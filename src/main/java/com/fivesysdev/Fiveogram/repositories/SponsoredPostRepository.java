@@ -1,0 +1,8 @@
+package com.fivesysdev.Fiveogram.repositories;
+
+import com.fivesysdev.Fiveogram.models.SponsoredPost;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SponsoredPostRepository extends JpaRepository<SponsoredPost,Long> {
+
+}
