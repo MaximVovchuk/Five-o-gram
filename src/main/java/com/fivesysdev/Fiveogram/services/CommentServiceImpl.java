@@ -29,15 +29,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void save(long id, String text) {
-        Comment comment = createComment(id, text);
-        comment.setPublished((LocalDate.now()));
+    public void save(Comment comment) {
         commentRepository.save(comment);
     }
 
     @Override
     public void editComment(long id, String text) {
-        Comment comment = createComment(id,text);
+        Comment comment = createComment(id, text);
         commentRepository.save(comment);
     }
 
@@ -54,6 +52,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = new Comment();
         comment.setAuthor(Context.getUserFromContext());
         comment.setText(text);
+        comment.setPublished((LocalDate.now()));
         comment.setPost(postService.findPostById(id));
         return comment;
     }

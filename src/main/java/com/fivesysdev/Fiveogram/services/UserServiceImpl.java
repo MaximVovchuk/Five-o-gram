@@ -7,6 +7,7 @@ import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.FriendshipRepository;
 import com.fivesysdev.Fiveogram.repositories.PictureRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
+import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Context;
@@ -28,12 +29,14 @@ public class UserServiceImpl implements UserService {
     private final PictureRepository pictureRepository;
     private final PostService postService;
     private final FriendshipRepository friendshipRepository;
+    private final FileService fileService;
 
-    public UserServiceImpl(UserRepository userRepository, PictureRepository pictureRepository, PostService postService, FriendshipRepository friendshipRepository) {
+    public UserServiceImpl(UserRepository userRepository, PictureRepository pictureRepository, PostService postService, FriendshipRepository friendshipRepository, FileService fileService) {
         this.userRepository = userRepository;
         this.pictureRepository = pictureRepository;
         this.postService = postService;
         this.friendshipRepository = friendshipRepository;
+        this.fileService = fileService;
     }
 
     public User getUser(long id) {
@@ -64,14 +67,8 @@ public class UserServiceImpl implements UserService {
     public Map<String, String> setAvatar(MultipartFile multipartFile) {
         User temp = Context.getUserFromContext();
         User user = userRepository.findUserById(temp.getId());
-        try {
-            Picture picture = new Picture(multipartFile.getBytes());
-            picture.setCreated(LocalDate.now());
-            pictureRepository.save(picture);
-            user.setAvatar(picture);
-        } catch (IOException e) {
-            return Map.of("Message", "Error");
-        }
+        Picture picture = fileService.saveFile(multipartFile);
+        user.setAvatar(picture);
         return Map.of("Message", "ok");
     }
 

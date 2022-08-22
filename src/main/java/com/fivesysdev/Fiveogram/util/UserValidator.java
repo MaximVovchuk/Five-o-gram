@@ -29,6 +29,6 @@ public class UserValidator implements Validator {
             return;
         }
         System.out.println("Человек с такой логином уже существует");
-        errors.rejectValue("email", "", "Человек с такой логином уже существует");
+        errors.rejectValue("username", "", "Человек с такой логином уже существует");
     }
 }

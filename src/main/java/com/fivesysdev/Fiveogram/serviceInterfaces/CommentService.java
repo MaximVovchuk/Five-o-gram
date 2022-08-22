@@ -5,7 +5,7 @@ import com.fivesysdev.Fiveogram.models.Post;
 
 public interface CommentService {
     void addComment(Post post, Comment comment);
-    void save(long id, String text);
+    void save(Comment comment);
 
     void editComment(long id, String text);
 

@@ -7,10 +7,11 @@ import com.fivesysdev.Fiveogram.repositories.PictureRepository;
 import com.fivesysdev.Fiveogram.repositories.PostRepository;
 import com.fivesysdev.Fiveogram.repositories.SponsoredPostRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
+import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Context;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,13 +29,17 @@ public class PostServiceImpl implements PostService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final SponsoredPostRepository sponsoredPostRepository;
+    private final FileService fileService;
 
-    public PostServiceImpl(PostRepository postRepository, PictureRepository pictureRepository, ModelMapper modelMapper, UserRepository userRepository, SponsoredPostRepository sponsoredPostRepository) {
+    public PostServiceImpl(PostRepository postRepository, PictureRepository pictureRepository,
+                           ModelMapper modelMapper, UserRepository userRepository,
+                           SponsoredPostRepository sponsoredPostRepository, FileService fileService) {
         this.postRepository = postRepository;
         this.pictureRepository = pictureRepository;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.sponsoredPostRepository = sponsoredPostRepository;
+        this.fileService = fileService;
     }
 
     @Override
@@ -57,14 +62,8 @@ public class PostServiceImpl implements PostService {
         if (multipartFile == null) {
             post.setPicture(null);
         } else {
-            try {
-                picture = new Picture(multipartFile.getBytes());
-                picture.setCreated(LocalDate.now());
-                pictureRepository.save(picture);
-                post.setPicture(picture);
-            } catch (IOException e) {
-                post.setPicture(null);
-            }
+            picture = fileService.saveFile(multipartFile);
+            post.setPicture(picture);
         }
         if (sponsorId != null) {
             User sponsor = userRepository.findUserById(sponsorId);
@@ -78,20 +77,6 @@ public class PostServiceImpl implements PostService {
         }
         return postRepository.save(post);
     }
-
-//    @Override
-//    public Post sponsorSave(String text, MultipartFile multipartFile, Long sponsorId) throws UserNotFoundException {
-//        Post post = save(text, multipartFile);
-//        SponsoredPost sponsoredPost = new SponsoredPost();
-//        sponsoredPost.setPost(post);
-//        User sponsor = userRepository.findUserById(sponsorId);
-//        if (sponsor == null) {
-//            throw new UserNotFoundException();
-//        }
-//        sponsoredPost.setSponsor(sponsor);
-//        sponsoredPostRepository.save(sponsoredPost);
-//        return post;
-//    }
 
     @Override
     public List<Post> findRecommendations(User user) {
@@ -110,12 +95,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public boolean editPost(long id, String text, MultipartFile multipartFile) {
         Post oldPost = postRepository.findPostById(id);
-        try {
-            oldPost.setPicture(new Picture(multipartFile.getBytes()));
-        } catch (IOException e) {
-            return false;
+        if (!multipartFile.isEmpty()) {
+            oldPost.setPicture(fileService.saveFile(multipartFile));
         }
-        oldPost.setText(text);
+        if (!text.isEmpty() && !text.equals(" ")) {
+            oldPost.setText(text);
+        }
         return true;
     }
 

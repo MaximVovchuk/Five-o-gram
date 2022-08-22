@@ -22,8 +22,10 @@ public class Picture {
     private long id;
     @Column(name = "created_at")
     private LocalDate created;
-    @Column(name = "content")
-    private byte[] content;
+    @Column(name = "path")
+    private String path;
+    @Column(name = "token")
+    private String token;
 
     @OneToMany(mappedBy = "picture")
     @JsonIgnore
@@ -32,8 +34,4 @@ public class Picture {
     @OneToMany(mappedBy = "avatar")
     @JsonIgnore
     private List<User> users;
-
-    public Picture(byte[] content) {
-        this.content = content;
-    }
 }
