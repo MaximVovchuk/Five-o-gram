@@ -26,7 +26,7 @@ public class CommentFacadeImpl implements CommentFacade {
         Post post = postService.findPostById(id);
         Comment comment = commentService.createComment(post,text);
         commentService.save(comment);
-        notificationService.sentNotification(
+        notificationService.sendNotification(
                 new NewCommentNotification(post, comment)
         );
     }

@@ -2,7 +2,6 @@ package com.fivesysdev.Fiveogram.facades;
 
 import com.fivesysdev.Fiveogram.facadeInterfaces.LikeFacade;
 import com.fivesysdev.Fiveogram.models.Post;
-import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.models.notifications.NewLikeNotification;
 import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
@@ -31,10 +30,8 @@ public class LikeFacadeImpl implements LikeFacade {
             return Map.of("Message","post not found");
         }
         likeService.likePost(post, Context.getUserFromContext());
-        for (User recipient : post.getLikeNotificationRecipients()) {
-            notificationService.sentNotification(
-                    new NewLikeNotification(recipient, Context.getUserFromContext()));
-        }
+        notificationService.sendNotification(
+                    new NewLikeNotification(post, Context.getUserFromContext()));
         return Map.of("Message","ok");
     }
 }

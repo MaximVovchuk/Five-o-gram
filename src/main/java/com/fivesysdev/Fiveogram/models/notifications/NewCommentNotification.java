@@ -4,6 +4,7 @@ import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 
+
 public class NewCommentNotification implements Notification {
     private final Post post;
     private final Comment comment;
@@ -21,7 +22,12 @@ public class NewCommentNotification implements Notification {
     }
 
     @Override
-    public User getReciever() {
+    public User getReceiver() {
         return post.getAuthor();
+    }
+
+    @Override
+    public Object getObject() {
+        return post;
     }
 }

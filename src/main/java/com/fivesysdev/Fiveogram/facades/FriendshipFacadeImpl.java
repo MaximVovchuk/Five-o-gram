@@ -35,7 +35,7 @@ public class FriendshipFacadeImpl implements FriendshipFacade {
                 map.put("Message", "You can`t friend yourself");
             } else {
                 map = friendshipService.addToFriends(owner, newFriend);
-                notificationService.sentNotification(
+                notificationService.sendNotification(
                         new NewFriendshipNotification(owner, newFriend)
                 );
             }

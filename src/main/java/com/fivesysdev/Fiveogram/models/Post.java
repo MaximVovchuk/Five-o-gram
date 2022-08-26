@@ -40,5 +40,4 @@ public class Post implements HasLikeNotificationRecipients {
     public List<User> getLikeNotificationRecipients() {
         return Collections.singletonList(this.author);
     }
-
 }

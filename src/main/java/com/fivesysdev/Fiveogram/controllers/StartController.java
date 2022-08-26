@@ -55,7 +55,6 @@ public class StartController {
         return Map.of("jwt-token", token);
     }
 
-    //TODO PIZDEC NIHUYA NE RABOTAET
     @PostMapping("/register")
     public Map<String, String> registerPage(@RequestBody @Valid UserDTO userDTO,
                                             BindingResult bindingResult) {
