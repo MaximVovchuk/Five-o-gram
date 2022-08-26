@@ -24,7 +24,7 @@ public class CommentFacadeImpl implements CommentFacade {
     @Override
     public void addComment(long id, String text) {
         Post post = postService.findPostById(id);
-        Comment comment = commentService.createComment(id,text);
+        Comment comment = commentService.createComment(post,text);
         commentService.save(comment);
         notificationService.sentNotification(
                 new NewCommentNotification(post, comment)

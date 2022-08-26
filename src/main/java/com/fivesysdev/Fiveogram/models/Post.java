@@ -1,17 +1,13 @@
 package com.fivesysdev.Fiveogram.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -26,7 +22,7 @@ public class Post implements HasLikeNotificationRecipients {
     private long id;
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
-
+    @JsonIgnoreProperties({"friendships"})
     private User author;
     @Column(name = "text")
     private String text;
@@ -34,11 +30,10 @@ public class Post implements HasLikeNotificationRecipients {
     @JoinColumn(name = "picture_id", referencedColumnName = "id")
     private Picture picture;
     @Column(name = "created_at")
-    private LocalDate pubDate;
-    @OneToMany(mappedBy = "post")
+    private LocalDateTime pubDate;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likesList;
-
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList;
 
     @Override
@@ -46,11 +41,4 @@ public class Post implements HasLikeNotificationRecipients {
         return Collections.singletonList(this.author);
     }
 
-    public void addLike(Like like) {
-        likesList.add(like);
-    }
-
-    public void addComment(Comment comment) {
-        commentList.add(comment);
-    }
 }

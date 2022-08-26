@@ -28,7 +28,6 @@ public class UserValidator implements Validator {
         } catch (UsernameNotFoundException e) {
             return;
         }
-        System.out.println("Человек с такой логином уже существует");
-        errors.rejectValue("username", "", "Человек с такой логином уже существует");
+        errors.rejectValue("username", "", "This username is already taken");
     }
 }

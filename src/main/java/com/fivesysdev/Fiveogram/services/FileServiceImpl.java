@@ -7,7 +7,7 @@ import com.fivesysdev.Fiveogram.util.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -30,7 +30,7 @@ public class FileServiceImpl implements FileService {
 
         picture.setPath(fullPath);
         picture.setToken(fileName);
-        picture.setCreated(LocalDate.now());
+        picture.setCreated(LocalDateTime.now());
         pictureRepository.save(picture);
         try {
             FileUtil.uploadFile(file.getBytes(), filePath, fileName);

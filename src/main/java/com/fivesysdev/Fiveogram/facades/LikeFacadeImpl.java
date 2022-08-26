@@ -8,8 +8,9 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.util.Context;
-import lombok.Data;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class LikeFacadeImpl implements LikeFacade {
@@ -24,12 +25,16 @@ public class LikeFacadeImpl implements LikeFacade {
     }
 
     @Override
-    public void likePost(long id) {
+    public Map<String,String> likePost(long id) {
         Post post = postService.findPostById(id);
+        if(post==null){
+            return Map.of("Message","post not found");
+        }
         likeService.likePost(post, Context.getUserFromContext());
         for (User recipient : post.getLikeNotificationRecipients()) {
             notificationService.sentNotification(
                     new NewLikeNotification(recipient, Context.getUserFromContext()));
         }
+        return Map.of("Message","ok");
     }
 }

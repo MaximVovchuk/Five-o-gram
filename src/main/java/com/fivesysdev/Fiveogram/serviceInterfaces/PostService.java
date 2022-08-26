@@ -1,28 +1,20 @@
 package com.fivesysdev.Fiveogram.serviceInterfaces;
 
-import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
-import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PostService {
     List<Post> findAll(User user);
 
-    List<Post> findAll();
+    Map<String,String> save(String name, MultipartFile multipartFile, Long sponsorId);
 
-    Post save(String name, MultipartFile multipartFile,Long sponsorId) throws UserNotFoundException;
-
-    List<Post> findRecommendations(User user);
     Post findPostById(long id);
-    boolean editPost(long id, String text, MultipartFile multipartFile);
-    void deletePost(long id);
+    Map<String,String> editPost(long id, String text, MultipartFile multipartFile);
+    Map<String,String> deletePost(long id);
 
-    boolean addLike(Like like);
 
-    boolean unlikePost(long id);
-
-    //Post sponsorSave(String text, MultipartFile multipartFile, Long sponsorId) throws UserNotFoundException;
 }

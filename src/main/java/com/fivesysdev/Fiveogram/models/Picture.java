@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -21,7 +20,7 @@ public class Picture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "created_at")
-    private LocalDate created;
+    private LocalDateTime created;
     @Column(name = "path")
     private String path;
     @Column(name = "token")

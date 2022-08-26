@@ -10,6 +10,8 @@ import com.fivesysdev.Fiveogram.util.Context;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 @Transactional
 public class LikeServiceImpl implements LikeService {
@@ -23,14 +25,21 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public void likePost(Post post, User whoLikes) {
-        if(!likeRepository.existsByPostAndWhoLikes(post,whoLikes))
+        if (!likeRepository.existsByPostAndWhoLikes(post, whoLikes))
             likeRepository.save(new Like(post, whoLikes));
     }
 
     @Override
-    public void unlikePost(long id) {
+    public Map<String, String> unlikePost(long id) {
         Post post = postRepository.findPostById(id);
+        if (post == null) {
+            return Map.of("Message", "Post not found");
+        }
         Like like = likeRepository.findByPostAndWhoLikes(post, Context.getUserFromContext());
+        if (like == null) {
+            return Map.of("Message", "You didn`t like this post");
+        }
         likeRepository.delete(like);
+        return Map.of("Message", "ok");
     }
 }

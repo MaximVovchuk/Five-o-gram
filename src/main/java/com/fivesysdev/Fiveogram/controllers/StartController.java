@@ -37,8 +37,12 @@ public class StartController {
     }
 
     @GetMapping("/login")
-    public Map<String,String> login(@RequestBody AuthenticationDTO authenticationDTO){
+    public Map<String,String> login(@RequestBody @Valid AuthenticationDTO authenticationDTO,
+                                    BindingResult bindingResult){
         MyUserDetails userDetails;
+        if(bindingResult.hasErrors()){
+            return Map.of("Message","Bad credentials");
+        }
         try {
             userDetails = authService.loadUserByUsername(authenticationDTO.getUsername());
         } catch (UsernameNotFoundException e) {
@@ -51,14 +55,17 @@ public class StartController {
         return Map.of("jwt-token", token);
     }
 
-
+    //TODO PIZDEC NIHUYA NE RABOTAET
     @PostMapping("/register")
     public Map<String, String> registerPage(@RequestBody @Valid UserDTO userDTO,
                                             BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return Map.of("Message", "Validation Error");
+        }
         User user = convertToUser(userDTO);
         userValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {
-            return Map.of("Message", "Error!");
+            return Map.of("Message", "This username is already taken");
         }
         registrationService.save(user);
         String token = jwtUtil.generateToken(user.getUsername());

@@ -1,6 +1,7 @@
 package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class Like {
 
     @ManyToOne
     @JoinColumn(name = "who_likes_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"friendships"})
     private User whoLikes;
 
     public Like(Post post, User whoLikes) {
