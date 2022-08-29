@@ -2,8 +2,13 @@ package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
+import com.fivesysdev.Fiveogram.models.notifications.NewCommentNotification;
+import com.fivesysdev.Fiveogram.models.notifications.Notification;
 import com.fivesysdev.Fiveogram.repositories.CommentRepository;
+import com.fivesysdev.Fiveogram.repositories.SponsoredPostRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Context;
 import org.springframework.stereotype.Service;
@@ -17,15 +22,28 @@ import java.util.Map;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
+    private final PostService postService;
+    private final SponsoredPostRepository sponsoredPostRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, UserService userService) {
+    public CommentServiceImpl(CommentRepository commentRepository, UserService userService, NotificationService notificationService, PostService postService, SponsoredPostRepository sponsoredPostRepository) {
         this.commentRepository = commentRepository;
         this.userService = userService;
+        this.notificationService = notificationService;
+        this.postService = postService;
+        this.sponsoredPostRepository = sponsoredPostRepository;
     }
 
     @Override
-    public void save(Comment comment) {
+    public void save(long id, String text) {
+        Post post = postService.findPostById(id);
+        Comment comment = createComment(post, text);
         commentRepository.save(comment);
+        Notification notification = new NewCommentNotification(post, comment);
+        if(sponsoredPostRepository.existsByPost(post)){
+            notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
+        }
+        notificationService.sendNotification(notification);
     }
 
     @Override
@@ -34,7 +52,7 @@ public class CommentServiceImpl implements CommentService {
         if (oldComment == null) {
             return Map.of("Message", "Comment not found");
         }
-        if (oldComment.getAuthor().equals(userService.getUser(Context.getUserFromContext().getId()))) {
+        if (oldComment.getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()))) {
             oldComment.setText(text);
             return Map.of("Message", "ok");
         }
@@ -47,8 +65,8 @@ public class CommentServiceImpl implements CommentService {
         if (oldComment == null) {
             return Map.of("Message", "Comment not found");
         }
-        if (oldComment.getAuthor().equals(userService.getUser(Context.getUserFromContext().getId()))
-                || oldComment.getPost().getAuthor().equals(userService.getUser(Context.getUserFromContext().getId()))) {
+        if (oldComment.getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()))
+                || oldComment.getPost().getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()))) {
             commentRepository.deleteById(id);
             return Map.of("Message", "ok");
         }

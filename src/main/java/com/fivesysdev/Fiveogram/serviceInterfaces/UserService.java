@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserService {
-    User getUser(long id);
-
-    Map<String, String> unmakeFriend(long id);
+    User findUserById(long id);
 
     Map<String, String> setAvatar(MultipartFile multipartFile);
 

@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FriendshipRepository extends JpaRepository<Friendship,Integer> {
     Friendship findFriendshipByFriendAndOwner(User Friend, User owner);
+    void deleteByFriendAndOwner(User friend, User owner);
 }

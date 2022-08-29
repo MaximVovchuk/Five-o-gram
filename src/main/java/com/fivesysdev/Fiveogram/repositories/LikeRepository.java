@@ -5,7 +5,12 @@ import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LikeRepository extends JpaRepository<Like,Long> {
+import java.util.Set;
+
+public interface LikeRepository extends JpaRepository<Like, Long> {
     Like findByPostAndWhoLikes(Post post, User WhoLikes);
+
     boolean existsByPostAndWhoLikes(Post post, User whoLikes);
+
+    Set<Like> findAllByPost(Post post);
 }

@@ -1,16 +1,15 @@
 package com.fivesysdev.Fiveogram.dto;
 
-import com.fivesysdev.Fiveogram.models.Picture;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.sql.Date;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
     @NotBlank(message = "this should not be empty")
     @Size(min = 2, max = 32, message = "name must be between 2 and 32 characters long")
@@ -24,5 +23,4 @@ public class UserDTO {
     @NotBlank(message = "this should not be empty")
     @Length(min = 8, message = "password should be at least 8 characters")
     private String password;
-   // private Picture avatar;
 }

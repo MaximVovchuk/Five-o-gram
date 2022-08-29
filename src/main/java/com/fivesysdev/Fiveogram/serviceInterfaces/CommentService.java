@@ -6,7 +6,7 @@ import com.fivesysdev.Fiveogram.models.Post;
 import java.util.Map;
 
 public interface CommentService {
-    void save(Comment comment);
+    void save(long id, String text);
 
     Map<String ,String> editComment(long id, String text);
 

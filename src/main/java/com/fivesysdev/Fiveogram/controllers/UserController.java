@@ -1,8 +1,8 @@
 package com.fivesysdev.Fiveogram.controllers;
 
-import com.fivesysdev.Fiveogram.facadeInterfaces.FriendshipFacade;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
+import com.fivesysdev.Fiveogram.serviceInterfaces.FriendshipService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +14,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private final FriendshipFacade friendshipFacade;
+    private final FriendshipService friendshipService;
     private final UserService userService;
     private final NotificationService notificationService;
 
-    public UserController(FriendshipFacade friendshipFacade, UserService userService, NotificationService notificationService) {
-        this.friendshipFacade = friendshipFacade;
+    public UserController(FriendshipService friendshipService, UserService userService, NotificationService notificationService) {
+        this.friendshipService = friendshipService;
         this.userService = userService;
         this.notificationService = notificationService;
     }
@@ -31,17 +31,17 @@ public class UserController {
 
     @GetMapping("{id}")
     public User getUser(@PathVariable long id) {
-        return userService.getUser(id);
+        return userService.findUserById(id);
     }
 
     @PostMapping("{id}/makeFriend")
     public Map<String, String> makeFriend(@PathVariable long id) {
-        return friendshipFacade.addToFriends(id);
+        return friendshipService.addToFriends(id);
     }
 
     @PostMapping("{id}/unmakeFriend")
     public Map<String, String> unmakeFriend(@PathVariable long id) {
-        return userService.unmakeFriend(id);
+        return friendshipService.unmakeFriend(id);
     }
 
     @GetMapping("/notifications")

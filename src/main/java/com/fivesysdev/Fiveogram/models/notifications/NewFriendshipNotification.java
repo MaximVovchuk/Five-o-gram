@@ -3,6 +3,7 @@ package com.fivesysdev.Fiveogram.models.notifications;
 import com.fivesysdev.Fiveogram.models.User;
 
 
+
 public class NewFriendshipNotification implements Notification {
     private final User owner;
     private final User friend;
@@ -10,6 +11,7 @@ public class NewFriendshipNotification implements Notification {
     public NewFriendshipNotification(User owner, User friend) {
         this.owner = owner;
         this.friend = friend;
+        recipients.add(friend);
     }
 
     @Override
@@ -17,13 +19,4 @@ public class NewFriendshipNotification implements Notification {
         return owner.getName() + " added " + friend.getName() + " to friends";
     }
 
-    @Override
-    public User getReceiver() {
-        return friend;
-    }
-
-    @Override
-    public Object getObject() {
-        return owner;
-    }
 }

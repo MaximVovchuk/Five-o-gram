@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SponsoredPostRepository extends JpaRepository<SponsoredPost,Long> {
     SponsoredPost findByPost(Post post);
+    boolean existsByPost(Post post);
 }

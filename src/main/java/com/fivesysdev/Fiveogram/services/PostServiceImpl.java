@@ -102,7 +102,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Map<String,String> deletePost(long id) {
+    public Map<String, String> deletePost(long id) {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             return Map.of("Message", "Post not found");
@@ -111,7 +111,7 @@ public class PostServiceImpl implements PostService {
             return Map.of("Message", "That`s not your post");
         }
         postRepository.deleteById(id);
-        return Map.of("Message","ok");
+        return Map.of("Message", "ok");
     }
 
 

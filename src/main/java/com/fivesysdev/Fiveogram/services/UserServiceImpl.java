@@ -4,8 +4,6 @@ import com.fivesysdev.Fiveogram.models.Friendship;
 import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
-import com.fivesysdev.Fiveogram.repositories.FriendshipRepository;
-import com.fivesysdev.Fiveogram.repositories.PictureRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
@@ -15,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,42 +22,21 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final PictureRepository pictureRepository;
     private final PostService postService;
-    private final FriendshipRepository friendshipRepository;
     private final FileService fileService;
 
-    public UserServiceImpl(UserRepository userRepository, PictureRepository pictureRepository, PostService postService, FriendshipRepository friendshipRepository, FileService fileService) {
+    public UserServiceImpl(UserRepository userRepository, PostService postService,
+                           FileService fileService) {
         this.userRepository = userRepository;
-        this.pictureRepository = pictureRepository;
         this.postService = postService;
-        this.friendshipRepository = friendshipRepository;
         this.fileService = fileService;
     }
 
-    public User getUser(long id) {
+    public User findUserById(long id) {
         return userRepository.findUserById(id);
     }
 
-    @Override
-    public Map<String, String> unmakeFriend(long id) {
-        Friendship friendship = new Friendship();
-        User friend = userRepository.findUserById(id);
-        if (friend == null) {
-            return Map.of("Message", "friend not found");
-        }
-        friendship.setFriend(friend);
-        friendship.setOwner(Context.getUserFromContext());
-        if (friendshipRepository.findFriendshipByFriendAndOwner(friend, Context.getUserFromContext()) == null) {
-            return Map.of("Message", "You are not friends");
-        }
-        try {
-            friendshipRepository.delete(friendship);
-        } catch (Exception ex) {
-            return Map.of("Message", ex.getMessage());
-        }
-        return Map.of("Message", "ok");
-    }
+
 
     @Override
     public Map<String, String> setAvatar(MultipartFile multipartFile) {
