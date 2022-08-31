@@ -1,9 +1,9 @@
 package com.fivesysdev.Fiveogram.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-@ToString(exclude = "friendships")
 public class User {
     @Id
     @Column(name = "id")
@@ -32,6 +31,7 @@ public class User {
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private Picture avatar;
     @OneToMany(mappedBy = "owner")
+    @JsonIgnore
     private List<Friendship> friendships;
 
 }

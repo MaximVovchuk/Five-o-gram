@@ -1,5 +1,7 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.exceptions.FileException;
+import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Friendship;
 import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.models.Post;
@@ -9,6 +11,8 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Context;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,25 +35,35 @@ public class UserServiceImpl implements UserService {
         this.fileService = fileService;
     }
 
-    public User findUserById(long id) {
-        return userRepository.findUserById(id);
+    public ResponseEntity<User> findUserById(long id) {
+        User user = userRepository.findUserById(id);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
 
-
     @Override
-    public Map<String, String> setAvatar(MultipartFile multipartFile) {
-        User temp = Context.getUserFromContext();
-        User user = userRepository.findUserById(temp.getId());
-        Picture picture = fileService.saveFile(multipartFile);
+    public ResponseEntity<Map<String, String>> setAvatar(MultipartFile multipartFile) {
+        User user = userRepository.findUserById(Context.getUserFromContext().getId());
+        if(multipartFile==null){
+            return new ResponseEntity<>(Map.of("Message","didn`t receive picture"),HttpStatus.BAD_REQUEST);
+        }
+        Picture picture;
+        try {
+            picture = fileService.saveFile(multipartFile);
+        }
+        catch (FileException ex){
+            return new ResponseEntity<>(Map.of("Message","File Exception"),HttpStatus.BAD_REQUEST);
+        }
         user.setAvatar(picture);
-        return Map.of("Message", "ok");
+        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
     }
 
     @Override
     public List<User> getFriendsList() {
-        User temp = Context.getUserFromContext();
-        User user = userRepository.findUserById(temp.getId());
+        User user = userRepository.findUserById(Context.getUserFromContext().getId());
         List<User> result = new ArrayList<>();
         for (Friendship friendship : user.getFriendships()) {
             result.add(friendship.getFriend());
@@ -59,8 +72,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Post> getRecommendations() {
-        return getFriendsList().stream().flatMap
-                (friend -> postService.findAll(friend).stream().limit(5)).collect(Collectors.toList());
+    public ResponseEntity<List<Post>> getRecommendations() {
+        List<Post> posts = getFriendsList().stream().flatMap
+                (friend -> postService.findAll(friend).stream().limit(5)).toList();
+        if (!posts.isEmpty()) {
+            return new ResponseEntity<>(posts, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }

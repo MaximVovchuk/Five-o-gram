@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.exceptions.FileException;
 import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.repositories.PictureRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
@@ -17,7 +18,7 @@ public class FileServiceImpl implements FileService {
         this.pictureRepository = pictureRepository;
     }
 
-    public Picture saveFile(MultipartFile file) {
+    public Picture saveFile(MultipartFile file) throws FileException {
         String fileName = FileUtil.getFileName(file.getOriginalFilename());
         String filePath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/";
         String fullPath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/" + fileName;

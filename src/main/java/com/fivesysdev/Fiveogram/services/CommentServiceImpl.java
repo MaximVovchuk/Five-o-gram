@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
 import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.notifications.NewCommentNotification;
@@ -11,6 +12,8 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Context;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,42 +38,45 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void save(long id, String text) {
+    public void save(long id, String text)  throws PostNotFoundException{
         Post post = postService.findPostById(id);
+        if(post == null){
+            throw new PostNotFoundException();
+        }
         Comment comment = createComment(post, text);
         commentRepository.save(comment);
         Notification notification = new NewCommentNotification(post, comment);
-        if(sponsoredPostRepository.existsByPost(post)){
+        if (sponsoredPostRepository.existsByPost(post)) {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
         }
         notificationService.sendNotification(notification);
     }
 
     @Override
-    public Map<String, String> editComment(long id, String text) {
+    public ResponseEntity<Map<String, String>> editComment(long id, String text) throws PostNotFoundException{
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
-            return Map.of("Message", "Comment not found");
+            throw new PostNotFoundException();
         }
-        if (oldComment.getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()))) {
+        if (oldComment.getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()).getBody())) {
             oldComment.setText(text);
-            return Map.of("Message", "ok");
+            return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
         }
-        return Map.of("Message", "That`s not your comment");
+        return new ResponseEntity<>(Map.of("Message", "That`s not your comment"), HttpStatus.BAD_REQUEST);
     }
 
     @Override
-    public Map<String, String> deleteComment(long id) {
+    public ResponseEntity<Map<String, String>> deleteComment(long id) throws PostNotFoundException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
-            return Map.of("Message", "Comment not found");
+            throw new PostNotFoundException();
         }
-        if (oldComment.getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()))
-                || oldComment.getPost().getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()))) {
+        if (oldComment.getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()).getBody())
+                || oldComment.getPost().getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()).getBody())) {
             commentRepository.deleteById(id);
-            return Map.of("Message", "ok");
+            return new ResponseEntity<>(Map.of("Message", "ok"),HttpStatus.OK);
         }
-        return Map.of("Message", "That`s not your comment");
+        return new ResponseEntity<>(Map.of("Message", "That`s not your comment"),HttpStatus.BAD_REQUEST);
     }
 
     public Comment createComment(Post post, String text) {

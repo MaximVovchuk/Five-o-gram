@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
@@ -12,6 +13,8 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Context;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,42 +39,45 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public Map<String, String> likePost(long id) {
+    public ResponseEntity<Map<String, String>> likePost(long id) {
         Post post = postService.findPostById(id);
-        if(post == null){
-            return Map.of("Message", "Post isn`t found");
+        if (post == null) {
+            throw new PostNotFoundException();
         }
-        User whoLikes = userService.findUserById(Context.getUserFromContext().getId());
+        User whoLikes = userService.findUserById(Context.getUserFromContext().getId()).getBody();
         if (!likeRepository.existsByPostAndWhoLikes(post, whoLikes)) {
             likeRepository.save(new Like(post, whoLikes));
         } else {
-            return Map.of("Message","You`ve already liked this post");
+            return new ResponseEntity<>(Map.of("Message", "You`ve already liked this post"), HttpStatus.BAD_REQUEST);
         }
-        Notification notification = new NewLikeNotification(post,whoLikes);
-        if(sponsoredPostRepository.existsByPost(post)){
+        Notification notification = new NewLikeNotification(post, whoLikes);
+        if (sponsoredPostRepository.existsByPost(post)) {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
         }
         notificationService.sendNotification(notification);
-        return Map.of("Message","ok");
+        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
     }
 
     @Override
-    public Map<String, String> unlikePost(long id) {
+    public ResponseEntity<Map<String, String>> unlikePost(long id) {
         Post post = postService.findPostById(id);
         if (post == null) {
-            return Map.of("Message", "Post not found");
+            throw new PostNotFoundException();
         }
         Like like = likeRepository.findByPostAndWhoLikes(post, Context.getUserFromContext());
         if (like == null) {
-            return Map.of("Message", "You didn`t like this post");
+            return new ResponseEntity<>(Map.of("Message", "You didn`t like this post"), HttpStatus.BAD_REQUEST);
         }
         likeRepository.delete(like);
-        return Map.of("Message", "ok");
+        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
     }
 
     @Override
-    public Set<Like> findAllPostLikes(long id) {
+    public ResponseEntity<Set<Like>> findAllPostLikes(long id) {
         Post post = postService.findPostById(id);
-        return likeRepository.findAllByPost(post);
+        if (post == null) {
+            throw new PostNotFoundException();
+        }
+        return new ResponseEntity<>(likeRepository.findAllByPost(post), HttpStatus.OK);
     }
 }

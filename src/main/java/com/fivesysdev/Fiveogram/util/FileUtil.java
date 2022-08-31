@@ -1,5 +1,7 @@
 package com.fivesysdev.Fiveogram.util;
 
+import com.fivesysdev.Fiveogram.exceptions.FileException;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.UUID;
@@ -17,10 +19,14 @@ public class FileUtil {
     }
 
     public static String getSuffix(String fileName) {
-        return fileName.substring(fileName.lastIndexOf("."));
+        try {
+            return fileName.substring(fileName.lastIndexOf("."));
+        }catch (StringIndexOutOfBoundsException ex){
+            throw new FileException();
+        }
     }
 
-    public static String getFileName(String fileOriginName) {
+    public static String getFileName(String fileOriginName) throws FileException{
         return getUUID() + getSuffix(fileOriginName);
     }
 

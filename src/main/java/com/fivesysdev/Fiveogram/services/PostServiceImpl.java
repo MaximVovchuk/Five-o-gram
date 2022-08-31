@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.repositories.PostRepository;
 import com.fivesysdev.Fiveogram.repositories.SponsoredPostRepository;
@@ -7,6 +8,8 @@ import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.util.Context;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,20 +42,20 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public Map<String, String> save(String text, MultipartFile multipartFile, Long sponsorId) {
+    public ResponseEntity<Map<String, String>> save(String text, MultipartFile multipartFile, Long sponsorId) {
         if (text == null || text.isEmpty()) {
-            return Map.of("Message", "Text is empty");
+            return new ResponseEntity<>(Map.of("Message", "Text is empty"), HttpStatus.BAD_REQUEST);
         }
         Post post = createPost(text, multipartFile);
         if (sponsorId != null) {
             User sponsor = userRepository.findUserById(sponsorId);
             if (sponsor == null) {
-                return Map.of("Message", "Sponsor not found");
+                return new ResponseEntity<>(Map.of("Message", "Sponsor not found"), HttpStatus.BAD_REQUEST);
             }
             createAndSaveSponsoredPost(post, sponsor);
         }
         postRepository.save(post);
-        return Map.of("Message", "ok");
+        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
     }
 
     private void createAndSaveSponsoredPost(Post post, User sponsor) {
@@ -79,40 +82,42 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post findPostById(long id) {
-        return postRepository.findPostById(id);
+        Post post = postRepository.findPostById(id);
+        if (post == null) {
+            throw new PostNotFoundException();
+        }
+        return post;
     }
 
     @Override
-    public Map<String, String> editPost(long id, String text, MultipartFile multipartFile) {
+    public ResponseEntity<Map<String, String>> editPost(long id, String text, MultipartFile multipartFile) {
         if (text == null || text.isEmpty()) {
-            return Map.of("Message", "Text is empty");
+            return new ResponseEntity<>(Map.of("Message", "Text is empty"), HttpStatus.BAD_REQUEST);
         }
         Post oldPost = postRepository.findPostById(id);
         if (oldPost == null) {
-            return Map.of("Message", "Post not found");
+            throw new PostNotFoundException();
         }
         if (!Objects.equals(oldPost.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
-            return Map.of("Message", "That`s not your post");
+            return new ResponseEntity<>(Map.of("Message", "That`s not your post"), HttpStatus.BAD_REQUEST);
         }
         if (multipartFile != null && !multipartFile.isEmpty()) {
             oldPost.setPicture(fileService.saveFile(multipartFile));
         }
         oldPost.setText(text);
-        return Map.of("Message", "ok");
+        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
     }
 
     @Override
-    public Map<String, String> deletePost(long id) {
+    public ResponseEntity<Map<String, String>> deletePost(long id) {
         Post post = postRepository.findPostById(id);
         if (post == null) {
-            return Map.of("Message", "Post not found");
+            throw new PostNotFoundException();
         }
         if (!Objects.equals(post.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
-            return Map.of("Message", "That`s not your post");
+            return new ResponseEntity<>(Map.of("Message", "That`s not your post"), HttpStatus.BAD_REQUEST);
         }
         postRepository.deleteById(id);
-        return Map.of("Message", "ok");
+        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
     }
-
-
 }
