@@ -17,7 +17,7 @@ public class CommentController {
     }
 
     @PatchMapping("/{id}/editComment")
-    public ResponseEntity<Map<String, String>> editComment(@PathVariable long id, @RequestBody String text) {
+    public ResponseEntity<Map<String, String>> editComment(@PathVariable long id, @RequestParam String text) {
         try {
             return commentService.editComment(id, text);
         } catch (PostNotFoundException ex) {

@@ -4,6 +4,7 @@ import com.fivesysdev.Fiveogram.exceptions.FileException;
 import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.repositories.PictureRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
+import com.fivesysdev.Fiveogram.util.Context;
 import com.fivesysdev.Fiveogram.util.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,12 +21,10 @@ public class FileServiceImpl implements FileService {
 
     public Picture saveFile(MultipartFile file) throws FileException {
         String fileName = FileUtil.getFileName(file.getOriginalFilename());
-        String filePath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/";
-        String fullPath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/" + fileName;
-
-        System.out.println("Токен файла: " + fileName);
-        System.out.println("Имя файла: " + file.getOriginalFilename());
-        System.out.println("FullPath: " + fullPath);
+        String filePath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/"
+                + Context.getUserFromContext().getUsername() + "/";
+        String fullPath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/"
+                + Context.getUserFromContext().getUsername() + "/" + fileName;
 
         Picture picture = new Picture();
 
