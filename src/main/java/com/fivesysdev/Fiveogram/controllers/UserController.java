@@ -40,7 +40,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
     @PostMapping("{id}/makeFriend")
     public ResponseEntity<Map<String, String>> makeFriend(@PathVariable long id) {
         try {

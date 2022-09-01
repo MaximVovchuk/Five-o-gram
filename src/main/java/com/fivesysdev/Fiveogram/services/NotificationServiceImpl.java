@@ -32,7 +32,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public ResponseEntity<List<String>> getAllNotifications() {
-        List<TextNotification> textNotifications = notificationRepository.findTextNotificationsByOwner(Context.getUserFromContext());
+        List<TextNotification> textNotifications =
+                notificationRepository.findTextNotificationsByOwner(Context.getUserFromContext());
         List<String> result = new ArrayList<>();
         for(TextNotification notification : textNotifications){
             result.add(notification.getContent());

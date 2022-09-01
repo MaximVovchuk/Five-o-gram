@@ -3,7 +3,6 @@ package com.fivesysdev.Fiveogram.services;
 import com.fivesysdev.Fiveogram.exceptions.FileException;
 import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Friendship;
-import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
@@ -46,18 +45,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<Map<String, String>> setAvatar(MultipartFile multipartFile) {
-        User user = userRepository.findUserById(Context.getUserFromContext().getId());
         if(multipartFile==null){
             return new ResponseEntity<>(Map.of("Message","didn`t receive picture"),HttpStatus.BAD_REQUEST);
         }
-        Picture picture;
+        User user = userRepository.findUserById(Context.getUserFromContext().getId());
         try {
-            picture = fileService.saveFile(multipartFile);
+           user.setAvatarUri(fileService.saveFile(multipartFile));
         }
         catch (FileException ex){
             return new ResponseEntity<>(Map.of("Message","File Exception"),HttpStatus.BAD_REQUEST);
         }
-        user.setAvatar(picture);
+
         return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
     }
 

@@ -70,12 +70,8 @@ public class PostServiceImpl implements PostService {
         post.setAuthor(Context.getUserFromContext());
         post.setText(text);
         post.setPubDate(LocalDateTime.now());
-        Picture picture;
-        if (multipartFile == null) {
-            post.setPicture(null);
-        } else {
-            picture = fileService.saveFile(multipartFile);
-            post.setPicture(picture);
+        if (multipartFile != null) {
+            post.setPictureUri(fileService.saveFile(multipartFile));
         }
         return post;
     }
@@ -102,7 +98,7 @@ public class PostServiceImpl implements PostService {
             return new ResponseEntity<>(Map.of("Message", "That`s not your post"), HttpStatus.BAD_REQUEST);
         }
         if (multipartFile != null && !multipartFile.isEmpty()) {
-            oldPost.setPicture(fileService.saveFile(multipartFile));
+            oldPost.setPictureUri(fileService.saveFile(multipartFile));
         }
         oldPost.setText(text);
         return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);

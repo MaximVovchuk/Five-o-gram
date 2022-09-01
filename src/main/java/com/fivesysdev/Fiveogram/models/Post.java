@@ -26,9 +26,7 @@ public class Post implements HasLikeNotificationRecipients {
     private User author;
     @Column(name = "text")
     private String text;
-    @ManyToOne
-    @JoinColumn(name = "picture_id", referencedColumnName = "id")
-    private Picture picture;
+    private String pictureUri;
     @Column(name = "created_at")
     private LocalDateTime pubDate;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)

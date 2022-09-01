@@ -27,9 +27,7 @@ public class User {
     private String username;
     @Column(name = "password")
     private String password;
-    @ManyToOne
-    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
-    private Picture avatar;
+    private String avatarUri;
     @OneToMany(mappedBy = "owner")
     @JsonIgnore
     private List<Friendship> friendships;
