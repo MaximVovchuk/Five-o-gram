@@ -11,17 +11,17 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "pictures")
+@Table(name = "avatars")
 @Entity
-public class Picture {
+public class Avatar {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @JsonIgnore
-    private Post post;
+    private User user;
     @Column(name = "path")
     private String path;
 }

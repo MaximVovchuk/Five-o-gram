@@ -8,12 +8,12 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "posts")
 @Entity
 public class Post {
@@ -27,7 +27,8 @@ public class Post {
     private User author;
     @Column(name = "text")
     private String text;
-    private String pictureUri;
+    @OneToMany(mappedBy = "post")
+    private List<Picture> pictures;
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime pubDate;
@@ -35,5 +36,10 @@ public class Post {
     private List<Like> likesList;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList;
-
+    public void addPicture(Picture picture){
+        pictures.add(picture);
+    }
+    public Post(){
+        pictures = new ArrayList<>();
+    }
 }

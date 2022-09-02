@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -27,9 +29,15 @@ public class User {
     private String username;
     @Column(name = "password")
     private String password;
-    private String avatarUri;
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Avatar> avatars;
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "owner")
     @JsonIgnore
     private List<Friendship> friendships;
-
+    public void addAvatar(Avatar avatar){
+        avatars.add(avatar);
+    }
 }
