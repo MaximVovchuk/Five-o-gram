@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "posts")
 @Entity
-public class Post implements HasLikeNotificationRecipients {
+public class Post {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,14 +29,11 @@ public class Post implements HasLikeNotificationRecipients {
     private String text;
     private String pictureUri;
     @Column(name = "created_at")
+    @CreatedDate
     private LocalDateTime pubDate;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likesList;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList;
 
-    @Override
-    public List<User> getLikeNotificationRecipients() {
-        return Collections.singletonList(this.author);
-    }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "sponsored_posts")
-public class SponsoredPost implements HasLikeNotificationRecipients {
+public class SponsoredPost {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +26,4 @@ public class SponsoredPost implements HasLikeNotificationRecipients {
     @JoinColumn(name = "sponsor_id", referencedColumnName = "id")
     private User sponsor;
 
-    @Override
-    public List<User> getLikeNotificationRecipients() {
-        return Arrays.asList(post.getAuthor(), getSponsor());
-    }
 }

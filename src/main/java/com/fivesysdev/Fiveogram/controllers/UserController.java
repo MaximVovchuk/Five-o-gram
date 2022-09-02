@@ -39,6 +39,7 @@ public class UserController {
         } catch (UserNotFoundException ex) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
     }
     @PostMapping("{id}/makeFriend")
     public ResponseEntity<Map<String, String>> makeFriend(@PathVariable long id) {
