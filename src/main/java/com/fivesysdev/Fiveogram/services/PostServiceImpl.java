@@ -1,7 +1,9 @@
 package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.exceptions.FileException;
+import com.fivesysdev.Fiveogram.exceptions.NotYourPostException;
 import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.SponsorNotFoundException;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.repositories.PictureRepository;
 import com.fivesysdev.Fiveogram.repositories.PostRepository;
@@ -18,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -46,19 +47,16 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public ResponseEntity<Map<String, String>> save(String text, MultipartFile multipartFile, Long sponsorId) {
-        if (text == null || text.isEmpty()) {
-            return new ResponseEntity<>(Map.of("Message", "Text is empty"), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Post> save(String text, MultipartFile multipartFile, Long sponsorId) {
         Post post = createAndSavePost(text, multipartFile);
         if (sponsorId != null) {
             User sponsor = userRepository.findUserById(sponsorId);
             if (sponsor == null) {
-                return new ResponseEntity<>(Map.of("Message", "Sponsor not found"), HttpStatus.BAD_REQUEST);
+                throw new SponsorNotFoundException();
             }
             createAndSaveSponsoredPost(post, sponsor);
         }
-        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     private void createAndSaveSponsoredPost(Post post, User sponsor) {
@@ -96,16 +94,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> editPost(long id, String text, MultipartFile multipartFile) {
-        if (text == null || text.isEmpty()) {
-            return new ResponseEntity<>(Map.of("Message", "Text is empty"), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Post> editPost(long id, String text, MultipartFile multipartFile) {
         Post oldPost = postRepository.findPostById(id);
         if (oldPost == null) {
             throw new PostNotFoundException();
         }
         if (!Objects.equals(oldPost.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
-            return new ResponseEntity<>(Map.of("Message", "That`s not your post"), HttpStatus.BAD_REQUEST);
+            throw new NotYourPostException();
         }
         if (multipartFile != null && !multipartFile.isEmpty()) {
             String uri = fileService.saveFile(multipartFile);
@@ -115,19 +110,22 @@ public class PostServiceImpl implements PostService {
             oldPost.addPicture(picture);
         }
         oldPost.setText(text);
-        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
+        return new ResponseEntity<>(oldPost, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> deletePost(long id) {
+    public ResponseEntity<List<Post>> deletePost(long id) {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new PostNotFoundException();
         }
         if (!Objects.equals(post.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
-            return new ResponseEntity<>(Map.of("Message", "That`s not your post"), HttpStatus.BAD_REQUEST);
+            throw new NotYourPostException();
+        }
+        if(sponsoredPostRepository.existsByPost(post)){
+            sponsoredPostRepository.deleteByPost(post);
         }
         postRepository.deleteById(id);
-        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
+        return new ResponseEntity<>(postRepository.findAllByAuthor(post.getAuthor()), HttpStatus.OK);
     }
 }

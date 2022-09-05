@@ -31,7 +31,6 @@ public class User {
     private String password;
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "user")
-    @JsonIgnore
     private List<Avatar> avatars;
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "owner")

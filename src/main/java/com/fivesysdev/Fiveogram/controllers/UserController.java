@@ -1,8 +1,6 @@
 package com.fivesysdev.Fiveogram.controllers;
 
-import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Post;
-import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FriendshipService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -28,34 +25,38 @@ public class UserController {
     }
 
     @PostMapping("/setAvatar")
-    public ResponseEntity<Map<String, String>> setAvatar(@RequestBody MultipartFile multipartFile) {
-        return userService.setAvatar(multipartFile);
+    public ResponseEntity<?> setAvatar(@RequestBody MultipartFile multipartFile) {
+        try {
+            return userService.setAvatar(multipartFile);
+        } catch (RuntimeException ex) {
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<User> getUser(@PathVariable long id) {
+    public ResponseEntity<?> getUser(@PathVariable long id) {
         try {
             return userService.findUserById(id);
-        } catch (UserNotFoundException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (RuntimeException ex) {
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
         }
-
     }
+
     @PostMapping("{id}/makeFriend")
-    public ResponseEntity<Map<String, String>> makeFriend(@PathVariable long id) {
+    public ResponseEntity<?> makeFriend(@PathVariable long id) {
         try {
             return friendshipService.addToFriends(id);
-        } catch (UserNotFoundException ex) {
-            return new ResponseEntity<>(Map.of("Message", "User was not found"), HttpStatus.NOT_FOUND);
+        } catch (RuntimeException ex) {
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("{id}/unmakeFriend")
-    public ResponseEntity<Map<String, String>> unmakeFriend(@PathVariable long id) {
+    public ResponseEntity<?> unmakeFriend(@PathVariable long id) {
         try {
             return friendshipService.unmakeFriend(id);
-        } catch (UserNotFoundException ex) {
-            return new ResponseEntity<>(Map.of("Message", "User was not found"), HttpStatus.NOT_FOUND);
+        } catch (RuntimeException ex) {
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.exceptions.PostAlreadyLikedException;
 import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -39,37 +39,32 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> likePost(long id) {
+    public ResponseEntity<Post> likePost(long id) {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new PostNotFoundException();
         }
         User whoLikes = userService.findUserById(Context.getUserFromContext().getId()).getBody();
-        if (!likeRepository.existsByPostAndWhoLikes(post, whoLikes)) {
-            likeRepository.save(new Like(post, whoLikes));
-        } else {
-            return new ResponseEntity<>(Map.of("Message", "You`ve already liked this post"), HttpStatus.BAD_REQUEST);
+        if(likeRepository.existsByPostAndWhoLikes(post,whoLikes)){
+            throw new PostAlreadyLikedException();
         }
+        likeRepository.save(new Like(post,whoLikes));
         Notification notification = new NewLikeNotification(post, whoLikes);
         if (sponsoredPostRepository.existsByPost(post)) {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
         }
         notificationService.sendNotification(notification);
-        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> unlikePost(long id) {
+    public ResponseEntity<Post> unlikePost(long id) {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new PostNotFoundException();
         }
-        Like like = likeRepository.findByPostAndWhoLikes(post, Context.getUserFromContext());
-        if (like == null) {
-            return new ResponseEntity<>(Map.of("Message", "You didn`t like this post"), HttpStatus.BAD_REQUEST);
-        }
-        likeRepository.delete(like);
-        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
+        likeRepository.deleteByPostAndWhoLikes(post,Context.getUserFromContext());
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @Override

@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Set;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
-    Like findByPostAndWhoLikes(Post post, User WhoLikes);
 
     boolean existsByPostAndWhoLikes(Post post, User whoLikes);
 
     Set<Like> findAllByPost(Post post);
+    void deleteByPostAndWhoLikes(Post post, User whoLikes);
 }

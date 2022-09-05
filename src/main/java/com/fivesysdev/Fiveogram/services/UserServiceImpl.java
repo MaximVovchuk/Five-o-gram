@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -48,24 +47,18 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<Map<String, String>> setAvatar(MultipartFile multipartFile) {
+    public ResponseEntity<User> setAvatar(MultipartFile multipartFile) throws FileException{
         if(multipartFile == null){
-            return new ResponseEntity<>(Map.of("Message","didn`t receive picture"),HttpStatus.BAD_REQUEST);
+            throw new FileException();
         }
         User user = userRepository.findUserById(Context.getUserFromContext().getId());
-        String uri;
-        try {
-           uri = fileService.saveFile(multipartFile);
-        }
-        catch (FileException ex){
-            return new ResponseEntity<>(Map.of("Message","File Exception"),HttpStatus.BAD_REQUEST);
-        }
+        String uri = fileService.saveFile(multipartFile);
         Avatar avatar = new Avatar();
         avatar.setPath(uri);
         avatar.setUser(user);
         avatarRepository.save(avatar);
         user.addAvatar(avatar);
-        return new ResponseEntity<>(Map.of("Message", "ok"), HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Override

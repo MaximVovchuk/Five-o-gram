@@ -1,8 +1,8 @@
 package com.fivesysdev.Fiveogram.exceptions;
 
-public class FileException extends RuntimeException{
+public class NotYourPostException extends RuntimeException{
     @Override
     public String getMessage() {
-        return "File exception";
+        return "That`s not your post";
     }
 }

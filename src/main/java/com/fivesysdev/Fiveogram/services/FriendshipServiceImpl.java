@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.exceptions.FriendshipException;
 import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Friendship;
 import com.fivesysdev.Fiveogram.models.User;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -30,45 +30,37 @@ public class FriendshipServiceImpl implements FriendshipService {
         this.notificationService = notificationService;
     }
 
-    public ResponseEntity<Map<String, String>> addToFriends(long id) {
+    public ResponseEntity<User> addToFriends(long id) {
         User newFriend = userService.findUserById(id).getBody();
         User owner = userService.findUserById(Context.getUserFromContext().getId()).getBody();
         if (newFriend == null) {
             throw new UserNotFoundException();
         }
         if(Objects.equals(owner, newFriend)){
-            return new ResponseEntity<>(Map.of("Message","You can`t friend yourself"),HttpStatus.BAD_REQUEST);
+            throw new FriendshipException("You can`t friend yourself");
         }
         if (friendshipRepository.findFriendshipByFriendAndOwner(newFriend, owner) != null) {
-            return new ResponseEntity<>(Map.of("Message", "You are already friends"),HttpStatus.BAD_REQUEST);
+            throw new FriendshipException("You are already friends");
         }
         Friendship friendship = new Friendship(owner, newFriend);
-        try {
-            friendshipRepository.save(friendship);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(Map.of("Message", ex.getMessage()),HttpStatus.BAD_REQUEST);
-        }
+        friendshipRepository.save(friendship);
         notificationService.sendNotification(
                 new NewFriendshipNotification(owner, newFriend)
         );
-        return new ResponseEntity<>(Map.of("Message", "ok"),HttpStatus.OK);
+        return new ResponseEntity<>(newFriend,HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> unmakeFriend(long id) {
+    public ResponseEntity<User> unmakeFriend(long id) {
         User friend = userService.findUserById(id).getBody();
         User owner = Context.getUserFromContext();
         if (friend == null) {
             throw new UserNotFoundException();
         }
         if (friendshipRepository.findFriendshipByFriendAndOwner(friend, owner) == null) {
-            return new ResponseEntity<>(Map.of("Message", "You are not friends"),HttpStatus.BAD_REQUEST);
+            throw new FriendshipException("You are not friends");
         }
-        try {
-            friendshipRepository.deleteByFriendAndOwner(friend,owner);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(Map.of("Message", ex.getMessage()),HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(Map.of("Message", "ok"),HttpStatus.OK);
+        friendshipRepository.deleteByFriendAndOwner(friend,owner);
+        return new ResponseEntity<>(friend,HttpStatus.OK);
     }
 }

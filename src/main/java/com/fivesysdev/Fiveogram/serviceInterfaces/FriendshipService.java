@@ -1,12 +1,12 @@
 package com.fivesysdev.Fiveogram.serviceInterfaces;
 
 
+import com.fivesysdev.Fiveogram.models.User;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Map;
 
 public interface FriendshipService {
-    ResponseEntity<Map<String, String>> addToFriends(long id);
+    ResponseEntity<User> addToFriends(long id);
 
-    ResponseEntity<Map<String, String>> unmakeFriend(long id);
+    ResponseEntity<User> unmakeFriend(long id);
 }
