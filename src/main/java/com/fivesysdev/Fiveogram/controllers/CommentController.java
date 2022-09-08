@@ -19,7 +19,7 @@ public class CommentController {
     public ResponseEntity<?> editComment(@PathVariable long id, @RequestParam String text) {
         try {
             return commentService.editComment(id, text);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -28,7 +28,7 @@ public class CommentController {
     public ResponseEntity<?> deleteComment(@PathVariable long id) {
         try {
             return commentService.deleteComment(id);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

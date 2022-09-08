@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.controllers;
 
+import com.fivesysdev.Fiveogram.dto.PostDTO;
 import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
@@ -7,11 +8,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.constraints.Null;
 
 @RestController
 @RequestMapping("/post")
@@ -27,11 +24,10 @@ public class PostController {
     }
 
     @PostMapping("/newPost")
-    public ResponseEntity<?> addNewPost(@RequestParam @Nullable String text,
-                                        MultipartFile multipartFile, @Null Long sponsorId) {
+    public ResponseEntity<?> addNewPost(@ModelAttribute PostDTO postDTO) {
         try {
-            return postService.save(text, multipartFile, sponsorId);
-        } catch (RuntimeException ex) {
+            return postService.save(postDTO.getText(), postDTO.getMultipartFiles(), postDTO.getSponsorId());
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -46,11 +42,10 @@ public class PostController {
     }
 
     @PatchMapping("/{id:\\d+}/edit")
-    public ResponseEntity<?> editPost(@PathVariable long id,
-                                      @RequestParam @Nullable String text, MultipartFile multipartFile) {
+    public ResponseEntity<?> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO) {
         try {
-            return postService.editPost(id, text, multipartFile);
-        } catch (RuntimeException ex) {
+            return postService.editPost(id, postDTO.getText(), postDTO.getMultipartFiles());
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -59,7 +54,7 @@ public class PostController {
     public ResponseEntity<?> deletePost(@PathVariable long id) {
         try {
             return postService.deletePost(id);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -68,7 +63,7 @@ public class PostController {
     public ResponseEntity<?> addComment(@PathVariable long id, @RequestParam String text) {
         try {
             return new ResponseEntity<>(commentService.save(id, text), HttpStatus.OK);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -77,7 +72,7 @@ public class PostController {
     public ResponseEntity<?> addLike(@PathVariable long id) {
         try {
             return likeService.likePost(id);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -86,7 +81,7 @@ public class PostController {
     public ResponseEntity<?> deleteLike(@PathVariable long id) {
         try {
             return likeService.unlikePost(id);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -95,7 +90,7 @@ public class PostController {
     public ResponseEntity<?> getLikes(@PathVariable long id) {
         try {
             return likeService.findAllPostLikes(id);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

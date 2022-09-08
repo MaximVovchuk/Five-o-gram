@@ -18,7 +18,7 @@ public class FileUtil {
         out.close();
     }
 
-    public static String getSuffix(String fileName) {
+    public static String getSuffix(String fileName) throws FileException {
         try {
             return fileName.substring(fileName.lastIndexOf("."));
         }catch (StringIndexOutOfBoundsException ex){

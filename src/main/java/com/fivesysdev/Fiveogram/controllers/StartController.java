@@ -26,7 +26,7 @@ public class StartController {
     public ResponseEntity<?> login(@RequestBody AuthenticationDTO authenticationDTO) {
         try {
             return loginService.login(authenticationDTO);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -36,7 +36,7 @@ public class StartController {
                                           BindingResult bindingResult) {
         try {
             return registrationService.register(userDTO, bindingResult);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

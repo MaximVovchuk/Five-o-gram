@@ -22,7 +22,7 @@ public class LoginService {
         this.jwtUtil = jwtUtil;
     }
 
-    public ResponseEntity<String> login(AuthenticationDTO authenticationDTO) throws UsernameNotFoundException {
+    public ResponseEntity<String> login(AuthenticationDTO authenticationDTO) throws UsernameNotFoundException, WrongPasswordException {
         MyUserDetails userDetails;
         userDetails = authService.loadUserByUsername(authenticationDTO.getUsername());
         if(!passwordEncoder.matches(authenticationDTO.getPassword(),userDetails.getPassword())){

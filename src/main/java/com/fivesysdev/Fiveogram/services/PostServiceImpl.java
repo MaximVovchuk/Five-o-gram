@@ -1,9 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.FileException;
-import com.fivesysdev.Fiveogram.exceptions.NotYourPostException;
-import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.SponsorNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.repositories.PictureRepository;
 import com.fivesysdev.Fiveogram.repositories.PostRepository;
@@ -47,8 +44,8 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public ResponseEntity<Post> save(String text, MultipartFile multipartFile, Long sponsorId) {
-        Post post = createAndSavePost(text, multipartFile);
+    public ResponseEntity<Post> save(String text, List<MultipartFile> multipartFiles, Long sponsorId) throws FileException, SponsorNotFoundException {
+        Post post = createAndSavePost(text, multipartFiles);
         if (sponsorId != null) {
             User sponsor = userRepository.findUserById(sponsorId);
             if (sponsor == null) {
@@ -66,26 +63,28 @@ public class PostServiceImpl implements PostService {
         sponsoredPostRepository.save(sponsoredPost);
     }
 
-    private Post createAndSavePost(String text, MultipartFile multipartFile) throws FileException{
+    private Post createAndSavePost(String text, List<MultipartFile> multipartFiles) throws FileException {
         Post post = new Post();
         post.setAuthor(Context.getUserFromContext());
         post.setText(text);
         post.setPubDate(LocalDateTime.now());
         postRepository.save(post);
         String uri;
-        if (multipartFile != null) {
-            uri = fileService.saveFile(multipartFile);
-            Picture picture = new Picture();
-            picture.setPost(post);
-            picture.setPath(uri);
-            post.addPicture(picture);
-            pictureRepository.save(picture);
+        if (multipartFiles != null) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                uri = fileService.saveFile(multipartFile);
+                Picture picture = new Picture();
+                picture.setPost(post);
+                picture.setPath(uri);
+                post.addPicture(picture);
+                pictureRepository.save(picture);
+            }
         }
         return post;
     }
 
     @Override
-    public Post findPostById(long id) {
+    public Post findPostById(long id) throws PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new PostNotFoundException();
@@ -94,7 +93,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<Post> editPost(long id, String text, MultipartFile multipartFile) {
+    public ResponseEntity<Post> editPost(long id, String text, List<MultipartFile> multipartFiles) throws FileException, NotYourPostException, PostNotFoundException {
         Post oldPost = postRepository.findPostById(id);
         if (oldPost == null) {
             throw new PostNotFoundException();
@@ -102,19 +101,22 @@ public class PostServiceImpl implements PostService {
         if (!Objects.equals(oldPost.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
             throw new NotYourPostException();
         }
-        if (multipartFile != null && !multipartFile.isEmpty()) {
-            String uri = fileService.saveFile(multipartFile);
-            Picture picture = new Picture();
-            picture.setPath(uri);
-            picture.setPost(oldPost);
-            oldPost.addPicture(picture);
+        deletePictures(oldPost.getPictures());
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                String uri = fileService.saveFile(multipartFile);
+                Picture picture = new Picture();
+                picture.setPath(uri);
+                picture.setPost(oldPost);
+                oldPost.addPicture(picture);
+            }
         }
         oldPost.setText(text);
         return new ResponseEntity<>(oldPost, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<List<Post>> deletePost(long id) {
+    public ResponseEntity<List<Post>> deletePost(long id) throws NotYourPostException, PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new PostNotFoundException();
@@ -122,10 +124,18 @@ public class PostServiceImpl implements PostService {
         if (!Objects.equals(post.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
             throw new NotYourPostException();
         }
-        if(sponsoredPostRepository.existsByPost(post)){
+        if (sponsoredPostRepository.existsByPost(post)) {
             sponsoredPostRepository.deleteByPost(post);
         }
+        deletePictures(post.getPictures());
         postRepository.deleteById(id);
         return new ResponseEntity<>(postRepository.findAllByAuthor(post.getAuthor()), HttpStatus.OK);
+    }
+
+    private void deletePictures(List<Picture> pictures){
+        for(Picture picture:pictures){
+            pictureRepository.delete(picture);
+            fileService.deleteFile(picture.getPath());
+        }
     }
 }

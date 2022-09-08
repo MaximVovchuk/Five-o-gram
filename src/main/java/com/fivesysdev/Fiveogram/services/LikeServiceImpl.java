@@ -2,6 +2,7 @@ package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.exceptions.PostAlreadyLikedException;
 import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
@@ -39,7 +40,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Post> likePost(long id) {
+    public ResponseEntity<Post> likePost(long id) throws PostAlreadyLikedException, PostNotFoundException, UserNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new PostNotFoundException();
@@ -58,7 +59,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Post> unlikePost(long id) {
+    public ResponseEntity<Post> unlikePost(long id) throws PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new PostNotFoundException();
@@ -68,7 +69,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Set<Like>> findAllPostLikes(long id) {
+    public ResponseEntity<Set<Like>> findAllPostLikes(long id) throws PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new PostNotFoundException();

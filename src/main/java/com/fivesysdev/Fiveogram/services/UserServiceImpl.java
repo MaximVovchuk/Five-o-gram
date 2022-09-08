@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
         this.avatarRepository = avatarRepository;
     }
 
-    public ResponseEntity<User> findUserById(long id) {
+    public ResponseEntity<User> findUserById(long id) throws UserNotFoundException {
         User user = userRepository.findUserById(id);
         if (user == null) {
             throw new UserNotFoundException();
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<User> setAvatar(MultipartFile multipartFile) throws FileException{
+    public ResponseEntity<User> setAvatar(MultipartFile multipartFile) throws FileException {
         if(multipartFile == null){
             throw new FileException();
         }

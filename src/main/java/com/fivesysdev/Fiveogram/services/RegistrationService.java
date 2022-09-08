@@ -29,7 +29,7 @@ public class RegistrationService {
         this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
     }
-    public ResponseEntity<String> register(UserDTO userDTO, BindingResult bindingResult) {
+    public ResponseEntity<String> register(UserDTO userDTO, BindingResult bindingResult) throws UsernameBusyException {
         User user = convertToUser(userDTO);
         userValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {

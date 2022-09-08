@@ -3,6 +3,7 @@ package com.fivesysdev.Fiveogram.services;
 import com.fivesysdev.Fiveogram.exceptions.CommentNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.NotYourCommentException;
 import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.notifications.NewCommentNotification;
@@ -55,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public ResponseEntity<Comment> editComment(long id, String text) throws PostNotFoundException, NotYourCommentException {
+    public ResponseEntity<Comment> editComment(long id, String text) throws CommentNotFoundException, NotYourCommentException, UserNotFoundException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
             throw new CommentNotFoundException();
@@ -68,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public ResponseEntity<Post> deleteComment(long id) throws PostNotFoundException {
+    public ResponseEntity<Post> deleteComment(long id) throws CommentNotFoundException, NotYourCommentException, UserNotFoundException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
             throw new CommentNotFoundException();

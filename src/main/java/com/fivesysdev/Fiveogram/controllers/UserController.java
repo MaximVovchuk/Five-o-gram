@@ -28,7 +28,7 @@ public class UserController {
     public ResponseEntity<?> setAvatar(@RequestBody MultipartFile multipartFile) {
         try {
             return userService.setAvatar(multipartFile);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
@@ -37,7 +37,7 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable long id) {
         try {
             return userService.findUserById(id);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<?> makeFriend(@PathVariable long id) {
         try {
             return friendshipService.addToFriends(id);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
@@ -55,7 +55,7 @@ public class UserController {
     public ResponseEntity<?> unmakeFriend(@PathVariable long id) {
         try {
             return friendshipService.unmakeFriend(id);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }

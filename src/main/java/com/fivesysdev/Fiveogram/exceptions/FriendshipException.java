@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.exceptions;
 
-public class FriendshipException extends RuntimeException {
+public class FriendshipException extends Exception {
     private final String message;
 
     public FriendshipException(String ex) {

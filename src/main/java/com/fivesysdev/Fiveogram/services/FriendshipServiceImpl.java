@@ -30,7 +30,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         this.notificationService = notificationService;
     }
 
-    public ResponseEntity<User> addToFriends(long id) {
+    public ResponseEntity<User> addToFriends(long id) throws FriendshipException, UserNotFoundException {
         User newFriend = userService.findUserById(id).getBody();
         User owner = userService.findUserById(Context.getUserFromContext().getId()).getBody();
         if (newFriend == null) {
@@ -51,7 +51,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public ResponseEntity<User> unmakeFriend(long id) {
+    public ResponseEntity<User> unmakeFriend(long id) throws FriendshipException, UserNotFoundException {
         User friend = userService.findUserById(id).getBody();
         User owner = Context.getUserFromContext();
         if (friend == null) {
