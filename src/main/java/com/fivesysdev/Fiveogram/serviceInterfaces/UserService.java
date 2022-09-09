@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.serviceInterfaces;
 
+import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.FileException;
 import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Post;
@@ -18,4 +19,5 @@ public interface UserService {
 
     List<User> getFriendsList();
 
+    ResponseEntity<?> editMe(UserDTO userDTO);
 }

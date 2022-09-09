@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.FileException;
 import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Avatar;
@@ -14,6 +15,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Context;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,13 +30,15 @@ public class UserServiceImpl implements UserService {
     private final PostService postService;
     private final FileService fileService;
     private final AvatarRepository avatarRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository, PostService postService,
-                           FileService fileService, AvatarRepository avatarRepository) {
+                           FileService fileService, AvatarRepository avatarRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.postService = postService;
         this.fileService = fileService;
         this.avatarRepository = avatarRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public ResponseEntity<User> findUserById(long id) throws UserNotFoundException {
@@ -69,6 +73,16 @@ public class UserServiceImpl implements UserService {
             result.add(friendship.getFriend());
         }
         return result;
+    }
+
+    @Override
+    public ResponseEntity<?> editMe(UserDTO userDTO) {
+        User user = userRepository.findUserById(Context.getUserFromContext().getId());
+        user.setName(userDTO.getName());
+        user.setUsername(userDTO.getUsername());
+        user.setSurname(userDTO.getSurname());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return new ResponseEntity<>(user,HttpStatus.OK);
     }
 
     @Override

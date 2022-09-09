@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.controllers;
 
+import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FriendshipService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
@@ -28,6 +29,14 @@ public class UserController {
     public ResponseEntity<?> setAvatar(@RequestBody MultipartFile multipartFile) {
         try {
             return userService.setAvatar(multipartFile);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PatchMapping("/editMyProfile")
+    public ResponseEntity<?> editProfile(@ModelAttribute UserDTO userDTO){
+        try {
+            return userService.editMe(userDTO);
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
         }
