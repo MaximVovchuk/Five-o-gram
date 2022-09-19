@@ -44,13 +44,16 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public ResponseEntity<Post> save(String text, List<MultipartFile> multipartFiles, Long sponsorId) throws FileException, SponsorNotFoundException {
-        Post post = createAndSavePost(text, multipartFiles);
+    public ResponseEntity<Post> save(String text, List<MultipartFile> multipartFiles, Long sponsorId) throws Status408FileException, Status404SponsorNotFoundException {
+        User sponsor = null;
         if (sponsorId != null) {
-            User sponsor = userRepository.findUserById(sponsorId);
+            sponsor = userRepository.findUserById(sponsorId);
             if (sponsor == null) {
-                throw new SponsorNotFoundException();
+                throw new Status404SponsorNotFoundException();
             }
+        }
+        Post post = createAndSavePost(text, multipartFiles);
+        if(sponsorId!=null) {
             createAndSaveSponsoredPost(post, sponsor);
         }
         return new ResponseEntity<>(post, HttpStatus.OK);
@@ -63,7 +66,7 @@ public class PostServiceImpl implements PostService {
         sponsoredPostRepository.save(sponsoredPost);
     }
 
-    private Post createAndSavePost(String text, List<MultipartFile> multipartFiles) throws FileException {
+    private Post createAndSavePost(String text, List<MultipartFile> multipartFiles) throws Status408FileException {
         Post post = new Post();
         post.setAuthor(Context.getUserFromContext());
         post.setText(text);
@@ -84,22 +87,22 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post findPostById(long id) throws PostNotFoundException {
+    public Post findPostById(long id) throws Status404PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
-            throw new PostNotFoundException();
+            throw new Status404PostNotFoundException();
         }
         return post;
     }
 
     @Override
-    public ResponseEntity<Post> editPost(long id, String text, List<MultipartFile> multipartFiles) throws FileException, NotYourPostException, PostNotFoundException {
+    public ResponseEntity<Post> editPost(long id, String text, List<MultipartFile> multipartFiles) throws Status408FileException, Status403NotYourPostException, Status404PostNotFoundException {
         Post oldPost = postRepository.findPostById(id);
         if (oldPost == null) {
-            throw new PostNotFoundException();
+            throw new Status404PostNotFoundException();
         }
         if (!Objects.equals(oldPost.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
-            throw new NotYourPostException();
+            throw new Status403NotYourPostException();
         }
         deletePictures(oldPost.getPictures());
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
@@ -116,13 +119,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<List<Post>> deletePost(long id) throws NotYourPostException, PostNotFoundException {
+    public ResponseEntity<List<Post>> deletePost(long id) throws Status403NotYourPostException, Status404PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
-            throw new PostNotFoundException();
+            throw new Status404PostNotFoundException();
         }
         if (!Objects.equals(post.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
-            throw new NotYourPostException();
+            throw new Status403NotYourPostException();
         }
         if (sponsoredPostRepository.existsByPost(post)) {
             sponsoredPostRepository.deleteByPost(post);

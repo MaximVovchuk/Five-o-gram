@@ -1,8 +1,0 @@
-package com.fivesysdev.Fiveogram.exceptions;
-
-public class SponsorNotFoundException extends Exception{
-    @Override
-    public String getMessage() {
-        return "Your sponsor isn`t found";
-    }
-}

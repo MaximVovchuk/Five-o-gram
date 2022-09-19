@@ -1,7 +1,10 @@
 package com.fivesysdev.Fiveogram.controllers;
 
+import com.fivesysdev.Fiveogram.exceptions.Status404CommentNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status403NotYourCommentException;
+import com.fivesysdev.Fiveogram.exceptions.Status404PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status404UserNotFoundException;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,20 +19,12 @@ public class CommentController {
     }
 
     @PatchMapping("/{id}/editComment")
-    public ResponseEntity<?> editComment(@PathVariable long id, @RequestParam String text) {
-        try {
-            return commentService.editComment(id, text);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> editComment(@PathVariable long id, @RequestParam String text) throws Status404UserNotFoundException, Status404PostNotFoundException, Status404CommentNotFoundException, Status403NotYourCommentException {
+        return commentService.editComment(id, text);
     }
 
     @DeleteMapping("/{id}/deleteComment")
-    public ResponseEntity<?> deleteComment(@PathVariable long id) {
-        try {
-            return commentService.deleteComment(id);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> deleteComment(@PathVariable long id) throws Status404UserNotFoundException, Status404PostNotFoundException, Status404CommentNotFoundException, Status403NotYourCommentException {
+        return commentService.deleteComment(id);
     }
 }

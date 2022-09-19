@@ -1,7 +1,7 @@
 package com.fivesysdev.Fiveogram.controllers;
 
 import com.fivesysdev.Fiveogram.dto.PostDTO;
-import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
@@ -24,74 +24,42 @@ public class PostController {
     }
 
     @PostMapping("/newPost")
-    public ResponseEntity<?> addNewPost(@ModelAttribute PostDTO postDTO) {
-        try {
-            return postService.save(postDTO.getText(), postDTO.getMultipartFiles(), postDTO.getSponsorId());
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> addNewPost(@ModelAttribute PostDTO postDTO) throws Status408FileException, Status404SponsorNotFoundException {
+        return postService.save(postDTO.getText(), postDTO.getMultipartFiles(), postDTO.getSponsorId());
     }
 
     @GetMapping("/{id:\\d+}")
-    public ResponseEntity<Post> getPost(@PathVariable long id) {
-        try {
-            return new ResponseEntity<>(postService.findPostById(id), HttpStatus.OK);
-        } catch (PostNotFoundException ex) {
-            return new ResponseEntity<>(ex.httpStatus);
-        }
+    public ResponseEntity<Post> getPost(@PathVariable long id) throws Status404PostNotFoundException {
+        return new ResponseEntity<>(postService.findPostById(id), HttpStatus.OK);
     }
 
     @PatchMapping("/{id:\\d+}/edit")
-    public ResponseEntity<?> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO) {
-        try {
-            return postService.editPost(id, postDTO.getText(), postDTO.getMultipartFiles());
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO) throws Status408FileException, Status404PostNotFoundException, Status403NotYourPostException {
+        return postService.editPost(id, postDTO.getText(), postDTO.getMultipartFiles());
     }
 
     @DeleteMapping("/{id:\\d+}/delete")
-    public ResponseEntity<?> deletePost(@PathVariable long id) {
-        try {
-            return postService.deletePost(id);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> deletePost(@PathVariable long id) throws Status404PostNotFoundException, Status403NotYourPostException {
+        return postService.deletePost(id);
     }
 
     @PostMapping("/{id:\\d+}/addComment")
-    public ResponseEntity<?> addComment(@PathVariable long id, @RequestParam String text) {
-        try {
-            return new ResponseEntity<>(commentService.save(id, text), HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> addComment(@PathVariable long id, @RequestParam String text) throws Status404PostNotFoundException {
+        return new ResponseEntity<>(commentService.save(id, text), HttpStatus.OK);
     }
 
     @PostMapping("/{id:\\d+}/setLike")
-    public ResponseEntity<?> addLike(@PathVariable long id) {
-        try {
-            return likeService.likePost(id);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> addLike(@PathVariable long id) throws Status404UserNotFoundException, Status405PostAlreadyLikedException, Status404PostNotFoundException {
+        return likeService.likePost(id);
     }
 
     @PostMapping("/{id:\\d+}/deleteLike")
-    public ResponseEntity<?> deleteLike(@PathVariable long id) {
-        try {
-            return likeService.unlikePost(id);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> deleteLike(@PathVariable long id) throws Status404PostNotFoundException {
+        return likeService.unlikePost(id);
     }
 
     @GetMapping("/{id:\\d+}/getLikes")
-    public ResponseEntity<?> getLikes(@PathVariable long id) {
-        try {
-            return likeService.findAllPostLikes(id);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> getLikes(@PathVariable long id) throws Status404PostNotFoundException {
+        return likeService.findAllPostLikes(id);
     }
 }

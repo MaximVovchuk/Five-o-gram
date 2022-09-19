@@ -1,9 +1,9 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.CommentNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.NotYourCommentException;
-import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status404CommentNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status403NotYourCommentException;
+import com.fivesysdev.Fiveogram.exceptions.Status404PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status404UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.notifications.NewCommentNotification;
@@ -40,10 +40,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment save(long id, String text) throws PostNotFoundException {
+    public Comment save(long id, String text) throws Status404PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
-            throw new PostNotFoundException();
+            throw new Status404PostNotFoundException();
         }
         Comment comment = createComment(post, text);
         commentRepository.save(comment);
@@ -56,30 +56,30 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public ResponseEntity<Comment> editComment(long id, String text) throws CommentNotFoundException, NotYourCommentException, UserNotFoundException {
+    public ResponseEntity<Comment> editComment(long id, String text) throws Status404CommentNotFoundException, Status403NotYourCommentException, Status404UserNotFoundException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
-            throw new CommentNotFoundException();
+            throw new Status404CommentNotFoundException();
         }
         if (oldComment.getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()).getBody())) {
             oldComment.setText(text);
             return new ResponseEntity<>(oldComment, HttpStatus.OK);
         }
-        throw new NotYourCommentException();
+        throw new Status403NotYourCommentException();
     }
 
     @Override
-    public ResponseEntity<Post> deleteComment(long id) throws CommentNotFoundException, NotYourCommentException, UserNotFoundException {
+    public ResponseEntity<Post> deleteComment(long id) throws Status404CommentNotFoundException, Status403NotYourCommentException, Status404UserNotFoundException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
-            throw new CommentNotFoundException();
+            throw new Status404CommentNotFoundException();
         }
         if (oldComment.getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()).getBody())
                 || oldComment.getPost().getAuthor().equals(userService.findUserById(Context.getUserFromContext().getId()).getBody())) {
             commentRepository.deleteById(id);
             return new ResponseEntity<>(oldComment.getPost(), HttpStatus.OK);
         }
-        throw new NotYourCommentException();
+        throw new Status403NotYourCommentException();
     }
 
     public Comment createComment(Post post, String text) {

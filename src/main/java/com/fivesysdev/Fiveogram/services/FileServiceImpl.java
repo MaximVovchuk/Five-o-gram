@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status408FileException;
 import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.util.Context;
@@ -25,7 +25,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String saveFile(MultipartFile file) throws FileException {
+    public String saveFile(MultipartFile file) throws Status408FileException {
         String fileName = FileUtil.getFileName(file.getOriginalFilename());
         String filePath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/"
                 + Context.getUserFromContext().getUsername() + "/";

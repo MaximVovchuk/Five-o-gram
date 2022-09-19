@@ -1,11 +1,13 @@
 package com.fivesysdev.Fiveogram.controllers;
 
 import com.fivesysdev.Fiveogram.dto.UserDTO;
+import com.fivesysdev.Fiveogram.exceptions.Status408FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status402FriendshipException;
+import com.fivesysdev.Fiveogram.exceptions.Status404UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FriendshipService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,47 +28,28 @@ public class UserController {
     }
 
     @PostMapping("/setAvatar")
-    public ResponseEntity<?> setAvatar(@RequestBody MultipartFile multipartFile) {
-        try {
-            return userService.setAvatar(multipartFile);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> setAvatar(@RequestBody MultipartFile multipartFile) throws Status408FileException {
+        return userService.setAvatar(multipartFile);
     }
+
     @PatchMapping("/editMyProfile")
-    public ResponseEntity<?> editProfile(@ModelAttribute UserDTO userDTO){
-        try {
-            return userService.editMe(userDTO);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> editProfile(@ModelAttribute UserDTO userDTO) {
+        return userService.editMe(userDTO);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getUser(@PathVariable long id) {
-        try {
-            return userService.findUserById(id);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> getUser(@PathVariable long id) throws Status404UserNotFoundException {
+        return userService.findUserById(id);
     }
 
     @PostMapping("{id}/makeFriend")
-    public ResponseEntity<?> makeFriend(@PathVariable long id) {
-        try {
-            return friendshipService.addToFriends(id);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> makeFriend(@PathVariable long id) throws Status404UserNotFoundException, Status402FriendshipException {
+        return friendshipService.addToFriends(id);
     }
 
     @PostMapping("{id}/unmakeFriend")
-    public ResponseEntity<?> unmakeFriend(@PathVariable long id) {
-        try {
-            return friendshipService.unmakeFriend(id);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> unmakeFriend(@PathVariable long id) throws Status404UserNotFoundException, Status402FriendshipException {
+        return friendshipService.unmakeFriend(id);
     }
 
     @GetMapping("/notifications")

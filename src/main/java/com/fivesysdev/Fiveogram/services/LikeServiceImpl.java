@@ -1,8 +1,8 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.PostAlreadyLikedException;
-import com.fivesysdev.Fiveogram.exceptions.PostNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.UserNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status405PostAlreadyLikedException;
+import com.fivesysdev.Fiveogram.exceptions.Status404PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status404UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
@@ -40,14 +40,14 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Post> likePost(long id) throws PostAlreadyLikedException, PostNotFoundException, UserNotFoundException {
+    public ResponseEntity<Post> likePost(long id) throws Status405PostAlreadyLikedException, Status404PostNotFoundException, Status404UserNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
-            throw new PostNotFoundException();
+            throw new Status404PostNotFoundException();
         }
         User whoLikes = userService.findUserById(Context.getUserFromContext().getId()).getBody();
         if(likeRepository.existsByPostAndWhoLikes(post,whoLikes)){
-            throw new PostAlreadyLikedException();
+            throw new Status405PostAlreadyLikedException();
         }
         likeRepository.save(new Like(post,whoLikes));
         Notification notification = new NewLikeNotification(post, whoLikes);
@@ -59,20 +59,20 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Post> unlikePost(long id) throws PostNotFoundException {
+    public ResponseEntity<Post> unlikePost(long id) throws Status404PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
-            throw new PostNotFoundException();
+            throw new Status404PostNotFoundException();
         }
         likeRepository.deleteByPostAndWhoLikes(post,Context.getUserFromContext());
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Set<Like>> findAllPostLikes(long id) throws PostNotFoundException {
+    public ResponseEntity<Set<Like>> findAllPostLikes(long id) throws Status404PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
-            throw new PostNotFoundException();
+            throw new Status404PostNotFoundException();
         }
         return new ResponseEntity<>(likeRepository.findAllByPost(post), HttpStatus.OK);
     }
