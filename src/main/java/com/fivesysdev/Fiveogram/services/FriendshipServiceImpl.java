@@ -36,7 +36,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         if (newFriend == null) {
             throw new Status404UserNotFoundException();
         }
-        if(Objects.equals(owner, newFriend)){
+        if (Objects.equals(owner, newFriend)) {
             throw new Status402FriendshipException("You can`t friend yourself");
         }
         if (friendshipRepository.findFriendshipByFriendAndOwner(newFriend, owner) != null) {
@@ -47,7 +47,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         notificationService.sendNotification(
                 new NewFriendshipNotification(owner, newFriend)
         );
-        return new ResponseEntity<>(newFriend,HttpStatus.OK);
+        return new ResponseEntity<>(newFriend, HttpStatus.OK);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         if (friendshipRepository.findFriendshipByFriendAndOwner(friend, owner) == null) {
             throw new Status402FriendshipException("You are not friends");
         }
-        friendshipRepository.deleteByFriendAndOwner(friend,owner);
-        return new ResponseEntity<>(friend,HttpStatus.OK);
+        friendshipRepository.deleteByFriendAndOwner(friend, owner);
+        return new ResponseEntity<>(friend, HttpStatus.OK);
     }
 }

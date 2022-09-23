@@ -29,6 +29,7 @@ public class RegistrationService {
         this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
     }
+
     public ResponseEntity<String> register(UserDTO userDTO, BindingResult bindingResult) throws Status406UsernameBusyException {
         User user = convertToUser(userDTO);
         userValidator.validate(user, bindingResult);

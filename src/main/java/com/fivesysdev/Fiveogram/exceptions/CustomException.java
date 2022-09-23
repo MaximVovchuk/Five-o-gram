@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ToString
-public class CustomException extends Exception{
+public class CustomException extends Exception {
     private static final String GENERAL_EXCEPTION_GUID = "ErrorCodeException";
     public int code = 400;
     private String errorCode = GENERAL_EXCEPTION_GUID; //Unique string for the exception (used by feign decoder imp)

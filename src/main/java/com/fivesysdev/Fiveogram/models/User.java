@@ -36,7 +36,8 @@ public class User {
     @OneToMany(mappedBy = "owner")
     @JsonIgnore
     private List<Friendship> friendships;
-    public void addAvatar(Avatar avatar){
+
+    public void addAvatar(Avatar avatar) {
         avatars.add(avatar);
     }
 }

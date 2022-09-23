@@ -21,7 +21,7 @@ public class FileUtil {
     public static String getSuffix(String fileName) throws Status408FileException {
         try {
             return fileName.substring(fileName.lastIndexOf("."));
-        }catch (StringIndexOutOfBoundsException ex){
+        } catch (StringIndexOutOfBoundsException ex) {
             throw new Status408FileException();
         }
     }

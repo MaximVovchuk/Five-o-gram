@@ -1,6 +1,5 @@
 package com.fivesysdev.Fiveogram.models.notifications;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fivesysdev.Fiveogram.models.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +22,7 @@ public class TextNotification {
     private User owner;
     @Column(name = "content")
     public String content;
+
     public TextNotification(String content, User owner) {
         this.content = content;
         this.owner = owner;

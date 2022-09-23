@@ -1,8 +1,8 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.Status405PostAlreadyLikedException;
 import com.fivesysdev.Fiveogram.exceptions.Status404PostNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status404UserNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status405PostAlreadyLikedException;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
@@ -46,10 +46,10 @@ public class LikeServiceImpl implements LikeService {
             throw new Status404PostNotFoundException();
         }
         User whoLikes = userService.findUserById(Context.getUserFromContext().getId()).getBody();
-        if(likeRepository.existsByPostAndWhoLikes(post,whoLikes)){
+        if (likeRepository.existsByPostAndWhoLikes(post, whoLikes)) {
             throw new Status405PostAlreadyLikedException();
         }
-        likeRepository.save(new Like(post,whoLikes));
+        likeRepository.save(new Like(post, whoLikes));
         Notification notification = new NewLikeNotification(post, whoLikes);
         if (sponsoredPostRepository.existsByPost(post)) {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
@@ -64,7 +64,7 @@ public class LikeServiceImpl implements LikeService {
         if (post == null) {
             throw new Status404PostNotFoundException();
         }
-        likeRepository.deleteByPostAndWhoLikes(post,Context.getUserFromContext());
+        likeRepository.deleteByPostAndWhoLikes(post, Context.getUserFromContext());
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 

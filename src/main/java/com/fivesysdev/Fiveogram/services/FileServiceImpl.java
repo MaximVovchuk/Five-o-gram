@@ -50,7 +50,7 @@ public class FileServiceImpl implements FileService {
     public void deleteFile(String path) {
         String imgPath = path.substring(28);
         String folderPath = foldPath.substring(8);
-        File targetFile = new File(folderPath+imgPath);
+        File targetFile = new File(folderPath + imgPath);
         targetFile.delete();
     }
 }

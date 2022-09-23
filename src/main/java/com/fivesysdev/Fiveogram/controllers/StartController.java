@@ -25,7 +25,7 @@ public class StartController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authenticationDTO) throws UsernameNotFoundException,Status407WrongPasswordException {
+    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authenticationDTO) throws UsernameNotFoundException, Status407WrongPasswordException {
         return loginService.login(authenticationDTO);
     }
 

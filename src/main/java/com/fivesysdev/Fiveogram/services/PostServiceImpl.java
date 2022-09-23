@@ -1,7 +1,13 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.*;
-import com.fivesysdev.Fiveogram.models.*;
+import com.fivesysdev.Fiveogram.exceptions.Status403NotYourPostException;
+import com.fivesysdev.Fiveogram.exceptions.Status404PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status404SponsorNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status408FileException;
+import com.fivesysdev.Fiveogram.models.Picture;
+import com.fivesysdev.Fiveogram.models.Post;
+import com.fivesysdev.Fiveogram.models.SponsoredPost;
+import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.PictureRepository;
 import com.fivesysdev.Fiveogram.repositories.PostRepository;
 import com.fivesysdev.Fiveogram.repositories.SponsoredPostRepository;
@@ -53,7 +59,7 @@ public class PostServiceImpl implements PostService {
             }
         }
         Post post = createAndSavePost(text, multipartFiles);
-        if(sponsorId!=null) {
+        if (sponsorId != null) {
             createAndSaveSponsoredPost(post, sponsor);
         }
         return new ResponseEntity<>(post, HttpStatus.OK);
@@ -135,8 +141,8 @@ public class PostServiceImpl implements PostService {
         return new ResponseEntity<>(postRepository.findAllByAuthor(post.getAuthor()), HttpStatus.OK);
     }
 
-    private void deletePictures(List<Picture> pictures){
-        for(Picture picture:pictures){
+    private void deletePictures(List<Picture> pictures) {
+        for (Picture picture : pictures) {
             pictureRepository.delete(picture);
             fileService.deleteFile(picture.getPath());
         }

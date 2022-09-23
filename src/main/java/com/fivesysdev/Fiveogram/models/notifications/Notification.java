@@ -5,6 +5,7 @@ import com.fivesysdev.Fiveogram.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public interface Notification {
     List<User> recipients = new ArrayList<>();
 
@@ -13,10 +14,12 @@ public interface Notification {
     default void addRecipient(User user) {
         recipients.add(user);
     }
-    default List<User> getRecipients(){
+
+    default List<User> getRecipients() {
         return recipients;
     }
-    default void clearRecipients(){
+
+    default void clearRecipients() {
         recipients.clear();
     }
 }

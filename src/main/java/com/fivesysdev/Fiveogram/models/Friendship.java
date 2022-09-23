@@ -24,7 +24,8 @@ public class Friendship {
     @ManyToOne
     @JoinColumn(name = "friend_id", referencedColumnName = "id")
     private User friend;
-    public Friendship(User owner,User newFriend) {
+
+    public Friendship(User owner, User newFriend) {
         this.owner = owner;
         this.friend = newFriend;
     }

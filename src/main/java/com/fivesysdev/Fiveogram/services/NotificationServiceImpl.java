@@ -23,8 +23,8 @@ public class NotificationServiceImpl implements NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public void sendNotification(Notification notification){
-        for(User recipient : notification.getRecipients()) {
+    public void sendNotification(Notification notification) {
+        for (User recipient : notification.getRecipients()) {
             notificationRepository.save(new TextNotification(notification.sendNotification(), recipient));
         }
         notification.clearRecipients();
@@ -35,7 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<TextNotification> textNotifications =
                 notificationRepository.findTextNotificationsByOwner(Context.getUserFromContext());
         List<String> result = new ArrayList<>();
-        for(TextNotification notification : textNotifications){
+        for (TextNotification notification : textNotifications) {
             result.add(notification.getContent());
         }
         return new ResponseEntity<>(result, HttpStatus.OK);

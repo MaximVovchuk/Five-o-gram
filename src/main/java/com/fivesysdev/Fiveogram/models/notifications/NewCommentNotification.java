@@ -15,7 +15,7 @@ public class NewCommentNotification implements Notification {
 
     @Override
     public String sendNotification() {
-         return this.comment.getAuthor().getName() + " commented "
+        return this.comment.getAuthor().getName() + " commented "
                 + this.post.getAuthor().getName() + "`s post: " +
                 this.comment.getText();
     }

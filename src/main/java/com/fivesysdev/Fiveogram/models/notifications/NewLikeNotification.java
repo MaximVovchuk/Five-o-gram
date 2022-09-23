@@ -4,8 +4,7 @@ import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 
 
-
-public class NewLikeNotification implements Notification{
+public class NewLikeNotification implements Notification {
     private final Post post;
     private final User whoLikes;
 
@@ -17,7 +16,7 @@ public class NewLikeNotification implements Notification{
 
     @Override
     public String sendNotification() {
-       return this.whoLikes.getName()+" Liked "+ this.post.getAuthor().getName()+"`s post";
+        return this.whoLikes.getName() + " Liked " + this.post.getAuthor().getName() + "`s post";
     }
 
 }

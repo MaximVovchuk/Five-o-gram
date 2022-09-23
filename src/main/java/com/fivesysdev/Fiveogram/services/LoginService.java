@@ -25,7 +25,7 @@ public class LoginService {
     public ResponseEntity<String> login(AuthenticationDTO authenticationDTO) throws UsernameNotFoundException, Status407WrongPasswordException {
         MyUserDetails userDetails;
         userDetails = authService.loadUserByUsername(authenticationDTO.getUsername());
-        if(!passwordEncoder.matches(authenticationDTO.getPassword(),userDetails.getPassword())){
+        if (!passwordEncoder.matches(authenticationDTO.getPassword(), userDetails.getPassword())) {
             throw new Status407WrongPasswordException();
         }
         String token = jwtUtil.generateToken(authenticationDTO.getUsername());

@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 public class MyUserDetails implements org.springframework.security.core.userdetails.UserDetails {
-        private final User user;
+    private final User user;
 
     public MyUserDetails(User user) {
         this.user = user;
