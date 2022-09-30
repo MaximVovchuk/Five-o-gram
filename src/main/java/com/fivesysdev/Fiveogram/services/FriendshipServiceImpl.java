@@ -1,7 +1,7 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.Status402FriendshipException;
-import com.fivesysdev.Fiveogram.exceptions.Status404UserNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status431FriendshipException;
+import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Friendship;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.models.notifications.NewFriendshipNotification;
@@ -30,17 +30,17 @@ public class FriendshipServiceImpl implements FriendshipService {
         this.notificationService = notificationService;
     }
 
-    public ResponseEntity<User> addToFriends(long id) throws Status402FriendshipException, Status404UserNotFoundException {
+    public ResponseEntity<User> addToFriends(long id) throws Status431FriendshipException, Status437UserNotFoundException {
         User newFriend = userService.findUserById(id).getBody();
         User owner = userService.findUserById(Context.getUserFromContext().getId()).getBody();
         if (newFriend == null) {
-            throw new Status404UserNotFoundException();
+            throw new Status437UserNotFoundException();
         }
         if (Objects.equals(owner, newFriend)) {
-            throw new Status402FriendshipException("You can`t friend yourself");
+            throw new Status431FriendshipException("You can`t friend yourself");
         }
         if (friendshipRepository.findFriendshipByFriendAndOwner(newFriend, owner) != null) {
-            throw new Status402FriendshipException("You are already friends");
+            throw new Status431FriendshipException("You are already friends");
         }
         Friendship friendship = new Friendship(owner, newFriend);
         friendshipRepository.save(friendship);
@@ -51,14 +51,14 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public ResponseEntity<User> unmakeFriend(long id) throws Status402FriendshipException, Status404UserNotFoundException {
+    public ResponseEntity<User> unmakeFriend(long id) throws Status431FriendshipException, Status437UserNotFoundException {
         User friend = userService.findUserById(id).getBody();
         User owner = Context.getUserFromContext();
         if (friend == null) {
-            throw new Status404UserNotFoundException();
+            throw new Status437UserNotFoundException();
         }
         if (friendshipRepository.findFriendshipByFriendAndOwner(friend, owner) == null) {
-            throw new Status402FriendshipException("You are not friends");
+            throw new Status431FriendshipException("You are not friends");
         }
         friendshipRepository.deleteByFriendAndOwner(friend, owner);
         return new ResponseEntity<>(friend, HttpStatus.OK);

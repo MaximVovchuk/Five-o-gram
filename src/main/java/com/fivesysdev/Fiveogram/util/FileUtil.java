@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.util;
 
-import com.fivesysdev.Fiveogram.exceptions.Status408FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,15 +18,15 @@ public class FileUtil {
         out.close();
     }
 
-    public static String getSuffix(String fileName) throws Status408FileException {
+    public static String getSuffix(String fileName) throws Status441FileException {
         try {
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException ex) {
-            throw new Status408FileException();
+            throw new Status441FileException();
         }
     }
 
-    public static String getFileName(String fileOriginName) throws Status408FileException {
+    public static String getFileName(String fileOriginName) throws Status441FileException {
         return getUUID() + getSuffix(fileOriginName);
     }
 

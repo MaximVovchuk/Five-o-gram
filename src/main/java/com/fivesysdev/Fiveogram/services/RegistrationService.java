@@ -2,7 +2,7 @@ package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.config.JWTUtil;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
-import com.fivesysdev.Fiveogram.exceptions.Status406UsernameBusyException;
+import com.fivesysdev.Fiveogram.exceptions.Status439UsernameBusyException;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.util.UserValidator;
@@ -30,11 +30,11 @@ public class RegistrationService {
         this.modelMapper = modelMapper;
     }
 
-    public ResponseEntity<String> register(UserDTO userDTO, BindingResult bindingResult) throws Status406UsernameBusyException {
+    public ResponseEntity<String> register(UserDTO userDTO, BindingResult bindingResult) throws Status439UsernameBusyException {
         User user = convertToUser(userDTO);
         userValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {
-            throw new Status406UsernameBusyException();
+            throw new Status439UsernameBusyException();
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);

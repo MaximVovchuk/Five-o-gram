@@ -27,5 +27,4 @@ public class TextNotification {
         this.content = content;
         this.owner = owner;
     }
-
 }

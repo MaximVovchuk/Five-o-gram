@@ -1,9 +1,9 @@
 package com.fivesysdev.Fiveogram.controllers;
 
 import com.fivesysdev.Fiveogram.dto.UserDTO;
-import com.fivesysdev.Fiveogram.exceptions.Status402FriendshipException;
-import com.fivesysdev.Fiveogram.exceptions.Status404UserNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status408FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status431FriendshipException;
+import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FriendshipService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("/setAvatar")
-    public ResponseEntity<?> setAvatar(@RequestBody MultipartFile multipartFile) throws Status408FileException {
+    public ResponseEntity<?> setAvatar(@RequestBody MultipartFile multipartFile) throws Status441FileException {
         return userService.setAvatar(multipartFile);
     }
 
@@ -38,17 +38,17 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getUser(@PathVariable long id) throws Status404UserNotFoundException {
+    public ResponseEntity<?> getUser(@PathVariable long id) throws Status437UserNotFoundException {
         return userService.findUserById(id);
     }
 
     @PostMapping("{id}/makeFriend")
-    public ResponseEntity<?> makeFriend(@PathVariable long id) throws Status404UserNotFoundException, Status402FriendshipException {
+    public ResponseEntity<?> makeFriend(@PathVariable long id) throws Status437UserNotFoundException, Status431FriendshipException {
         return friendshipService.addToFriends(id);
     }
 
     @PostMapping("{id}/unmakeFriend")
-    public ResponseEntity<?> unmakeFriend(@PathVariable long id) throws Status404UserNotFoundException, Status402FriendshipException {
+    public ResponseEntity<?> unmakeFriend(@PathVariable long id) throws Status437UserNotFoundException, Status431FriendshipException {
         return friendshipService.unmakeFriend(id);
     }
 

@@ -2,8 +2,8 @@ package com.fivesysdev.Fiveogram.controllers;
 
 import com.fivesysdev.Fiveogram.dto.AuthenticationDTO;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
-import com.fivesysdev.Fiveogram.exceptions.Status406UsernameBusyException;
-import com.fivesysdev.Fiveogram.exceptions.Status407WrongPasswordException;
+import com.fivesysdev.Fiveogram.exceptions.Status439UsernameBusyException;
+import com.fivesysdev.Fiveogram.exceptions.Status440WrongPasswordException;
 import com.fivesysdev.Fiveogram.services.LoginService;
 import com.fivesysdev.Fiveogram.services.RegistrationService;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +25,13 @@ public class StartController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authenticationDTO) throws UsernameNotFoundException, Status407WrongPasswordException {
+    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authenticationDTO) throws UsernameNotFoundException, Status440WrongPasswordException {
         return loginService.login(authenticationDTO);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerPage(@RequestBody @Valid UserDTO userDTO,
-                                          BindingResult bindingResult) throws Status406UsernameBusyException {
+                                          BindingResult bindingResult) throws Status439UsernameBusyException {
         return registrationService.register(userDTO, bindingResult);
     }
 }

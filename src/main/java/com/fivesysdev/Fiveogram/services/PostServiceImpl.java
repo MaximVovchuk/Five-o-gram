@@ -1,9 +1,9 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.Status403NotYourPostException;
-import com.fivesysdev.Fiveogram.exceptions.Status404PostNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status404SponsorNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status408FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status433NotYourPostException;
+import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status436SponsorNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
 import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.SponsoredPost;
@@ -50,12 +50,12 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public ResponseEntity<Post> save(String text, List<MultipartFile> multipartFiles, Long sponsorId) throws Status408FileException, Status404SponsorNotFoundException {
+    public ResponseEntity<Post> save(String text, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileException, Status436SponsorNotFoundException {
         User sponsor = null;
         if (sponsorId != null) {
             sponsor = userRepository.findUserById(sponsorId);
             if (sponsor == null) {
-                throw new Status404SponsorNotFoundException();
+                throw new Status436SponsorNotFoundException();
             }
         }
         Post post = createAndSavePost(text, multipartFiles);
@@ -72,7 +72,7 @@ public class PostServiceImpl implements PostService {
         sponsoredPostRepository.save(sponsoredPost);
     }
 
-    private Post createAndSavePost(String text, List<MultipartFile> multipartFiles) throws Status408FileException {
+    private Post createAndSavePost(String text, List<MultipartFile> multipartFiles) throws Status441FileException {
         Post post = new Post();
         post.setAuthor(Context.getUserFromContext());
         post.setText(text);
@@ -93,22 +93,22 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post findPostById(long id) throws Status404PostNotFoundException {
+    public Post findPostById(long id) throws Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
-            throw new Status404PostNotFoundException();
+            throw new Status435PostNotFoundException();
         }
         return post;
     }
 
     @Override
-    public ResponseEntity<Post> editPost(long id, String text, List<MultipartFile> multipartFiles) throws Status408FileException, Status403NotYourPostException, Status404PostNotFoundException {
+    public ResponseEntity<Post> editPost(long id, String text, List<MultipartFile> multipartFiles) throws Status441FileException, Status433NotYourPostException, Status435PostNotFoundException {
         Post oldPost = postRepository.findPostById(id);
         if (oldPost == null) {
-            throw new Status404PostNotFoundException();
+            throw new Status435PostNotFoundException();
         }
         if (!Objects.equals(oldPost.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
-            throw new Status403NotYourPostException();
+            throw new Status433NotYourPostException();
         }
         deletePictures(oldPost.getPictures());
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
@@ -125,13 +125,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<List<Post>> deletePost(long id) throws Status403NotYourPostException, Status404PostNotFoundException {
+    public ResponseEntity<List<Post>> deletePost(long id) throws Status433NotYourPostException, Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
-            throw new Status404PostNotFoundException();
+            throw new Status435PostNotFoundException();
         }
         if (!Objects.equals(post.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
-            throw new Status403NotYourPostException();
+            throw new Status433NotYourPostException();
         }
         if (sponsoredPostRepository.existsByPost(post)) {
             sponsoredPostRepository.deleteByPost(post);

@@ -1,8 +1,8 @@
 package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.dto.UserDTO;
-import com.fivesysdev.Fiveogram.exceptions.Status404UserNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status408FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
 import com.fivesysdev.Fiveogram.models.Avatar;
 import com.fivesysdev.Fiveogram.models.Friendship;
 import com.fivesysdev.Fiveogram.models.Post;
@@ -41,19 +41,19 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<User> findUserById(long id) throws Status404UserNotFoundException {
+    public ResponseEntity<User> findUserById(long id) throws Status437UserNotFoundException {
         User user = userRepository.findUserById(id);
         if (user == null) {
-            throw new Status404UserNotFoundException();
+            throw new Status437UserNotFoundException();
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<User> setAvatar(MultipartFile multipartFile) throws Status408FileException {
+    public ResponseEntity<User> setAvatar(MultipartFile multipartFile) throws Status441FileException {
         if (multipartFile == null) {
-            throw new Status408FileException();
+            throw new Status441FileException();
         }
         User user = userRepository.findUserById(Context.getUserFromContext().getId());
         String uri = fileService.saveFile(multipartFile);
