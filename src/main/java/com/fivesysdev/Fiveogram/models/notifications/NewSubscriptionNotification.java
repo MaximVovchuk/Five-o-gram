@@ -3,11 +3,11 @@ package com.fivesysdev.Fiveogram.models.notifications;
 import com.fivesysdev.Fiveogram.models.User;
 
 
-public class NewFriendshipNotification implements Notification {
+public class NewSubscriptionNotification implements Notification {
     private final User owner;
     private final User friend;
 
-    public NewFriendshipNotification(User owner, User friend) {
+    public NewSubscriptionNotification(User owner, User friend) {
         this.owner = owner;
         this.friend = friend;
         recipients.add(friend);

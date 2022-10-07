@@ -11,8 +11,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "friendships")
-public class Friendship {
+@Table(name = "subscriptions")
+public class Subscription {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class Friendship {
     @JoinColumn(name = "friend_id", referencedColumnName = "id")
     private User friend;
 
-    public Friendship(User owner, User newFriend) {
+    public Subscription(User owner, User newFriend) {
         this.owner = owner;
         this.friend = newFriend;
     }
