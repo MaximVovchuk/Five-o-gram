@@ -21,7 +21,7 @@ public class Post {
     private long id;
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
-    @JsonIgnoreProperties({"friendships"})
+    @JsonIgnoreProperties({"subscriptions"})
     private User author;
     @Column(name = "text")
     private String text;

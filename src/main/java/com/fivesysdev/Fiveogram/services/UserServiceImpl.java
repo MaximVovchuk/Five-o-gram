@@ -4,7 +4,7 @@ import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
 import com.fivesysdev.Fiveogram.models.Avatar;
-import com.fivesysdev.Fiveogram.models.Friendship;
+import com.fivesysdev.Fiveogram.models.Subscription;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.AvatarRepository;
@@ -12,7 +12,6 @@ import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
-import com.fivesysdev.Fiveogram.util.Context;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,12 +50,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<User> setAvatar(MultipartFile multipartFile) throws Status441FileException {
+    public ResponseEntity<User> setAvatar(String username, MultipartFile multipartFile) throws Status441FileException {
         if (multipartFile == null) {
             throw new Status441FileException();
         }
-        User user = userRepository.findUserById(Context.getUserFromContext().getId());
-        String uri = fileService.saveFile(multipartFile);
+        User user = userRepository.findUserByUsername(username);
+        String uri = fileService.saveFile(user,multipartFile);
         Avatar avatar = new Avatar();
         avatar.setPath(uri);
         avatar.setUser(user);
@@ -66,18 +65,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getFriendsList() {
-        User user = userRepository.findUserById(Context.getUserFromContext().getId());
+    public List<User> getFriendsList(String username) {
+        User user = userRepository.findUserByUsername(username);
         List<User> result = new ArrayList<>();
-        for (Friendship friendship : user.getFriendships()) {
-            result.add(friendship.getFriend());
+        for (Subscription subscription : user.getSubscriptions()) {
+            result.add(subscription.getFriend());
         }
         return result;
     }
 
     @Override
-    public ResponseEntity<?> editMe(UserDTO userDTO) {
-        User user = userRepository.findUserById(Context.getUserFromContext().getId());
+    public ResponseEntity<?> editMe(String username, UserDTO userDTO) {
+        User user = userRepository.findUserByUsername(username);
         user.setName(userDTO.getName());
         user.setUsername(userDTO.getUsername());
         user.setSurname(userDTO.getSurname());
@@ -86,8 +85,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<List<Post>> getRecommendations() {
-        List<Post> posts = getFriendsList().stream().flatMap
+    public User findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username);
+    }
+
+    @Override
+    public ResponseEntity<List<Post>> getRecommendations(String username) {
+        List<Post> posts = getFriendsList(username).stream().flatMap
                 (friend -> postService.findAll(friend).stream().limit(5)).toList();
         if (!posts.isEmpty()) {
             return new ResponseEntity<>(posts, HttpStatus.OK);

@@ -9,7 +9,6 @@ import com.fivesysdev.Fiveogram.repositories.CommentLikeRepository;
 import com.fivesysdev.Fiveogram.repositories.CommentRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentLikeService;
-import com.fivesysdev.Fiveogram.util.Context;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
     @Override
     @Transactional
-    public ResponseEntity<Post> setLike(long id) throws Status434CommentNotFoundException {
+    public ResponseEntity<Post> setLike(String username, long id) throws Status434CommentNotFoundException {
         Comment comment = commentRepository.findCommentById(id);
         if(comment==null){
             throw new Status434CommentNotFoundException();
@@ -37,7 +36,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
         commentLikeRepository.save(
                 CommentLike.builder()
                 .comment(comment)
-                .author(userRepository.findUserById(Context.getUserFromContext().getId()))
+                .author(userRepository.findUserByUsername(username))
                 .build()
         );
         return new ResponseEntity<>(comment.getPost(), HttpStatus.OK);
@@ -45,12 +44,12 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
     @Override
     @Transactional
-    public ResponseEntity<Post> deleteLike(long id) throws Status434CommentNotFoundException {
+    public ResponseEntity<Post> deleteLike(String username,long id) throws Status434CommentNotFoundException {
         Comment comment = commentRepository.findCommentById(id);
         if(comment==null){
             throw new Status434CommentNotFoundException();
         }
-        User user = userRepository.findUserById(Context.getUserFromContext().getId());
+        User user = userRepository.findUserByUsername(username);
         commentLikeRepository.deleteByAuthorAndComment(user, comment);
         return new ResponseEntity<>(comment.getPost(), HttpStatus.OK);
     }

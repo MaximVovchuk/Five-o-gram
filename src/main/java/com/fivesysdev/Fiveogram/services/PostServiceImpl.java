@@ -14,7 +14,6 @@ import com.fivesysdev.Fiveogram.repositories.SponsoredPostRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
-import com.fivesysdev.Fiveogram.util.Context;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -50,7 +49,8 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public ResponseEntity<Post> save(String text, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileException, Status436SponsorNotFoundException {
+    public ResponseEntity<Post> save(String username,String text, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileException, Status436SponsorNotFoundException {
+        User user = userRepository.findUserByUsername(username);
         User sponsor = null;
         if (sponsorId != null) {
             sponsor = userRepository.findUserById(sponsorId);
@@ -58,7 +58,7 @@ public class PostServiceImpl implements PostService {
                 throw new Status436SponsorNotFoundException();
             }
         }
-        Post post = createAndSavePost(text, multipartFiles);
+        Post post = createAndSavePost(user,text, multipartFiles);
         if (sponsorId != null) {
             createAndSaveSponsoredPost(post, sponsor);
         }
@@ -72,16 +72,16 @@ public class PostServiceImpl implements PostService {
         sponsoredPostRepository.save(sponsoredPost);
     }
 
-    private Post createAndSavePost(String text, List<MultipartFile> multipartFiles) throws Status441FileException {
+    private Post createAndSavePost(User user,String text, List<MultipartFile> multipartFiles) throws Status441FileException {
         Post post = new Post();
-        post.setAuthor(Context.getUserFromContext());
+        post.setAuthor(user);
         post.setText(text);
         post.setPubDate(LocalDateTime.now());
         postRepository.save(post);
         String uri;
         if (multipartFiles != null) {
             for (MultipartFile multipartFile : multipartFiles) {
-                uri = fileService.saveFile(multipartFile);
+                uri = fileService.saveFile(user,multipartFile);
                 Picture picture = new Picture();
                 picture.setPost(post);
                 picture.setPath(uri);
@@ -102,18 +102,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<Post> editPost(long id, String text, List<MultipartFile> multipartFiles) throws Status441FileException, Status433NotYourPostException, Status435PostNotFoundException {
+    public ResponseEntity<Post> editPost(String username,long id,
+                                         String text, List<MultipartFile> multipartFiles)
+            throws Status441FileException, Status433NotYourPostException, Status435PostNotFoundException {
         Post oldPost = postRepository.findPostById(id);
         if (oldPost == null) {
             throw new Status435PostNotFoundException();
         }
-        if (!Objects.equals(oldPost.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
+        User user = userRepository.findUserByUsername(username);
+        if (!Objects.equals(oldPost.getAuthor(), user)) {
             throw new Status433NotYourPostException();
         }
         deletePictures(oldPost.getPictures());
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             for (MultipartFile multipartFile : multipartFiles) {
-                String uri = fileService.saveFile(multipartFile);
+                String uri = fileService.saveFile(user,multipartFile);
                 Picture picture = new Picture();
                 picture.setPath(uri);
                 picture.setPost(oldPost);
@@ -125,12 +128,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<List<Post>> deletePost(long id) throws Status433NotYourPostException, Status435PostNotFoundException {
+    public ResponseEntity<List<Post>> deletePost(String username,long id) throws Status433NotYourPostException, Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
-        if (!Objects.equals(post.getAuthor(), userRepository.findUserById(Context.getUserFromContext().getId()))) {
+        if (!post.getAuthor().equals(userRepository.findUserByUsername(username))) {
             throw new Status433NotYourPostException();
         }
         if (sponsoredPostRepository.existsByPost(post)) {

@@ -10,11 +10,11 @@ import org.springframework.http.ResponseEntity;
 
 
 public interface CommentService {
-    Comment save(long id, String text) throws Status435PostNotFoundException;
+    Comment save(String username,long id, String text) throws Status435PostNotFoundException;
 
-    ResponseEntity<Comment> editComment(long id, String text) throws Status435PostNotFoundException, Status434CommentNotFoundException, Status432NotYourCommentException, Status437UserNotFoundException;
+    ResponseEntity<Comment> editComment(String username,long id, String text) throws Status435PostNotFoundException, Status434CommentNotFoundException, Status432NotYourCommentException, Status437UserNotFoundException;
 
-    ResponseEntity<Post> deleteComment(long id) throws Status435PostNotFoundException, Status434CommentNotFoundException, Status432NotYourCommentException, Status437UserNotFoundException;
+    ResponseEntity<Post> deleteComment(String username,long id) throws Status435PostNotFoundException, Status434CommentNotFoundException, Status432NotYourCommentException, Status437UserNotFoundException;
 
-    Comment createComment(Post post, String text);
+    Comment createComment(String username,Post post, String text);
 }

@@ -5,7 +5,6 @@ import com.fivesysdev.Fiveogram.models.notifications.Notification;
 import com.fivesysdev.Fiveogram.models.notifications.TextNotification;
 import com.fivesysdev.Fiveogram.repositories.NotificationRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
-import com.fivesysdev.Fiveogram.util.Context;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public ResponseEntity<List<String>> getAllNotifications() {
+    public ResponseEntity<List<String>> getAllNotifications(String username) {
         List<TextNotification> textNotifications =
-                notificationRepository.findTextNotificationsByOwner(Context.getUserFromContext());
+                notificationRepository.findTextNotificationsByOwnerUsername(username);
         List<String> result = new ArrayList<>();
         for (TextNotification notification : textNotifications) {
             result.add(notification.getContent());

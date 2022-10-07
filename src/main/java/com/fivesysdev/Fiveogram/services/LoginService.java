@@ -1,7 +1,7 @@
 package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.config.JWTUtil;
-import com.fivesysdev.Fiveogram.config.MyUserDetails;
+import com.fivesysdev.Fiveogram.config.JwtUser;
 import com.fivesysdev.Fiveogram.dto.AuthenticationDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status440WrongPasswordException;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class LoginService {
     }
 
     public ResponseEntity<String> login(AuthenticationDTO authenticationDTO) throws UsernameNotFoundException, Status440WrongPasswordException {
-        MyUserDetails userDetails;
+        JwtUser userDetails;
         userDetails = authService.loadUserByUsername(authenticationDTO.getUsername());
         if (!passwordEncoder.matches(authenticationDTO.getPassword(), userDetails.getPassword())) {
             throw new Status440WrongPasswordException();

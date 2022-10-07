@@ -35,7 +35,7 @@ public class User {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "owner")
     @JsonIgnore
-    private List<Friendship> friendships;
+    private List<Subscription> subscriptions;
 
     public void addAvatar(Avatar avatar) {
         avatars.add(avatar);

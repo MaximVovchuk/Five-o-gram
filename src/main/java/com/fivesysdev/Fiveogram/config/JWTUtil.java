@@ -28,6 +28,10 @@ public class JWTUtil {
                 .withExpiresAt(expirationDate)
                 .sign(Algorithm.HMAC256(secret));
     }
+    public String validate(String token){
+        String jwt = token.substring(7);
+        return validateTokenAndRetrieveClaim(jwt);
+    }
 
     public String validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))

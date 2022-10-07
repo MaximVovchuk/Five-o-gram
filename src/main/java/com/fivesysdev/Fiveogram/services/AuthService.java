@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.config.MyUserDetails;
+import com.fivesysdev.Fiveogram.config.JwtUser;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,11 +19,11 @@ public class AuthService implements UserDetailsService {
     }
 
     @Override
-    public MyUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("User not found!");
         }
-        return new MyUserDetails(user);
+        return new JwtUser(user);
     }
 }

@@ -2,13 +2,14 @@ package com.fivesysdev.Fiveogram.config;
 
 import com.fivesysdev.Fiveogram.models.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class MyUserDetails implements org.springframework.security.core.userdetails.UserDetails {
+public class JwtUser implements UserDetails {
     private final User user;
 
-    public MyUserDetails(User user) {
+    public JwtUser(User user) {
         this.user = user;
     }
 

@@ -10,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.Set;
 
 public interface LikeService {
-    ResponseEntity<Post> likePost(long id) throws Status438PostAlreadyLikedException, Status435PostNotFoundException, Status437UserNotFoundException;
+    ResponseEntity<Post> likePost(String username,long id) throws Status438PostAlreadyLikedException, Status435PostNotFoundException, Status437UserNotFoundException;
 
-    ResponseEntity<Post> unlikePost(long id) throws Status435PostNotFoundException;
+    ResponseEntity<Post> unlikePost(String username, long id) throws Status435PostNotFoundException;
 
     ResponseEntity<Set<Like>> findAllPostLikes(long id) throws Status435PostNotFoundException;
 }

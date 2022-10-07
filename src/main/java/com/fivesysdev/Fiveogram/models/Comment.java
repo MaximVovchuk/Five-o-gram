@@ -1,6 +1,7 @@
 package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ public class Comment {
     private long id;
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
-//    @JsonIgnoreProperties({"friendships"})
+    @JsonIgnoreProperties({"subscriptions"})
     private User author;
     @Column(name = "text")
     private String text;

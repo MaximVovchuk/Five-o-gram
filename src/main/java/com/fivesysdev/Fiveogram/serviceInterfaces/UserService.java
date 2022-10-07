@@ -13,11 +13,13 @@ import java.util.List;
 public interface UserService {
     ResponseEntity<User> findUserById(long id) throws Status437UserNotFoundException;
 
-    ResponseEntity<User> setAvatar(MultipartFile multipartFile) throws Status441FileException;
+    ResponseEntity<User> setAvatar(String username,MultipartFile multipartFile) throws Status441FileException;
 
-    ResponseEntity<List<Post>> getRecommendations();
+    ResponseEntity<List<Post>> getRecommendations(String username);
 
-    List<User> getFriendsList();
+    List<User> getFriendsList(String username);
 
-    ResponseEntity<?> editMe(UserDTO userDTO);
+    ResponseEntity<?> editMe(String username, UserDTO userDTO);
+
+    User findUserByUsername(String username);
 }

@@ -8,5 +8,5 @@ import java.util.List;
 public interface NotificationService {
     void sendNotification(Notification notification);
 
-    ResponseEntity<List<String>> getAllNotifications();
+    ResponseEntity<List<String>> getAllNotifications(String username);
 }

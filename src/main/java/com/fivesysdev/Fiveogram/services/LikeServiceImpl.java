@@ -1,7 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status438PostAlreadyLikedException;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
@@ -14,7 +13,6 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
-import com.fivesysdev.Fiveogram.util.Context;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -40,12 +38,12 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Post> likePost(long id) throws Status438PostAlreadyLikedException, Status435PostNotFoundException, Status437UserNotFoundException {
+    public ResponseEntity<Post> likePost(String username,long id) throws Status438PostAlreadyLikedException, Status435PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
-        User whoLikes = userService.findUserById(Context.getUserFromContext().getId()).getBody();
+        User whoLikes = userService.findUserByUsername(username);
         if (likeRepository.existsByPostAndWhoLikes(post, whoLikes)) {
             throw new Status438PostAlreadyLikedException();
         }
@@ -59,12 +57,12 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Post> unlikePost(long id) throws Status435PostNotFoundException {
+    public ResponseEntity<Post> unlikePost(String username,long id) throws Status435PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
-        likeRepository.deleteByPostAndWhoLikes(post, Context.getUserFromContext());
+        likeRepository.deleteByPostAndWhoLikes(post, userService.findUserByUsername(username));
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 

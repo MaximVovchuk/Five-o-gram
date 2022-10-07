@@ -2,8 +2,8 @@ package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
 import com.fivesysdev.Fiveogram.models.Picture;
+import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
-import com.fivesysdev.Fiveogram.util.Context;
 import com.fivesysdev.Fiveogram.util.FileUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -25,12 +25,12 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String saveFile(MultipartFile file) throws Status441FileException {
+    public String saveFile(User user, MultipartFile file) throws Status441FileException {
         String fileName = FileUtil.getFileName(file.getOriginalFilename());
         String filePath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/"
-                + Context.getUserFromContext().getUsername() + "/";
+                + user.getUsername() + "/";
         String fullPath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/"
-                + Context.getUserFromContext().getUsername() + "/" + fileName;
+                + user.getUsername() + "/" + fileName;
 
         Picture picture = new Picture();
         picture.setPath(fullPath);
@@ -43,7 +43,7 @@ public class FileServiceImpl implements FileService {
         String hostName = "localhost";
 
         return String.format("http://%s:%s%s/%s/%s", hostName, port, image,
-                Context.getUserFromContext().getUsername(), fileName);
+                user.getUsername(), fileName);
     }
 
     @Override
