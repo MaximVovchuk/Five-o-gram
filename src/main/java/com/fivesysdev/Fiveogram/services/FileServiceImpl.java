@@ -28,9 +28,9 @@ public class FileServiceImpl implements FileService {
     public String saveFile(User user, MultipartFile file) throws Status441FileException {
         String fileName = FileUtil.getFileName(file.getOriginalFilename());
         String filePath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/"
-                + user.getUsername() + "/";
+                + user.getId() + "/";
         String fullPath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/"
-                + user.getUsername() + "/" + fileName;
+                + user.getId() + "/" + fileName;
 
         Picture picture = new Picture();
         picture.setPath(fullPath);
@@ -43,7 +43,7 @@ public class FileServiceImpl implements FileService {
         String hostName = "localhost";
 
         return String.format("http://%s:%s%s/%s/%s", hostName, port, image,
-                user.getUsername(), fileName);
+                user.getId(), fileName);
     }
 
     @Override

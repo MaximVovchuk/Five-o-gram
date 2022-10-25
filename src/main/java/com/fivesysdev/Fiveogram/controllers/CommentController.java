@@ -30,7 +30,7 @@ public class CommentController {
                                          @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status435PostNotFoundException,
             Status434CommentNotFoundException, Status432NotYourCommentException {
-        return commentService.editComment(jwtUtil.validate(token),id, text);
+        return commentService.editComment(jwtUtil.validate(token), id, text);
     }
 
     @DeleteMapping("/{id}/deleteComment")
@@ -38,18 +38,20 @@ public class CommentController {
                                            @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status435PostNotFoundException,
             Status434CommentNotFoundException, Status432NotYourCommentException {
-        return commentService.deleteComment(jwtUtil.validate(token),id);
+        return commentService.deleteComment(jwtUtil.validate(token), id);
     }
+
     @PostMapping("/{id}/setLike")
     public ResponseEntity<Post> setLike(@PathVariable long id,
                                         @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
-        return commentLikeService.setLike(jwtUtil.validate(token),id);
+        return commentLikeService.setLike(jwtUtil.validate(token), id);
     }
+
     @DeleteMapping("{id}/deleteLike")
     public ResponseEntity<Post> deleteLike(@PathVariable long id,
                                            @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
-        return commentLikeService.deleteLike(jwtUtil.validate(token),id);
+        return commentLikeService.deleteLike(jwtUtil.validate(token), id);
     }
 }
