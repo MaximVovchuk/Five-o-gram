@@ -1,6 +1,7 @@
 package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class Subscription {
     private User owner;
     @ManyToOne
     @JoinColumn(name = "friend_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"subscriptions"})
     private User friend;
 
     public Subscription(User owner, User newFriend) {

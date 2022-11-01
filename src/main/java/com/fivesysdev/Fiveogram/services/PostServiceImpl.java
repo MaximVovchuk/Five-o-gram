@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -110,7 +109,7 @@ public class PostServiceImpl implements PostService {
             throw new Status435PostNotFoundException();
         }
         User user = userRepository.findUserByUsername(username);
-        if (!Objects.equals(oldPost.getAuthor(), user)) {
+        if (oldPost.getAuthor().equals(user)) {
             throw new Status433NotYourPostException();
         }
         deletePictures(oldPost.getPictures());

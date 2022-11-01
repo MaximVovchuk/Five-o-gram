@@ -8,6 +8,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,10 +35,22 @@ public class User {
     private List<Avatar> avatars;
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "owner")
-    @JsonIgnore
     private List<Subscription> subscriptions;
+    @OneToMany(mappedBy = "author")
+    @JsonIgnore
+    private List<Story> stories;
 
     public void addAvatar(Avatar avatar) {
         avatars.add(avatar);
+    }
+
+    public List<Story> getUnexpiredStories(){
+        List<Story> unexpiredStories = new ArrayList<>();
+        for (Story story : stories) {
+            if(!story.isExpired()){
+                unexpiredStories.add(story);
+            }
+        }
+        return unexpiredStories;
     }
 }
