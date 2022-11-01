@@ -9,8 +9,6 @@ import com.fivesysdev.Fiveogram.repositories.CommentLikeRepository;
 import com.fivesysdev.Fiveogram.repositories.CommentRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentLikeService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 @Service
@@ -28,7 +26,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
     @Override
     @Transactional
-    public ResponseEntity<Post> setLike(String username, long id) throws Status434CommentNotFoundException {
+    public Post setLike(String username, long id) throws Status434CommentNotFoundException {
         Comment comment = commentRepository.findCommentById(id);
         if(comment==null){
             throw new Status434CommentNotFoundException();
@@ -39,18 +37,18 @@ public class CommentLikeServiceImpl implements CommentLikeService {
                 .author(userRepository.findUserByUsername(username))
                 .build()
         );
-        return new ResponseEntity<>(comment.getPost(), HttpStatus.OK);
+        return comment.getPost();
     }
 
     @Override
     @Transactional
-    public ResponseEntity<Post> deleteLike(String username,long id) throws Status434CommentNotFoundException {
+    public Post deleteLike(String username,long id) throws Status434CommentNotFoundException {
         Comment comment = commentRepository.findCommentById(id);
         if(comment==null){
             throw new Status434CommentNotFoundException();
         }
         User user = userRepository.findUserByUsername(username);
         commentLikeRepository.deleteByAuthorAndComment(user, comment);
-        return new ResponseEntity<>(comment.getPost(), HttpStatus.OK);
+        return comment.getPost();
     }
 }

@@ -6,15 +6,14 @@ import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
-import org.springframework.http.ResponseEntity;
 
 
 public interface CommentService {
     Comment save(String username,long id, String text) throws Status435PostNotFoundException;
 
-    ResponseEntity<Comment> editComment(String username,long id, String text) throws Status435PostNotFoundException, Status434CommentNotFoundException, Status432NotYourCommentException, Status437UserNotFoundException;
+    Comment editComment(String username,long id, String text) throws Status435PostNotFoundException, Status434CommentNotFoundException, Status432NotYourCommentException, Status437UserNotFoundException;
 
-    ResponseEntity<Post> deleteComment(String username,long id) throws Status435PostNotFoundException, Status434CommentNotFoundException, Status432NotYourCommentException, Status437UserNotFoundException;
+    Post deleteComment(String username,long id) throws Status435PostNotFoundException, Status434CommentNotFoundException, Status432NotYourCommentException, Status437UserNotFoundException;
 
     Comment createComment(String username,Post post, String text);
 }

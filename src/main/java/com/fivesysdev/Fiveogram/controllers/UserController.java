@@ -5,10 +5,13 @@ import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status431SubscriptionException;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
 import com.fivesysdev.Fiveogram.models.Post;
+import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,41 +34,58 @@ public class UserController {
     }
 
     @PostMapping("/setAvatar")
-    public ResponseEntity<?> setAvatar(@RequestBody MultipartFile multipartFile,
-                                       @RequestHeader(value = "Authorization") String token) throws Status441FileException {
-        return userService.setAvatar(jwtUtil.validate(token),multipartFile);
+    public ResponseEntity<User> setAvatar(@RequestBody MultipartFile multipartFile,
+                                          @RequestHeader(value = "Authorization") String token)
+            throws Status441FileException {
+        return new ResponseEntity<>(
+                userService.setAvatar(jwtUtil.validate(token),multipartFile),
+                HttpStatus.OK);
     }
 
     @PatchMapping("/editMyProfile")
-    public ResponseEntity<?> editProfile(@ModelAttribute UserDTO userDTO,
+    public ResponseEntity<User> editProfile(@ModelAttribute UserDTO userDTO,
                                          @RequestHeader(value = "Authorization") String token) {
-        return userService.editMe(jwtUtil.validate(token),userDTO);
+        return new ResponseEntity<>(
+                userService.editMe(jwtUtil.validate(token),userDTO),
+                HttpStatus.OK);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getUser(@PathVariable long id) throws Status437UserNotFoundException {
-        return userService.findUserById(id);
+    public ResponseEntity<User> getUser(@PathVariable long id)
+            throws Status437UserNotFoundException {
+        return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }
 
     @PostMapping("{id}/makeFriend")
-    public ResponseEntity<?> subscribe(@PathVariable long id,
-                                       @RequestHeader(value = "Authorization") String token) throws Status437UserNotFoundException, Status431SubscriptionException {
-        return subscriptionService.subscribe(jwtUtil.validate(token),id);
+    public ResponseEntity<User> subscribe(@PathVariable long id,
+                                       @RequestHeader(value = "Authorization") String token)
+            throws Status437UserNotFoundException, Status431SubscriptionException {
+        return new ResponseEntity<>(
+                subscriptionService.subscribe(jwtUtil.validate(token),id),
+                HttpStatus.OK);
     }
 
     @PostMapping("{id}/unmakeFriend")
-    public ResponseEntity<?> unsubscribe(@PathVariable long id,
-                                         @RequestHeader(value = "Authorization") String token) throws Status437UserNotFoundException, Status431SubscriptionException {
-        return subscriptionService.unsubscribe(jwtUtil.validate(token),id);
+    public ResponseEntity<User> unsubscribe(@PathVariable long id,
+                                         @RequestHeader(value = "Authorization") String token)
+            throws Status437UserNotFoundException, Status431SubscriptionException {
+        return new ResponseEntity<>(
+                subscriptionService.unsubscribe(jwtUtil.validate(token),id),
+                HttpStatus.OK);
     }
 
     @GetMapping("/notifications")
     public ResponseEntity<List<String>> getNotifications(@RequestHeader(value = "Authorization") String token) {
-        return notificationService.getAllNotifications(jwtUtil.validate(token));
+        return new ResponseEntity<>(
+                notificationService.getAllNotifications(jwtUtil.validate(token)),
+                HttpStatus.OK);
     }
 
     @GetMapping("/getRecommendations")
-    public ResponseEntity<List<Post>> getRecommendations(@RequestHeader(value = "Authorization") String token) {
-        return userService.getRecommendations(jwtUtil.validate(token));
+    public ResponseEntity<List<Post>> getRecommendations(@RequestHeader(value = "Authorization") String token)
+            throws Status442NoRecommendationPostsException {
+        return new ResponseEntity<>(
+                userService.getRecommendations(jwtUtil.validate(token)),
+                HttpStatus.OK);
     }
 }

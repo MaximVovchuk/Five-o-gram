@@ -9,8 +9,6 @@ import com.fivesysdev.Fiveogram.repositories.SubscriptionRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +27,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.notificationService = notificationService;
     }
 
-    public ResponseEntity<User> subscribe(String username, long id) throws Status431SubscriptionException, Status437UserNotFoundException {
-        User newFriend = userService.findUserById(id).getBody();
+    public User subscribe(String username, long id) throws Status431SubscriptionException, Status437UserNotFoundException {
+        User newFriend = userService.findUserById(id);
         User owner = userService.findUserByUsername(username);
         if (newFriend == null) {
             throw new Status437UserNotFoundException();
@@ -46,12 +44,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         notificationService.sendNotification(
                 new NewSubscriptionNotification(owner, newFriend)
         );
-        return new ResponseEntity<>(newFriend, HttpStatus.OK);
+        return newFriend;
     }
 
     @Override
-    public ResponseEntity<User> unsubscribe(String username, long id) throws Status431SubscriptionException, Status437UserNotFoundException {
-        User friend = userService.findUserById(id).getBody();
+    public User unsubscribe(String username, long id) throws Status431SubscriptionException, Status437UserNotFoundException {
+        User friend = userService.findUserById(id);
         User owner = userService.findUserByUsername(username);
         if (friend == null) {
             throw new Status437UserNotFoundException();
@@ -60,6 +58,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new Status431SubscriptionException("You are not friends");
         }
         subscriptionRepository.deleteByFriendAndOwner(friend, owner);
-        return new ResponseEntity<>(friend, HttpStatus.OK);
+        return friend;
     }
 }

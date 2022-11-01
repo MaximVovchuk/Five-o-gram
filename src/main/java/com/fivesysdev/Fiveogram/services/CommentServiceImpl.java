@@ -14,8 +14,6 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,20 +53,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public ResponseEntity<Comment> editComment(String username,long id, String text) throws Status434CommentNotFoundException, Status432NotYourCommentException {
+    public Comment editComment(String username,long id, String text) throws Status434CommentNotFoundException, Status432NotYourCommentException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
             throw new Status434CommentNotFoundException();
         }
         if (oldComment.getAuthor().equals(userService.findUserByUsername(username))) {
             oldComment.setText(text);
-            return new ResponseEntity<>(oldComment, HttpStatus.OK);
+            return oldComment;
         }
         throw new Status432NotYourCommentException();
     }
 
     @Override
-    public ResponseEntity<Post> deleteComment(String username,long id) throws Status434CommentNotFoundException, Status432NotYourCommentException{
+    public Post deleteComment(String username,long id) throws Status434CommentNotFoundException, Status432NotYourCommentException{
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
             throw new Status434CommentNotFoundException();
@@ -77,7 +75,7 @@ public class CommentServiceImpl implements CommentService {
         if (oldComment.getAuthor().equals(user)
                 || oldComment.getPost().getAuthor().equals(user)){
             commentRepository.deleteById(id);
-            return new ResponseEntity<>(oldComment.getPost(), HttpStatus.OK);
+            return oldComment.getPost();
         }
         throw new Status432NotYourCommentException();
     }

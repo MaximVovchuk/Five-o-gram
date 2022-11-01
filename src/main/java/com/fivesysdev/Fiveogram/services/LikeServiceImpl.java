@@ -13,8 +13,6 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +36,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public ResponseEntity<Post> likePost(String username,long id) throws Status438PostAlreadyLikedException, Status435PostNotFoundException {
+    public Post likePost(String username,long id) throws Status438PostAlreadyLikedException, Status435PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
@@ -53,25 +51,25 @@ public class LikeServiceImpl implements LikeService {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
         }
         notificationService.sendNotification(notification);
-        return new ResponseEntity<>(post, HttpStatus.OK);
+        return post;
     }
 
     @Override
-    public ResponseEntity<Post> unlikePost(String username,long id) throws Status435PostNotFoundException {
+    public Post unlikePost(String username,long id) throws Status435PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
         likeRepository.deleteByPostAndWhoLikes(post, userService.findUserByUsername(username));
-        return new ResponseEntity<>(post, HttpStatus.OK);
+        return post;
     }
 
     @Override
-    public ResponseEntity<Set<Like>> findAllPostLikes(long id) throws Status435PostNotFoundException {
+    public Set<Like> findAllPostLikes(long id) throws Status435PostNotFoundException {
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
-        return new ResponseEntity<>(likeRepository.findAllByPost(post), HttpStatus.OK);
+        return likeRepository.findAllByPost(post);
     }
 }

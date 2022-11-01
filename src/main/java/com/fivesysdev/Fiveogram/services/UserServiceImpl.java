@@ -3,6 +3,7 @@ package com.fivesysdev.Fiveogram.services;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
 import com.fivesysdev.Fiveogram.models.Avatar;
 import com.fivesysdev.Fiveogram.models.Subscription;
 import com.fivesysdev.Fiveogram.models.Post;
@@ -12,8 +13,6 @@ import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,17 +39,17 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<User> findUserById(long id) throws Status437UserNotFoundException {
+    public User findUserById(long id) throws Status437UserNotFoundException {
         User user = userRepository.findUserById(id);
         if (user == null) {
             throw new Status437UserNotFoundException();
         }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return user;
     }
 
 
     @Override
-    public ResponseEntity<User> setAvatar(String username, MultipartFile multipartFile) throws Status441FileException {
+    public User setAvatar(String username, MultipartFile multipartFile) throws Status441FileException {
         if (multipartFile == null) {
             throw new Status441FileException();
         }
@@ -61,7 +60,7 @@ public class UserServiceImpl implements UserService {
         avatar.setUser(user);
         avatarRepository.save(avatar);
         user.addAvatar(avatar);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return user;
     }
 
     @Override
@@ -75,13 +74,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> editMe(String username, UserDTO userDTO) {
+    public User editMe(String username, UserDTO userDTO) {
         User user = userRepository.findUserByUsername(username);
         user.setName(userDTO.getName());
         user.setUsername(userDTO.getUsername());
         user.setSurname(userDTO.getSurname());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return user;
     }
 
     @Override
@@ -90,12 +89,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<List<Post>> getRecommendations(String username) {
+    public List<Post> getRecommendations(String username) throws Status442NoRecommendationPostsException {
         List<Post> posts = getFriendsList(username).stream().flatMap
                 (friend -> postService.findAll(friend).stream().limit(5)).toList();
         if (!posts.isEmpty()) {
-            return new ResponseEntity<>(posts, HttpStatus.OK);
+            return posts;
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        throw new Status442NoRecommendationPostsException();
     }
 }
