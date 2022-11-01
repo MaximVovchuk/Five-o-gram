@@ -3,7 +3,7 @@ package com.fivesysdev.Fiveogram.services;
 import com.fivesysdev.Fiveogram.exceptions.Status433NotYourPostException;
 import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status436SponsorNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.SponsoredPost;
@@ -46,7 +46,7 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public Post save(String username,String text, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileException, Status436SponsorNotFoundException {
+    public Post save(String username,String text, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileIsNullException, Status436SponsorNotFoundException {
         User user = userRepository.findUserByUsername(username);
         User sponsor = null;
         if (sponsorId != null) {
@@ -69,7 +69,7 @@ public class PostServiceImpl implements PostService {
         sponsoredPostRepository.save(sponsoredPost);
     }
 
-    private Post createAndSavePost(User user,String text, List<MultipartFile> multipartFiles) throws Status441FileException {
+    private Post createAndSavePost(User user,String text, List<MultipartFile> multipartFiles) throws Status441FileIsNullException {
         Post post = new Post();
         post.setAuthor(user);
         post.setText(text);
@@ -99,9 +99,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post editPost(String username,long id,
-                                         String text, List<MultipartFile> multipartFiles)
-            throws Status441FileException, Status433NotYourPostException, Status435PostNotFoundException {
+    public Post editPost(String username, long id, String text, List<MultipartFile> multipartFiles)
+            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();

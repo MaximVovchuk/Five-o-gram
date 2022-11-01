@@ -34,7 +34,7 @@ public class PostController {
     @PostMapping("/newPost")
     public ResponseEntity<Post> addNewPost(@ModelAttribute PostDTO postDTO,
                                         @RequestHeader(value = "Authorization") String token)
-            throws Status441FileException, Status436SponsorNotFoundException {
+            throws Status441FileIsNullException, Status436SponsorNotFoundException {
         return new ResponseEntity<>(
                 postService.save(jwtUtil.validate(token), postDTO.getText(),
                         postDTO.getMultipartFiles(), postDTO.getSponsorId()),
@@ -49,7 +49,7 @@ public class PostController {
     @PatchMapping("/{id:\\d+}/edit")
     public ResponseEntity<Post> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO,
                                       @RequestHeader(value = "Authorization") String token)
-            throws Status441FileException, Status435PostNotFoundException,
+            throws Status441FileIsNullException, Status435PostNotFoundException,
             Status433NotYourPostException {
         return new ResponseEntity<>(
                 postService.editPost(jwtUtil.validate(token), id,

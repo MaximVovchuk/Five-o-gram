@@ -2,7 +2,7 @@ package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
 import com.fivesysdev.Fiveogram.models.Avatar;
 import com.fivesysdev.Fiveogram.models.Subscription;
@@ -49,9 +49,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User setAvatar(String username, MultipartFile multipartFile) throws Status441FileException {
+    public User setAvatar(String username, MultipartFile multipartFile) throws Status441FileIsNullException {
         if (multipartFile == null) {
-            throw new Status441FileException();
+            throw new Status441FileIsNullException();
         }
         User user = userRepository.findUserByUsername(username);
         String uri = fileService.saveFile(user,multipartFile);

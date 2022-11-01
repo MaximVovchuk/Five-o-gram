@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.models.Picture;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
@@ -25,7 +25,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String saveFile(User user, MultipartFile file) throws Status441FileException {
+    public String saveFile(User user, MultipartFile file) throws Status441FileIsNullException {
         String fileName = FileUtil.getFileName(file.getOriginalFilename());
         String filePath = "C:/Users/tutil/IdeaProjects/Five-o-gram-pictures/"
                 + user.getId() + "/";

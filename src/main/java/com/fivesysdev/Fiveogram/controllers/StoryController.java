@@ -1,7 +1,7 @@
 package com.fivesysdev.Fiveogram.controllers;
 
 import com.fivesysdev.Fiveogram.config.JWTUtil;
-import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class StoryController {
     @PostMapping("/new")
     public ResponseEntity<Story> addNewStory(@ModelAttribute MultipartFile multipartFile,
                                          @RequestHeader(value = "Authorization") String token)
-            throws Status441FileException {
+            throws Status441FileIsNullException {
         return new ResponseEntity<>
                 (storyService.createNewStory(jwtUtil.validate(token), multipartFile), HttpStatus.OK);
     }

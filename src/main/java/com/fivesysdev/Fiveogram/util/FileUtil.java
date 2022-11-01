@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.util;
 
-import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,15 +19,15 @@ public class FileUtil {
         out.close();
     }
 
-    public static String getSuffix(String fileName) throws Status441FileException {
+    public static String getSuffix(String fileName) throws Status441FileIsNullException {
         try {
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException ex) {
-            throw new Status441FileException();
+            throw new Status441FileIsNullException();
         }
     }
 
-    public static String getFileName(String fileOriginName) throws Status441FileException {
+    public static String getFileName(String fileOriginName) throws Status441FileIsNullException {
         return getUUID() + getSuffix(fileOriginName);
     }
 

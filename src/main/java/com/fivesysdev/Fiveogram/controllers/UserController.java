@@ -4,7 +4,7 @@ import com.fivesysdev.Fiveogram.config.JWTUtil;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status431SubscriptionException;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
@@ -36,7 +36,7 @@ public class UserController {
     @PostMapping("/setAvatar")
     public ResponseEntity<User> setAvatar(@RequestBody MultipartFile multipartFile,
                                           @RequestHeader(value = "Authorization") String token)
-            throws Status441FileException {
+            throws Status441FileIsNullException {
         return new ResponseEntity<>(
                 userService.setAvatar(jwtUtil.validate(token),multipartFile),
                 HttpStatus.OK);

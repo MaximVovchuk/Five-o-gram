@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.Status441FileException;
+import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.models.Subscription;
 import com.fivesysdev.Fiveogram.models.User;
@@ -31,7 +31,7 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    public Story createNewStory(String username, MultipartFile multipartFile) throws Status441FileException {
+    public Story createNewStory(String username, MultipartFile multipartFile) throws Status441FileIsNullException {
         User author = userService.findUserByUsername(username);
         return storyRepository.save(
                 Story.builder().author(author)
