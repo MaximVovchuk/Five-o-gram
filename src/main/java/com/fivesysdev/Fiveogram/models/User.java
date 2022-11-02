@@ -37,13 +37,14 @@ public class User {
     @OneToMany(mappedBy = "owner")
     private List<Subscription> subscriptions;
     @OneToMany(mappedBy = "author")
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JsonIgnore
     private List<Story> stories;
 
     public void addAvatar(Avatar avatar) {
         avatars.add(avatar);
     }
-
+    @JsonIgnore
     public List<Story> getUnexpiredStories(){
         List<Story> unexpiredStories = new ArrayList<>();
         for (Story story : stories) {
@@ -52,5 +53,16 @@ public class User {
             }
         }
         return unexpiredStories;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

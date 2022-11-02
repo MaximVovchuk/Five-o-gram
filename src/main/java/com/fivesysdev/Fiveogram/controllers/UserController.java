@@ -2,12 +2,10 @@ package com.fivesysdev.Fiveogram.controllers;
 
 import com.fivesysdev.Fiveogram.config.JWTUtil;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
-import com.fivesysdev.Fiveogram.exceptions.Status431SubscriptionException;
-import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
-import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
+import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
+import com.fivesysdev.Fiveogram.models.notifications.Notification;
 import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
@@ -56,7 +55,7 @@ public class UserController {
         return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }
 
-    @PostMapping("{id}/makeFriend")
+    @PostMapping("{id}/subscribe")
     public ResponseEntity<User> subscribe(@PathVariable long id,
                                        @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status431SubscriptionException {
@@ -65,7 +64,7 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    @PostMapping("{id}/unmakeFriend")
+    @PostMapping("{id}/unsubscribe")
     public ResponseEntity<User> unsubscribe(@PathVariable long id,
                                          @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status431SubscriptionException {
@@ -75,9 +74,11 @@ public class UserController {
     }
 
     @GetMapping("/notifications")
-    public ResponseEntity<List<String>> getNotifications(@RequestHeader(value = "Authorization") String token) {
+    public ResponseEntity<List<Notification>> getNotifications(@RequestHeader(value = "Authorization") String token)
+            throws Status435PostNotFoundException, Status437UserNotFoundException {
+        List<Notification> allNotifications = notificationService.getAllNotifications(jwtUtil.validate(token));
         return new ResponseEntity<>(
-                notificationService.getAllNotifications(jwtUtil.validate(token)),
+                allNotifications,
                 HttpStatus.OK);
     }
 

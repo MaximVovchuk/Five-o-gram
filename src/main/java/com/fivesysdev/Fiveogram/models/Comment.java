@@ -36,4 +36,15 @@ public class Comment {
     private Post post;
     @OneToMany(mappedBy = "comment")
     private List<CommentLike> commentLikes;
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", author=" + author +
+                ", text='" + text + '\'' +
+                ", published=" + published +
+                ", post=" + post +
+                '}';
+    }
 }

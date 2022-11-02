@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<TextNotification, Integer> {
-    List<TextNotification> findTextNotificationsByOwnerUsername(String username);
+    List<TextNotification> findByOwnerUsername(String username);
 }

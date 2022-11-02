@@ -4,7 +4,7 @@ import com.fivesysdev.Fiveogram.exceptions.Status431SubscriptionException;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.models.Subscription;
 import com.fivesysdev.Fiveogram.models.User;
-import com.fivesysdev.Fiveogram.models.notifications.NewSubscriptionNotification;
+import com.fivesysdev.Fiveogram.models.notifications.SubscriptionNotification;
 import com.fivesysdev.Fiveogram.repositories.SubscriptionRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
@@ -42,7 +42,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = new Subscription(owner, newFriend);
         subscriptionRepository.save(subscription);
         notificationService.sendNotification(
-                new NewSubscriptionNotification(owner, newFriend)
+                new SubscriptionNotification(owner, newFriend)
         );
         return newFriend;
     }

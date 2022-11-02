@@ -6,7 +6,7 @@ import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
 import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
-import com.fivesysdev.Fiveogram.models.notifications.NewCommentNotification;
+import com.fivesysdev.Fiveogram.models.notifications.CommentNotification;
 import com.fivesysdev.Fiveogram.models.notifications.Notification;
 import com.fivesysdev.Fiveogram.repositories.CommentRepository;
 import com.fivesysdev.Fiveogram.repositories.SponsoredPostRepository;
@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
         }
         Comment comment = createComment(username,post, text);
         commentRepository.save(comment);
-        Notification notification = new NewCommentNotification(post, comment);
+        Notification notification = new CommentNotification(post, comment);
         if (sponsoredPostRepository.existsByPost(post)) {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
         }

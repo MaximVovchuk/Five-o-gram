@@ -23,8 +23,20 @@ public class TextNotification {
     @Column(name = "content")
     public String content;
 
-    public TextNotification(String content, User owner) {
+    @Column(name = "type")
+    public NotificationType type;
+
+    @Column(name = "entity_id")
+    public long entityId;
+
+    @Column(name = "second_entity_id")
+    public long secondEntityId;
+
+    public TextNotification(String content, User owner, NotificationType type,long entityId,long secondEntityId) {
         this.content = content;
         this.owner = owner;
+        this.type = type;
+        this.entityId = entityId;
+        this.secondEntityId = secondEntityId;
     }
 }

@@ -5,7 +5,7 @@ import com.fivesysdev.Fiveogram.exceptions.Status438PostAlreadyLikedException;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
-import com.fivesysdev.Fiveogram.models.notifications.NewLikeNotification;
+import com.fivesysdev.Fiveogram.models.notifications.LikeNotification;
 import com.fivesysdev.Fiveogram.models.notifications.Notification;
 import com.fivesysdev.Fiveogram.repositories.LikeRepository;
 import com.fivesysdev.Fiveogram.repositories.SponsoredPostRepository;
@@ -46,7 +46,7 @@ public class LikeServiceImpl implements LikeService {
             throw new Status438PostAlreadyLikedException();
         }
         likeRepository.save(new Like(post, whoLikes));
-        Notification notification = new NewLikeNotification(post, whoLikes);
+        Notification notification = new LikeNotification(post, whoLikes);
         if (sponsoredPostRepository.existsByPost(post)) {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
         }

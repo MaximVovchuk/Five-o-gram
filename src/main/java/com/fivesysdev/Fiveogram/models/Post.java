@@ -42,4 +42,14 @@ public class Post {
     public Post() {
         pictures = new ArrayList<>();
     }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", author=" + author +
+                ", text='" + text + '\'' +
+                ", pubDate=" + pubDate +
+                '}';
+    }
 }
