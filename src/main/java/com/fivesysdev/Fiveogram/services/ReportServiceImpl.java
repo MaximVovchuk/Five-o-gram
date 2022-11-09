@@ -2,7 +2,7 @@ package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.PostReport;
-import com.fivesysdev.Fiveogram.models.Report;
+import com.fivesysdev.Fiveogram.models.ReportPostEntity;
 import com.fivesysdev.Fiveogram.repositories.ReportRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
@@ -24,7 +24,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<PostReport> getReports() {
-        List<Report> reports = reportRepository.findAll();
+        List<ReportPostEntity> reports = reportRepository.findAll();
         if (reports.isEmpty()) {
             return new ArrayList<>();
         }
@@ -38,7 +38,7 @@ public class ReportServiceImpl implements ReportService {
 
         postReport.setPost(reports.get(0).getPost());
 
-        for (Report report : reports) {
+        for (ReportPostEntity report : reports) {
             if (report.getPost() != postWhichWeAreWorkingWith) {
                 postWhichWeAreWorkingWith = report.getPost();
                 postReports.add(postReport);

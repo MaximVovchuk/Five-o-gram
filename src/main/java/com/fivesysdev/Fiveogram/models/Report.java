@@ -1,26 +1,15 @@
 package com.fivesysdev.Fiveogram.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Table(name = "reports")
-@Entity
-public class Report {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @ManyToOne()
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
-    private Post post;
-    @Column(name = "text")
-    private String text;
+public abstract class Report {
+    private final List<String> reportTexts = new ArrayList<>();
+
+    public void addReportText(ReportPostEntity report) {
+        reportTexts.add(report.getText());
+    }
 }

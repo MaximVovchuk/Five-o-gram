@@ -138,7 +138,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post reportPost(String text, long id) {
         Post post = postRepository.findPostById(id);
-        reportRepository.save(Report.builder()
+        reportRepository.save(ReportPostEntity.builder()
                 .text(text)
                 .post(post)
                 .build());

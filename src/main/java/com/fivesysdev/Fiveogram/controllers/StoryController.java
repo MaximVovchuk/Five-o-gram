@@ -2,6 +2,8 @@ package com.fivesysdev.Fiveogram.controllers;
 
 import com.fivesysdev.Fiveogram.config.JWTUtil;
 import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
+import com.fivesysdev.Fiveogram.exceptions.Status444NotYourStoryException;
+import com.fivesysdev.Fiveogram.exceptions.Status445StoryNotFoundException;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
 import org.springframework.http.HttpStatus;
@@ -21,13 +23,25 @@ public class StoryController {
         this.storyService = storyService;
         this.jwtUtil = jwtUtil;
     }
-
+    //TODO story report
     @PostMapping("/new")
     public ResponseEntity<Story> addNewStory(@ModelAttribute MultipartFile multipartFile,
-                                         @RequestHeader(value = "Authorization") String token)
+                                             @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException {
         return new ResponseEntity<>
                 (storyService.createNewStory(jwtUtil.validate(token), multipartFile), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteStory(@PathVariable Long id,
+                            @RequestHeader(value = "Authorization") String token)
+            throws Status444NotYourStoryException, Status445StoryNotFoundException {
+        storyService.deleteById(jwtUtil.validateTokenAndRetrieveUsername(token), id);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Story> getStory(@PathVariable Long id) throws Status445StoryNotFoundException {
+        return new ResponseEntity<>(storyService.getStoryById(id), HttpStatus.OK);
     }
 
     @GetMapping()

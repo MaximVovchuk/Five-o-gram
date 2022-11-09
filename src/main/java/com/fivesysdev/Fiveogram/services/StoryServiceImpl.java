@@ -1,6 +1,8 @@
 package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
+import com.fivesysdev.Fiveogram.exceptions.Status444NotYourStoryException;
+import com.fivesysdev.Fiveogram.exceptions.Status445StoryNotFoundException;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.models.Subscription;
 import com.fivesysdev.Fiveogram.models.User;
@@ -61,5 +63,18 @@ public class StoryServiceImpl implements StoryService {
     @Override
     public List<Story> getMyStoriesArchive(String username) {
         return storyRepository.findAllByAuthor(userService.findUserByUsername(username));
+    }
+
+    @Override
+    public void deleteById(String username, Long id) throws Status444NotYourStoryException, Status445StoryNotFoundException {
+        Story story = storyRepository.findById(id).orElseThrow(Status445StoryNotFoundException::new);
+        if (story.isExpired()) throw new Status445StoryNotFoundException();
+        if (story.getAuthor() != userService.findUserByUsername(username)) throw new Status444NotYourStoryException();
+        storyRepository.deleteById(id);
+    }
+
+    @Override
+    public Story getStoryById(Long id) throws Status445StoryNotFoundException {
+        return storyRepository.findById(id).orElseThrow(Status445StoryNotFoundException::new);
     }
 }
