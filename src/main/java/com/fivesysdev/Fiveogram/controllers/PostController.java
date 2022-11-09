@@ -100,7 +100,8 @@ public class PostController {
     }
 
     @PostMapping("/{id:\\d+}/report")
-    public ResponseEntity<Post> report(@PathVariable long id,@RequestBody String text){
+    public ResponseEntity<Post> report(@PathVariable long id,@RequestBody String text)
+            throws Status435PostNotFoundException {
         return new ResponseEntity<>(
                 postService.reportPost(text,id),
                 HttpStatus.OK);

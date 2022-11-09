@@ -1,5 +1,7 @@
-package com.fivesysdev.Fiveogram.models;
+package com.fivesysdev.Fiveogram.models.reports;
 
+import com.fivesysdev.Fiveogram.models.BaseEntity;
+import com.fivesysdev.Fiveogram.models.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "post_reports")
 @Entity
-public class ReportPostEntity extends BaseEntity{
+public class ReportPostEntity extends BaseEntity {
     @ManyToOne()
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;

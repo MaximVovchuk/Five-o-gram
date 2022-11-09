@@ -1,11 +1,16 @@
 package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.models.Post;
-import com.fivesysdev.Fiveogram.models.PostReport;
-import com.fivesysdev.Fiveogram.models.ReportPostEntity;
-import com.fivesysdev.Fiveogram.repositories.ReportRepository;
+import com.fivesysdev.Fiveogram.models.Story;
+import com.fivesysdev.Fiveogram.models.reports.PostReport;
+import com.fivesysdev.Fiveogram.models.reports.ReportPostEntity;
+import com.fivesysdev.Fiveogram.models.reports.ReportStoryEntity;
+import com.fivesysdev.Fiveogram.models.reports.StoryReport;
+import com.fivesysdev.Fiveogram.repositories.ReportPostRepository;
+import com.fivesysdev.Fiveogram.repositories.ReportStoryRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,52 +19,92 @@ import java.util.List;
 
 @Service
 public class ReportServiceImpl implements ReportService {
-    private final ReportRepository reportRepository;
+    private final ReportPostRepository reportPostRepository;
+    private final ReportStoryRepository reportStoryRepository;
     private final PostService postService;
+    private final StoryService storyService;
 
-    public ReportServiceImpl(ReportRepository reportRepository, PostService postService) {
-        this.reportRepository = reportRepository;
+    public ReportServiceImpl(ReportPostRepository reportPostRepository, ReportStoryRepository reportStoryRepository, PostService postService, StoryService storyService) {
+        this.reportPostRepository = reportPostRepository;
+        this.reportStoryRepository = reportStoryRepository;
         this.postService = postService;
+        this.storyService = storyService;
     }
 
     @Override
-    public List<PostReport> getReports() {
-        List<ReportPostEntity> reports = reportRepository.findAll();
-        if (reports.isEmpty()) {
+    public List<PostReport> getPostReports() {
+        List<ReportPostEntity> postReports = reportPostRepository.findAll();
+        if (postReports.isEmpty()) {
             return new ArrayList<>();
         }
-        List<PostReport> postReports = new ArrayList<>();
+        List<PostReport> reports = new ArrayList<>();
 
-        reports.sort((o1, o2) -> Math.toIntExact(o1.getPost().getId() - o2.getPost().getId()));
+        postReports.sort((o1, o2) -> Math.toIntExact(o1.getPost().getId() - o2.getPost().getId()));
 
-        Post postWhichWeAreWorkingWith = reports.get(0).getPost();
+        Post postWhichWeAreWorkingWith = postReports.get(0).getPost();
 
-        PostReport postReport = new PostReport();
+        PostReport postReport = new PostReport(postWhichWeAreWorkingWith);
 
-        postReport.setPost(reports.get(0).getPost());
-
-        for (ReportPostEntity report : reports) {
+        for (ReportPostEntity report : postReports) {
             if (report.getPost() != postWhichWeAreWorkingWith) {
                 postWhichWeAreWorkingWith = report.getPost();
-                postReports.add(postReport);
-                postReport = new PostReport();
-                postReport.setPost(report.getPost());
+                reports.add(postReport);
+                postReport = new PostReport(report.getPost());
             }
-            postReport.addReportText(report);
+            postReport.addReportText(report.getText());
         }
-        postReports.add(postReport);
-        postReports.sort(Comparator.comparingInt(o -> o.getReportTexts().size()));
-        return postReports;
+        reports.add(postReport);
+        reports.sort(Comparator.comparingInt(o -> o.getReportTexts().size()));
+        return reports;
     }
 
     @Override
-    public void acceptReport(Long id) {
+    public void acceptPostReport(Long id) {
         postService.banPost(id);
-        reportRepository.deleteByPost_Id(id);
+        reportPostRepository.deleteByPost_Id(id);
     }
 
     @Override
-    public void declineReport(Long id) {
-        reportRepository.deleteByPost_Id(id);
+    public void declinePostReport(Long id) {
+        reportPostRepository.deleteByPost_Id(id);
     }
+
+    @Override
+    public List<StoryReport> getStoryReports() {
+        List<ReportStoryEntity> storyReports = reportStoryRepository.findAll();
+        if (storyReports.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<StoryReport> reports = new ArrayList<>();
+
+        storyReports.sort((o1, o2) -> Math.toIntExact(o1.getStory().getId() - o2.getStory().getId()));
+
+        Story storyWhichWeAreWorkingWith = storyReports.get(0).getStory();
+
+        StoryReport storyReport = new StoryReport(storyWhichWeAreWorkingWith);
+
+        for (ReportStoryEntity report : storyReports) {
+            if (report.getStory() != storyWhichWeAreWorkingWith) {
+                storyWhichWeAreWorkingWith = report.getStory();
+                reports.add(storyReport);
+                storyReport = new StoryReport(report.getStory());
+            }
+            storyReport.addReportText(report.getText());
+        }
+        reports.add(storyReport);
+        reports.sort(Comparator.comparingInt(o -> o.getReportTexts().size()));
+        return reports;
+    }
+
+    @Override
+    public void acceptStoryReport(Long id) {
+        storyService.banPost(id);
+        reportStoryRepository.deleteByStory_Id(id);
+    }
+
+    @Override
+    public void declineStoryReport(Long id) {
+        reportStoryRepository.deleteByStory_Id(id);
+    }
+
 }

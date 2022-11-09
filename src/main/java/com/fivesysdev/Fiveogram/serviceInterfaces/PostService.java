@@ -19,7 +19,7 @@ public interface PostService {
     List<Post> deletePost(String username, long id) throws Status433NotYourPostException, Status435PostNotFoundException;
 
 
-    Post reportPost(String text,long id);
+    Post reportPost(String text,long id) throws Status435PostNotFoundException;
 
     void banPost(Long id);
 }

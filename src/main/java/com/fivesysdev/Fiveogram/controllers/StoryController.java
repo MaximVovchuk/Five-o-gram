@@ -55,4 +55,11 @@ public class StoryController {
         return new ResponseEntity<>
                 (storyService.getMyStoriesArchive(jwtUtil.validate(token)), HttpStatus.OK);
     }
+
+    @PostMapping("/{id:\\d+}/report")
+    public ResponseEntity<Story> report(@PathVariable long id, @RequestBody String text) throws Status445StoryNotFoundException {
+        return new ResponseEntity<>(
+                storyService.reportStory(text,id),
+                HttpStatus.OK);
+    }
 }

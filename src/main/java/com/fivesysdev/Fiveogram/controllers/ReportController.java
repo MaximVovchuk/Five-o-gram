@@ -1,6 +1,7 @@
 package com.fivesysdev.Fiveogram.controllers;
 
-import com.fivesysdev.Fiveogram.models.PostReport;
+import com.fivesysdev.Fiveogram.models.reports.PostReport;
+import com.fivesysdev.Fiveogram.models.reports.StoryReport;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,18 +16,33 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    @GetMapping()
-    public List<PostReport> getReports(){
-        return reportService.getReports();
+    @GetMapping("/stories")
+    public List<StoryReport> getStoryReports() {
+        return reportService.getStoryReports();
     }
 
-    @PostMapping("/{id:\\d+}/acceptReport")
-    public void acceptReport(@PathVariable Long id){
-        reportService.acceptReport(id);
+    @PostMapping("/{id:\\d+}/acceptStoryReport")
+    public void acceptStoryReport(@PathVariable Long id) {
+        reportService.acceptStoryReport(id);
     }
 
-    @PostMapping("/{id:\\d+}/declineReport")
-    public void declineReport(@PathVariable Long id){
-        reportService.declineReport(id);
+    @PostMapping("/{id:\\d+}/declineStoryReport")
+    public void declineStoryReport(@PathVariable Long id) {
+        reportService.declineStoryReport(id);
+    }
+
+    @GetMapping("/posts")
+    public List<PostReport> getPostReports() {
+        return reportService.getPostReports();
+    }
+
+    @PostMapping("/{id:\\d+}/acceptPostReport")
+    public void acceptPostReport(@PathVariable Long id) {
+        reportService.acceptPostReport(id);
+    }
+
+    @PostMapping("/{id:\\d+}/declinePostReport")
+    public void declinePostReport(@PathVariable Long id) {
+        reportService.declinePostReport(id);
     }
 }

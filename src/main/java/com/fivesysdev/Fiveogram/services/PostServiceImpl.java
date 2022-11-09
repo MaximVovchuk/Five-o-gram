@@ -2,6 +2,7 @@ package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
+import com.fivesysdev.Fiveogram.models.reports.ReportPostEntity;
 import com.fivesysdev.Fiveogram.repositories.*;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
@@ -17,16 +18,16 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final ReportRepository reportRepository;
+    private final ReportPostRepository reportPostRepository;
     private final SponsoredPostRepository sponsoredPostRepository;
     private final FileService fileService;
     private final PictureRepository pictureRepository;
 
     public PostServiceImpl(PostRepository postRepository, UserRepository userRepository,
-                           ReportRepository reportRepository, SponsoredPostRepository sponsoredPostRepository, FileService fileService, PictureRepository pictureRepository) {
+                           ReportPostRepository reportPostRepository, SponsoredPostRepository sponsoredPostRepository, FileService fileService, PictureRepository pictureRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
-        this.reportRepository = reportRepository;
+        this.reportPostRepository = reportPostRepository;
         this.sponsoredPostRepository = sponsoredPostRepository;
         this.fileService = fileService;
         this.pictureRepository = pictureRepository;
@@ -136,9 +137,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post reportPost(String text, long id) {
-        Post post = postRepository.findPostById(id);
-        reportRepository.save(ReportPostEntity.builder()
+    public Post reportPost(String text, long id) throws Status435PostNotFoundException {
+        Post post = postRepository.findById(id).orElseThrow(Status435PostNotFoundException::new);
+        reportPostRepository.save(ReportPostEntity.builder()
                 .text(text)
                 .post(post)
                 .build());

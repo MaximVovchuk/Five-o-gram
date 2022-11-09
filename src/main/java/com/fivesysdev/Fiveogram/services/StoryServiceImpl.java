@@ -6,6 +6,8 @@ import com.fivesysdev.Fiveogram.exceptions.Status445StoryNotFoundException;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.models.Subscription;
 import com.fivesysdev.Fiveogram.models.User;
+import com.fivesysdev.Fiveogram.models.reports.ReportStoryEntity;
+import com.fivesysdev.Fiveogram.repositories.ReportStoryRepository;
 import com.fivesysdev.Fiveogram.repositories.StoryRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
@@ -25,11 +27,13 @@ public class StoryServiceImpl implements StoryService {
     private final UserService userService;
     private final FileService fileService;
     private final StoryRepository storyRepository;
+    private final ReportStoryRepository reportStoryRepository;
 
-    public StoryServiceImpl(UserService userService, FileService fileService, StoryRepository storyRepository) {
+    public StoryServiceImpl(UserService userService, FileService fileService, StoryRepository storyRepository, ReportStoryRepository reportStoryRepository) {
         this.userService = userService;
         this.fileService = fileService;
         this.storyRepository = storyRepository;
+        this.reportStoryRepository = reportStoryRepository;
     }
 
     @Override
@@ -76,5 +80,20 @@ public class StoryServiceImpl implements StoryService {
     @Override
     public Story getStoryById(Long id) throws Status445StoryNotFoundException {
         return storyRepository.findById(id).orElseThrow(Status445StoryNotFoundException::new);
+    }
+
+    @Override
+    public Story reportStory(String text, long id) throws Status445StoryNotFoundException {
+        Story story = storyRepository.findById(id).orElseThrow(Status445StoryNotFoundException::new);
+        reportStoryRepository.save(ReportStoryEntity.builder()
+                .story(story)
+                .text(text)
+                .build());
+        return story;
+    }
+
+    @Override
+    public void banPost(Long id) {
+        storyRepository.deleteById(id);
     }
 }

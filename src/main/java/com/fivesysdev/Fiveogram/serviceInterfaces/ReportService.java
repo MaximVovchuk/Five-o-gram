@@ -1,14 +1,21 @@
 package com.fivesysdev.Fiveogram.serviceInterfaces;
 
-import com.fivesysdev.Fiveogram.models.PostReport;
+import com.fivesysdev.Fiveogram.models.reports.PostReport;
+import com.fivesysdev.Fiveogram.models.reports.StoryReport;
 
 import java.util.List;
 
 public interface ReportService {
 
-    List<PostReport> getReports();
+    void acceptStoryReport(Long id);
 
-    void acceptReport(Long id);
+    void declineStoryReport(Long id);
 
-    void declineReport(Long id);
+    void acceptPostReport(Long id);
+
+    void declinePostReport(Long id);
+
+    List<StoryReport> getStoryReports();
+
+    List<PostReport> getPostReports();
 }

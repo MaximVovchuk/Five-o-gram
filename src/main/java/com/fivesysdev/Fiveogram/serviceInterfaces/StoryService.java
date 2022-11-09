@@ -19,4 +19,8 @@ public interface StoryService {
     void deleteById(String username, Long id) throws Status444NotYourStoryException, Status445StoryNotFoundException;
 
     Story getStoryById(Long id) throws Status445StoryNotFoundException;
+
+    Story reportStory(String text, long id) throws Status445StoryNotFoundException;
+
+    void banPost(Long id);
 }

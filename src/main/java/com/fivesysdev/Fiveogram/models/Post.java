@@ -38,4 +38,9 @@ public class Post extends BaseEntity{
     public Post() {
         pictures = new ArrayList<>();
     }
+
+    @Override
+    public String toString() {
+        return "Post";
+    }
 }
