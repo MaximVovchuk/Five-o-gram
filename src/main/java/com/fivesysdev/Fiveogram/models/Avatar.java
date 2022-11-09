@@ -1,14 +1,14 @@
 package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "avatars")
@@ -20,4 +20,5 @@ public class Avatar extends BaseEntity {
     private User user;
     @Column(name = "path")
     private String path;
+
 }

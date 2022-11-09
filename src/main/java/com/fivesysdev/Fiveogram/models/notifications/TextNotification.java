@@ -2,13 +2,13 @@ package com.fivesysdev.Fiveogram.models.notifications;
 
 import com.fivesysdev.Fiveogram.models.BaseEntity;
 import com.fivesysdev.Fiveogram.models.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @Entity
 @Table(name = "notifications")

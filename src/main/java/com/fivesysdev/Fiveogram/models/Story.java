@@ -1,16 +1,15 @@
 package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,5 +30,6 @@ public class Story extends BaseEntity {
 
     @Column(name = "is_expired")
     private boolean expired;
+
 }
 

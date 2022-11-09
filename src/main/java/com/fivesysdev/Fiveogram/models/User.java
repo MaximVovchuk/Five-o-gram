@@ -1,18 +1,21 @@
 package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -30,13 +33,16 @@ public class User extends BaseEntity{
     private Role role;
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private List<Avatar> avatars;
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "owner")
+    @ToString.Exclude
     private List<Subscription> subscriptions;
     @OneToMany(mappedBy = "author")
     @LazyCollection(LazyCollectionOption.FALSE)
     @JsonIgnore
+    @ToString.Exclude
     private List<Story> stories;
 
     public void addAvatar(Avatar avatar) {
@@ -53,4 +59,5 @@ public class User extends BaseEntity{
         }
         return unexpiredStories;
     }
+
 }

@@ -2,16 +2,17 @@ package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,6 +33,7 @@ public class Comment extends BaseEntity{
     private Post post;
     @OneToMany(mappedBy = "comment")
     @JsonIgnore
+    @ToString.Exclude
     private List<CommentLike> commentLikes;
 
 }
