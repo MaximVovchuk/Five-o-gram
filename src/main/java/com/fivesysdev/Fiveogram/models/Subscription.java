@@ -9,15 +9,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriptions")
-public class Subscription {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Subscription extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     @JsonIgnoreProperties({"name","surname","password","role","subscriptions"})

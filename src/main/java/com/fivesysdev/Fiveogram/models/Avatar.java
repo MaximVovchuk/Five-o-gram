@@ -13,11 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "avatars")
 @Entity
-public class Avatar {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Avatar extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @JsonIgnore

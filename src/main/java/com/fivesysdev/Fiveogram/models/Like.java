@@ -8,15 +8,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "likes")
-public class Like {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Like extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     @JsonIgnoreProperties({"author","text","pubDate","likesList","commentList"})

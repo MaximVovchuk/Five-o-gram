@@ -16,11 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "comments")
-public class Comment {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Comment extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     @JsonIgnoreProperties({"name","surname","password","role","subscriptions"})
@@ -38,14 +34,4 @@ public class Comment {
     @JsonIgnore
     private List<CommentLike> commentLikes;
 
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "id=" + id +
-                ", author=" + author +
-                ", text='" + text + '\'' +
-                ", published=" + published +
-                ", post=" + post +
-                '}';
-    }
 }

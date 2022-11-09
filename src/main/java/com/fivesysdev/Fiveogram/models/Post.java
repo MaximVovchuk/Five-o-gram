@@ -14,11 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "posts")
 @Entity
-public class Post {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Post extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     @JsonIgnoreProperties({"subscriptions"})
@@ -41,15 +37,5 @@ public class Post {
 
     public Post() {
         pictures = new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", author=" + author +
-                ", text='" + text + '\'' +
-                ", pubDate=" + pubDate +
-                '}';
     }
 }

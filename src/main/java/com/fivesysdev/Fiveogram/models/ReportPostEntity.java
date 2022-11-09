@@ -1,23 +1,22 @@
 package com.fivesysdev.Fiveogram.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "pictures")
+@Table(name = "post_reports")
 @Entity
-public class Picture extends BaseEntity{
-    @ManyToOne
+public class ReportPostEntity extends BaseEntity{
+    @ManyToOne()
     @JoinColumn(name = "post_id", referencedColumnName = "id")
-    @JsonIgnore
     private Post post;
-    @Column(name = "path")
-    private String path;
+    @Column(name = "text")
+    private String text;
 }
