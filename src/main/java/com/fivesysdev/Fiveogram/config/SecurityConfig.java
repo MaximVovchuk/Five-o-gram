@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.config;
 
+import com.fivesysdev.Fiveogram.models.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("/auth/login").permitAll()
+                .antMatchers("/report/**").hasAuthority(Role.ADMIN.getAuthority())
                 .antMatchers("/auth/register").permitAll().anyRequest().authenticated()
                 .and()
                 .formLogin()

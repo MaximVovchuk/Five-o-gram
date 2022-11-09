@@ -8,7 +8,6 @@ import com.fivesysdev.Fiveogram.services.LoginService;
 import com.fivesysdev.Fiveogram.services.RegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +25,7 @@ public class StartController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthenticationDTO authenticationDTO) throws UsernameNotFoundException, Status440WrongPasswordException {
+    public ResponseEntity<String> login(@RequestBody AuthenticationDTO authenticationDTO) throws Status440WrongPasswordException {
         return new ResponseEntity<>(
                 loginService.login(authenticationDTO),
                 HttpStatus.OK);
@@ -35,8 +34,7 @@ public class StartController {
     @PostMapping("/register")
     public ResponseEntity<String> registerPage(@RequestBody @Valid UserDTO userDTO,
                                           BindingResult bindingResult) throws Status439UsernameBusyException {
-        return new ResponseEntity<>(
-                registrationService.register(userDTO, bindingResult),
-                HttpStatus.OK);
+        String token = registrationService.register(userDTO, bindingResult);
+        return ResponseEntity.ok(token);
     }
 }
