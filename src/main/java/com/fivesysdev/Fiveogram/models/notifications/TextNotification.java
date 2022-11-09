@@ -20,8 +20,6 @@ public class TextNotification {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
-    @Column(name = "content")
-    public String content;
 
     @Column(name = "type")
     public NotificationType type;
@@ -29,14 +27,10 @@ public class TextNotification {
     @Column(name = "entity_id")
     public long entityId;
 
-    @Column(name = "second_entity_id")
-    public long secondEntityId;
 
-    public TextNotification(String content, User owner, NotificationType type,long entityId,long secondEntityId) {
-        this.content = content;
+    public TextNotification(User owner, NotificationType type,long entityId) {
         this.owner = owner;
         this.type = type;
         this.entityId = entityId;
-        this.secondEntityId = secondEntityId;
     }
 }

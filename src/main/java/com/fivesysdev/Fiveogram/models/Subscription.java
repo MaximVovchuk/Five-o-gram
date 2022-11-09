@@ -20,11 +20,11 @@ public class Subscription {
     private long id;
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"name","surname","password","role","subscriptions"})
     private User owner;
     @ManyToOne
     @JoinColumn(name = "friend_id", referencedColumnName = "id")
-    @JsonIgnoreProperties({"subscriptions"})
+    @JsonIgnore
     private User friend;
 
     public Subscription(User owner, User newFriend) {

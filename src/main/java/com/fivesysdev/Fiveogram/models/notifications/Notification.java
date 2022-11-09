@@ -13,14 +13,11 @@ public interface Notification {
 
     NotificationType type = null;
     long entityId = 0;
-    long secondEntityId = 0;
-
-
-    String sendNotification();
 
     default void addRecipient(User user) {
         recipients.add(user);
     }
+
     @JsonIgnore
     default List<User> getRecipients() {
         return recipients;
@@ -33,9 +30,7 @@ public interface Notification {
     default long getEntityId() {
         return entityId;
     }
-    default long getSecondEntityId(){
-        return secondEntityId;
-    }
+
     default NotificationType getType() {
         return type;
     }

@@ -23,7 +23,7 @@ public class Comment {
     private long id;
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
-    @JsonIgnoreProperties({"subscriptions"})
+    @JsonIgnoreProperties({"name","surname","password","role","subscriptions"})
     private User author;
     @Column(name = "text")
     private String text;
@@ -32,9 +32,10 @@ public class Comment {
     private LocalDateTime published;
     @ManyToOne
     @JoinColumn(name = "post_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"author","text","pubDate","likesList","commentList"})
     private Post post;
     @OneToMany(mappedBy = "comment")
+    @JsonIgnore
     private List<CommentLike> commentLikes;
 
     @Override

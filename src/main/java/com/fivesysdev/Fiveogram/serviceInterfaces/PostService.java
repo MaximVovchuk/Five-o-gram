@@ -1,9 +1,6 @@
 package com.fivesysdev.Fiveogram.serviceInterfaces;
 
-import com.fivesysdev.Fiveogram.exceptions.Status433NotYourPostException;
-import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status436SponsorNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
+import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +10,7 @@ import java.util.List;
 public interface PostService {
     List<Post> findAll(User user);
 
-    Post save(String username,String name, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileIsNullException, Status436SponsorNotFoundException;
+    Post save(String username,String name, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException;
 
     Post findPostById(long id) throws Status435PostNotFoundException;
 
@@ -22,4 +19,7 @@ public interface PostService {
     List<Post> deletePost(String username, long id) throws Status433NotYourPostException, Status435PostNotFoundException;
 
 
+    Post reportPost(String text,long id);
+
+    void banPost(Long id);
 }

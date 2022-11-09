@@ -34,7 +34,7 @@ public class PostController {
     @PostMapping("/newPost")
     public ResponseEntity<Post> addNewPost(@ModelAttribute PostDTO postDTO,
                                         @RequestHeader(value = "Authorization") String token)
-            throws Status441FileIsNullException, Status436SponsorNotFoundException {
+            throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException {
         return new ResponseEntity<>(
                 postService.save(jwtUtil.validate(token), postDTO.getText(),
                         postDTO.getMultipartFiles(), postDTO.getSponsorId()),
@@ -96,6 +96,13 @@ public class PostController {
     public ResponseEntity<Set<Like>> getLikes(@PathVariable long id) throws Status435PostNotFoundException {
         return new ResponseEntity<>(
                 likeService.findAllPostLikes(id),
+                HttpStatus.OK);
+    }
+
+    @PostMapping("/{id:\\d+}/report")
+    public ResponseEntity<Post> report(@PathVariable long id,@RequestBody String text){
+        return new ResponseEntity<>(
+                postService.reportPost(text,id),
                 HttpStatus.OK);
     }
 }

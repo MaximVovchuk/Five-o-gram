@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,9 +21,10 @@ public class CommentLike {
     private long id;
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"name","surname","password","role","subscriptions"})
     private User author;
     @ManyToOne
     @JoinColumn(name = "comment_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"author","published","commentLikes",})
     private Comment comment;
 }

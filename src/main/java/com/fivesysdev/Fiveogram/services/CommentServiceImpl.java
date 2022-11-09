@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
         }
         Comment comment = createComment(username,post, text);
         commentRepository.save(comment);
-        Notification notification = new CommentNotification(post, comment);
+        Notification notification = new CommentNotification(comment);
         if (sponsoredPostRepository.existsByPost(post)) {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
         }

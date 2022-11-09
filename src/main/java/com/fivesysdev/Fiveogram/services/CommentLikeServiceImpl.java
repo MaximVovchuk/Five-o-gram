@@ -38,13 +38,12 @@ public class CommentLikeServiceImpl implements CommentLikeService {
             throw new Status434CommentNotFoundException();
         }
         User whoLiked = userRepository.findUserByUsername(username);
-        commentLikeRepository.save(
-                CommentLike.builder()
-                        .comment(comment)
-                        .author(whoLiked)
-                        .build()
-        );
-        Notification notification = new CommentLikeNotification(comment, whoLiked);
+        CommentLike commentLike = CommentLike.builder()
+                .comment(comment)
+                .author(whoLiked)
+                .build();
+        commentLikeRepository.save(commentLike);
+        Notification notification = new CommentLikeNotification(commentLike);
         notificationService.sendNotification(notification);
         return comment.getPost();
     }

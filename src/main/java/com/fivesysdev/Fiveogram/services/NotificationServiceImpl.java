@@ -1,68 +1,76 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
-import com.fivesysdev.Fiveogram.models.User;
+import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.models.notifications.*;
-import com.fivesysdev.Fiveogram.repositories.CommentRepository;
-import com.fivesysdev.Fiveogram.repositories.NotificationRepository;
+import com.fivesysdev.Fiveogram.repositories.*;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
-    private final PostService postService;
-    private final UserService userService;
     private final CommentRepository commentRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final LikeRepository likeRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     public NotificationServiceImpl(NotificationRepository notificationRepository,
-                                   PostService postService,
-                                   UserService userService, CommentRepository commentRepository) {
+                                   CommentRepository commentRepository,
+                                   SubscriptionRepository subscriptionRepository,
+                                   LikeRepository likeRepository,
+                                   CommentLikeRepository commentLikeRepository) {
         this.notificationRepository = notificationRepository;
-        this.postService = postService;
-        this.userService = userService;
         this.commentRepository = commentRepository;
+        this.subscriptionRepository = subscriptionRepository;
+        this.likeRepository = likeRepository;
+        this.commentLikeRepository = commentLikeRepository;
     }
 
     public void sendNotification(Notification notification) {
         for (User recipient : notification.getRecipients()) {
-            notificationRepository.save(new TextNotification(notification.sendNotification(),
-                    recipient, notification.getType(), notification.getEntityId(), notification.getSecondEntityId()));
+            notificationRepository.save(new TextNotification(recipient,
+                    notification.getType(), notification.getEntityId()));
         }
         notification.clearRecipients();
     }
 
     @Override
-    public List<Notification> getAllNotifications(String username) throws Status435PostNotFoundException, Status437UserNotFoundException {
+    public List<Notification> getAllNotifications(String username) {
         List<TextNotification> textNotifications =
                 notificationRepository.findByOwnerUsername(username);
         List<Notification> notifications = new ArrayList<>();
         for (TextNotification textNotification : textNotifications) {
             switch (textNotification.getType()) {
-                case LIKE -> notifications.add(new LikeNotification(
-                        postService.findPostById(textNotification.getEntityId()),
-                        userService.findUserById(textNotification.getSecondEntityId())
-                ));
-                case COMMENT -> notifications.add(new CommentNotification(
-                        postService.findPostById(textNotification.getEntityId()),
-                        commentRepository.findCommentById(textNotification.getSecondEntityId())
-                ));
-                case SUBSCRIPTION -> notifications.add(new SubscriptionNotification(
-                        userService.findUserById(textNotification.getEntityId()),
-                        userService.findUserById(textNotification.getSecondEntityId())
-                ));
-                case COMMENTLIKE -> notifications.add(new CommentLikeNotification(
-                        commentRepository.findCommentById(textNotification.getEntityId()),
-                        userService.findUserById(textNotification.getSecondEntityId())
-                ));
+                case LIKE -> {
+                    Optional<Like> likeOptional =
+                            likeRepository.findById(textNotification.getEntityId());
+                    likeOptional.ifPresent(like ->
+                            notifications.add(new LikeNotification(like)));
+                }
+                case COMMENT -> {
+                    Optional<Comment> commentOptional =
+                            commentRepository.findById(textNotification.getEntityId());
+                    commentOptional.ifPresent(comment ->
+                            notifications.add(new CommentNotification(comment)));
+                }
+                case SUBSCRIPTION -> {
+                    Optional<Subscription> subscriptionOptional =
+                            subscriptionRepository.findById(textNotification.getEntityId());
+                    subscriptionOptional.ifPresent(subscription ->
+                            notifications.add(new SubscriptionNotification(subscription)));
+                }
+                case COMMENTLIKE -> {
+                    Optional<CommentLike> commentLikeOptional =
+                            commentLikeRepository.findById(textNotification.getEntityId());
+                    commentLikeOptional.ifPresent(commentLike ->
+                            notifications.add(new CommentLikeNotification(commentLike)));
+                }
             }
         }
         return notifications;

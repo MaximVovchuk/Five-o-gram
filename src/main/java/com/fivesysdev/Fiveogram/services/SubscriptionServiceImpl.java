@@ -42,7 +42,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = new Subscription(owner, newFriend);
         subscriptionRepository.save(subscription);
         notificationService.sendNotification(
-                new SubscriptionNotification(owner, newFriend)
+                new SubscriptionNotification(subscription)
         );
         return newFriend;
     }

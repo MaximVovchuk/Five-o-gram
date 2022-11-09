@@ -45,8 +45,9 @@ public class LikeServiceImpl implements LikeService {
         if (likeRepository.existsByPostAndWhoLikes(post, whoLikes)) {
             throw new Status438PostAlreadyLikedException();
         }
-        likeRepository.save(new Like(post, whoLikes));
-        Notification notification = new LikeNotification(post, whoLikes);
+        Like like = new Like(post, whoLikes);
+        likeRepository.save(like);
+        Notification notification = new LikeNotification(like);
         if (sponsoredPostRepository.existsByPost(post)) {
             notification.addRecipient(sponsoredPostRepository.findByPost(post).getSponsor());
         }

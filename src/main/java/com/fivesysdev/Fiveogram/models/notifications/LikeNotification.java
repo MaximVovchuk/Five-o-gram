@@ -1,30 +1,21 @@
 package com.fivesysdev.Fiveogram.models.notifications;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fivesysdev.Fiveogram.models.Post;
-import com.fivesysdev.Fiveogram.models.User;
+import com.fivesysdev.Fiveogram.models.Like;
 import lombok.Data;
 
 @Data
 public class LikeNotification implements Notification {
     private final NotificationType type = NotificationType.LIKE;
-    @JsonIgnoreProperties({"author","pubDate","likesList","commentList"})
-    private final Post post;
-    @JsonIgnoreProperties({"password","subscriptions"})
-    private final User whoLikes;
+    //just Like
+    private final Like like;
     @JsonIgnore
     private final long entityId;
-    @JsonIgnore
-    private final long secondEntityId;
 
-
-    public LikeNotification(Post post, User whoLikes) {
-        this.post = post;
-        this.whoLikes = whoLikes;
-        this.entityId = post.getId();
-        this.secondEntityId = whoLikes.getId();
-        recipients.add(post.getAuthor());
+    public LikeNotification(Like like){
+        this.like = like;
+        this.entityId = like.getId();
+        recipients.add(like.getPost().getAuthor());
     }
     @Override
     public NotificationType getType() {
@@ -33,14 +24,5 @@ public class LikeNotification implements Notification {
     @Override
     public long getEntityId() {
         return entityId;
-    }
-    @Override
-    public long getSecondEntityId() {
-        return secondEntityId;
-    }
-
-    @Override
-    public String sendNotification() {
-        return this.whoLikes.getName() + " Liked " + this.post.getAuthor().getName() + "`s post";
     }
 }

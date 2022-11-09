@@ -30,6 +30,8 @@ public class User {
     private String username;
     @Column(name = "password")
     private String password;
+    @Column(name = "role")
+    private Role role;
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "user")
     private List<Avatar> avatars;
@@ -44,11 +46,12 @@ public class User {
     public void addAvatar(Avatar avatar) {
         avatars.add(avatar);
     }
+
     @JsonIgnore
-    public List<Story> getUnexpiredStories(){
+    public List<Story> getUnexpiredStories() {
         List<Story> unexpiredStories = new ArrayList<>();
         for (Story story : stories) {
-            if(!story.isExpired()){
+            if (!story.isExpired()) {
                 unexpiredStories.add(story);
             }
         }
