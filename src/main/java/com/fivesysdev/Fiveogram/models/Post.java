@@ -1,7 +1,10 @@
 package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -15,14 +18,14 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "posts")
 @Entity
-public class Post extends BaseEntity{
+public class Post extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     @JsonIgnoreProperties({"subscriptions"})
     private User author;
     @Column(name = "text")
     private String text;
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Picture> pictures;
     @Column(name = "created_at")

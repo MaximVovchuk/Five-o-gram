@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Getter
@@ -20,5 +21,7 @@ public class Picture extends BaseEntity{
     private Post post;
     @Column(name = "path")
     private String path;
-
+    @ToString.Exclude
+    @OneToMany(mappedBy = "picture", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mark> marks;
 }

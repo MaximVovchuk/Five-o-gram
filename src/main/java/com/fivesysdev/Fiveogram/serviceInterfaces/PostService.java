@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.serviceInterfaces;
 
+import com.fivesysdev.Fiveogram.dto.PostDTO;
 import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
@@ -10,7 +11,7 @@ import java.util.List;
 public interface PostService {
     List<Post> findAll(User user);
 
-    Post save(String username,String name, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException;
+    Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequest;
 
     Post findPostById(long id) throws Status435PostNotFoundException;
 

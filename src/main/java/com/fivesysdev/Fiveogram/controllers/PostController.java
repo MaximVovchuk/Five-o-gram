@@ -33,11 +33,11 @@ public class PostController {
 
     @PostMapping("/newPost")
     public ResponseEntity<Post> addNewPost(@ModelAttribute PostDTO postDTO,
-                                        @RequestHeader(value = "Authorization") String token)
-            throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException {
+                                           @RequestHeader(value = "Authorization") String token)
+            throws Status441FileIsNullException, Status436SponsorNotFoundException,
+            Status443DidNotReceivePictureException, Status446MarksBadRequest {
         return new ResponseEntity<>(
-                postService.save(jwtUtil.validate(token), postDTO.getText(),
-                        postDTO.getMultipartFiles(), postDTO.getSponsorId()),
+                postService.save(jwtUtil.validate(token), postDTO),
                 HttpStatus.OK);
     }
 
@@ -48,7 +48,7 @@ public class PostController {
 
     @PatchMapping("/{id:\\d+}/edit")
     public ResponseEntity<Post> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO,
-                                      @RequestHeader(value = "Authorization") String token)
+                                         @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status435PostNotFoundException,
             Status433NotYourPostException {
         return new ResponseEntity<>(
@@ -75,7 +75,7 @@ public class PostController {
 
     @PostMapping("/{id:\\d+}/setLike")
     public ResponseEntity<Post> addLike(@PathVariable long id,
-                                     @RequestHeader(value = "Authorization") String token)
+                                        @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status438PostAlreadyLikedException,
             Status435PostNotFoundException {
         return new ResponseEntity<>(
@@ -85,7 +85,7 @@ public class PostController {
 
     @PostMapping("/{id:\\d+}/deleteLike")
     public ResponseEntity<Post> deleteLike(@PathVariable long id,
-                                        @RequestHeader(value = "Authorization") String token)
+                                           @RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException {
         return new ResponseEntity<>(
                 likeService.unlikePost(jwtUtil.validate(token), id),
@@ -100,10 +100,10 @@ public class PostController {
     }
 
     @PostMapping("/{id:\\d+}/report")
-    public ResponseEntity<Post> report(@PathVariable long id,@RequestBody String text)
+    public ResponseEntity<Post> report(@PathVariable long id, @RequestBody String text)
             throws Status435PostNotFoundException {
         return new ResponseEntity<>(
-                postService.reportPost(text,id),
+                postService.reportPost(text, id),
                 HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.dto.PostDTO;
 import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.models.reports.ReportPostEntity;
@@ -20,17 +21,23 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final ReportPostRepository reportPostRepository;
     private final SponsoredPostRepository sponsoredPostRepository;
-    private final FileService fileService;
     private final PictureRepository pictureRepository;
+    private final MarkRepository markRepository;
+    private final FileService fileService;
 
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository,
-                           ReportPostRepository reportPostRepository, SponsoredPostRepository sponsoredPostRepository, FileService fileService, PictureRepository pictureRepository) {
+    public PostServiceImpl(PostRepository postRepository,
+                           UserRepository userRepository,
+                           ReportPostRepository reportPostRepository,
+                           SponsoredPostRepository sponsoredPostRepository,
+                           FileService fileService,
+                           PictureRepository pictureRepository, MarkRepository markRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.reportPostRepository = reportPostRepository;
         this.sponsoredPostRepository = sponsoredPostRepository;
         this.fileService = fileService;
         this.pictureRepository = pictureRepository;
+        this.markRepository = markRepository;
     }
 
     @Override
@@ -40,10 +47,13 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public Post save(String username, String text, List<MultipartFile> multipartFiles, Long sponsorId) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException {
+    public Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequest {
         User user = userRepository.findUserByUsername(username);
+        String text = postDTO.getText();
+        List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
+        Long sponsorId = postDTO.getSponsorId();
         User sponsor = null;
-        if(multipartFiles.isEmpty()){
+        if (multipartFiles.isEmpty()) {
             throw new Status443DidNotReceivePictureException();
         }
         if (sponsorId != null) {
@@ -52,7 +62,14 @@ public class PostServiceImpl implements PostService {
                 throw new Status436SponsorNotFoundException();
             }
         }
+            if (postDTO.getHeights().size() != postDTO.getWidths().size()
+                || postDTO.getWidths().size() != postDTO.getUsernames().size()
+                || postDTO.getUsernames().size() != postDTO.getPhotosCount().size()
+                || postDTO.getPhotosCount().stream().anyMatch(i -> i > postDTO.getPhotosCount().size())) {
+            throw new Status446MarksBadRequest();
+        }
         Post post = createAndSavePost(user, text, multipartFiles);
+        saveMarks(postDTO, post);
         if (sponsorId != null) {
             createAndSaveSponsoredPost(post, sponsor);
         }
@@ -83,6 +100,17 @@ public class PostServiceImpl implements PostService {
         }
 
         return post;
+    }
+
+    private void saveMarks(PostDTO postDTO, Post post) {
+        for (int i = 0; i < postDTO.getHeights().size(); i++) {
+            Mark mark = new Mark();
+            mark.setHeight(postDTO.getHeights().get(i));
+            mark.setWidth(postDTO.getWidths().get(i));
+            mark.setUsername(postDTO.getUsernames().get(i));
+            mark.setPicture(post.getPictures().get(postDTO.getPhotosCount().get(i) - 1));
+            markRepository.save(mark);
+        }
     }
 
     @Override

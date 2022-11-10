@@ -23,7 +23,6 @@ public class StoryController {
         this.storyService = storyService;
         this.jwtUtil = jwtUtil;
     }
-    //TODO story report
     @PostMapping("/new")
     public ResponseEntity<Story> addNewStory(@ModelAttribute MultipartFile multipartFile,
                                              @RequestHeader(value = "Authorization") String token)
