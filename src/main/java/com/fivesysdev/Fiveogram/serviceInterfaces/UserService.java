@@ -22,4 +22,6 @@ public interface UserService {
     User editMe(String username, UserDTO userDTO);
 
     User findUserByUsername(String username);
+
+    List<User> searchByUsernameStartsWith(String text);
 }

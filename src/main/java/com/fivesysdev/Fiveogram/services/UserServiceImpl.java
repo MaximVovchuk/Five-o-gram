@@ -1,5 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
@@ -86,6 +87,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByUsername(String username) {
         return userRepository.findUserByUsername(username);
+    }
+
+    @Override
+    public List<User> searchByUsernameStartsWith(String startsWith) {
+        return userRepository.findByUsernameStartsWith(startsWith);
     }
 
     @Override

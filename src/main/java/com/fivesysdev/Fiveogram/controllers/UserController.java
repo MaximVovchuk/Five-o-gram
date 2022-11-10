@@ -6,8 +6,8 @@ import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.models.notifications.Notification;
-import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,15 +36,15 @@ public class UserController {
                                           @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException {
         return new ResponseEntity<>(
-                userService.setAvatar(jwtUtil.validate(token),multipartFile),
+                userService.setAvatar(jwtUtil.validate(token), multipartFile),
                 HttpStatus.OK);
     }
 
     @PatchMapping("/editMyProfile")
     public ResponseEntity<User> editProfile(@ModelAttribute UserDTO userDTO,
-                                         @RequestHeader(value = "Authorization") String token) {
+                                            @RequestHeader(value = "Authorization") String token) {
         return new ResponseEntity<>(
-                userService.editMe(jwtUtil.validate(token),userDTO),
+                userService.editMe(jwtUtil.validate(token), userDTO),
                 HttpStatus.OK);
     }
 
@@ -56,19 +56,19 @@ public class UserController {
 
     @PostMapping("{id}/subscribe")
     public ResponseEntity<User> subscribe(@PathVariable long id,
-                                       @RequestHeader(value = "Authorization") String token)
+                                          @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status431SubscriptionException {
         return new ResponseEntity<>(
-                subscriptionService.subscribe(jwtUtil.validate(token),id),
+                subscriptionService.subscribe(jwtUtil.validate(token), id),
                 HttpStatus.OK);
     }
 
     @PostMapping("{id}/unsubscribe")
     public ResponseEntity<User> unsubscribe(@PathVariable long id,
-                                         @RequestHeader(value = "Authorization") String token)
+                                            @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status431SubscriptionException {
         return new ResponseEntity<>(
-                subscriptionService.unsubscribe(jwtUtil.validate(token),id),
+                subscriptionService.unsubscribe(jwtUtil.validate(token), id),
                 HttpStatus.OK);
     }
 
@@ -87,5 +87,10 @@ public class UserController {
         return new ResponseEntity<>(
                 userService.getRecommendations(jwtUtil.validate(token)),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam String startsWith) {
+        return new ResponseEntity<>(userService.searchByUsernameStartsWith(startsWith), HttpStatus.OK);
     }
 }
