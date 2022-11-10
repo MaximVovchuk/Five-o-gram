@@ -15,11 +15,13 @@ import java.util.List;
 public class PostDTO {
     private String text;
     private List<MultipartFile> multipartFiles;
-//    @Nullable
-//    private List<MarkDTO> markDTOs;
+    @Nullable
     private List<Integer> widths;
+    @Nullable
     private List<Integer> heights;
+    @Nullable
     private List<String> usernames;
+    @Nullable
     private List<Integer> photosCount;
     @Nullable
     private Long sponsorId;

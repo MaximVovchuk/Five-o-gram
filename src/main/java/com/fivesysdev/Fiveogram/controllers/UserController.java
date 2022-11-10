@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
@@ -88,6 +89,15 @@ public class UserController {
                 userService.getRecommendations(jwtUtil.validate(token)),
                 HttpStatus.OK);
     }
+
+    @GetMapping("/getPostsWhereImMarked")
+    public ResponseEntity<Set<Post>> getPostsWhereImMarked(@RequestHeader(value = "Authorization") String token) {
+        Set<Post> postsWhereImMarked = userService.getPostsWhereImMarked(jwtUtil.validate(token));
+        return new ResponseEntity<>(
+                postsWhereImMarked,
+                HttpStatus.OK);
+    }
+
 
     @GetMapping("/search")
     public ResponseEntity<?> search(@RequestParam String startsWith) {

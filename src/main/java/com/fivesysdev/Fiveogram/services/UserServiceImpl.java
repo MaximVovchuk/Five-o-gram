@@ -1,15 +1,12 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
-import com.fivesysdev.Fiveogram.models.Avatar;
-import com.fivesysdev.Fiveogram.models.Subscription;
-import com.fivesysdev.Fiveogram.models.Post;
-import com.fivesysdev.Fiveogram.models.User;
+import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.repositories.AvatarRepository;
+import com.fivesysdev.Fiveogram.repositories.MarkRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
@@ -20,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -29,14 +28,16 @@ public class UserServiceImpl implements UserService {
     private final PostService postService;
     private final FileService fileService;
     private final AvatarRepository avatarRepository;
+    private final MarkRepository markRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository, PostService postService,
-                           FileService fileService, AvatarRepository avatarRepository, PasswordEncoder passwordEncoder) {
+                           FileService fileService, AvatarRepository avatarRepository, MarkRepository markRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.postService = postService;
         this.fileService = fileService;
         this.avatarRepository = avatarRepository;
+        this.markRepository = markRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -92,6 +93,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> searchByUsernameStartsWith(String startsWith) {
         return userRepository.findByUsernameStartsWith(startsWith);
+    }
+
+    @Override
+    public Set<Post> getPostsWhereImMarked(String username) {
+        Set<Post> posts = new HashSet<>();
+        for(Mark mark : markRepository.findByUsername(username)){
+            posts.add(mark.getPicture().getPost());
+        }
+        return posts;
     }
 
     @Override

@@ -30,7 +30,8 @@ public class PostServiceImpl implements PostService {
                            ReportPostRepository reportPostRepository,
                            SponsoredPostRepository sponsoredPostRepository,
                            FileService fileService,
-                           PictureRepository pictureRepository, MarkRepository markRepository) {
+                           PictureRepository pictureRepository,
+                           MarkRepository markRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.reportPostRepository = reportPostRepository;
@@ -45,11 +46,9 @@ public class PostServiceImpl implements PostService {
         return postRepository.findAllByAuthor(user);
     }
 
-
     @Override
-    public Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequest {
+    public Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequest, Status437UserNotFoundException {
         User user = userRepository.findUserByUsername(username);
-        String text = postDTO.getText();
         List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
         Long sponsorId = postDTO.getSponsorId();
         User sponsor = null;
@@ -62,18 +61,85 @@ public class PostServiceImpl implements PostService {
                 throw new Status436SponsorNotFoundException();
             }
         }
-            if (postDTO.getHeights().size() != postDTO.getWidths().size()
-                || postDTO.getWidths().size() != postDTO.getUsernames().size()
-                || postDTO.getUsernames().size() != postDTO.getPhotosCount().size()
-                || postDTO.getPhotosCount().stream().anyMatch(i -> i > postDTO.getPhotosCount().size())) {
-            throw new Status446MarksBadRequest();
-        }
-        Post post = createAndSavePost(user, text, multipartFiles);
+        checkMarks(postDTO);
+        Post post = createAndSavePost(user, postDTO.getText(), multipartFiles);
         saveMarks(postDTO, post);
         if (sponsorId != null) {
             createAndSaveSponsoredPost(post, sponsor);
         }
         return post;
+    }
+
+
+    @Override
+    public Post findPostById(long id) throws Status435PostNotFoundException {
+        Post post = postRepository.findPostById(id);
+        if (post == null) {
+            throw new Status435PostNotFoundException();
+        }
+        return post;
+    }
+
+    @Override
+    public Post editPost(String username, PostDTO postDTO, long id)
+            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException, Status437UserNotFoundException, Status446MarksBadRequest {
+        Post post = postRepository.findPostById(id);
+        List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
+        if (post == null) {
+            throw new Status435PostNotFoundException();
+        }
+        checkMarks(postDTO);
+        deleteMarks(post);
+        saveMarks(postDTO, post);
+        User user = userRepository.findUserByUsername(username);
+        if (post.getAuthor().equals(user)) {
+            throw new Status433NotYourPostException();
+        }
+        deletePictures(post.getPictures());
+        if (multipartFiles != null && !multipartFiles.isEmpty()) {
+            for (MultipartFile multipartFile : multipartFiles) {
+                String uri = fileService.saveFile(user, multipartFile);
+                Picture picture = new Picture();
+                picture.setPath(uri);
+                picture.setPost(post);
+                post.addPicture(picture);
+            }
+        }
+        post.setText(postDTO.getText());
+        return post;
+    }
+
+
+    @Override
+    public List<Post> deletePost(String username, long id) throws Status433NotYourPostException, Status435PostNotFoundException {
+        Post post = postRepository.findPostById(id);
+        if (post == null) {
+            throw new Status435PostNotFoundException();
+        }
+        if (!post.getAuthor().equals(userRepository.findUserByUsername(username))) {
+            throw new Status433NotYourPostException();
+        }
+        if (sponsoredPostRepository.existsByPost(post)) {
+            sponsoredPostRepository.deleteByPost(post);
+        }
+        deletePictures(post.getPictures());
+        postRepository.deleteById(id);
+        return postRepository.findAllByAuthor(post.getAuthor());
+    }
+
+    @Override
+    public Post reportPost(String text, long id) throws Status435PostNotFoundException {
+        Post post = postRepository.findById(id).orElseThrow(Status435PostNotFoundException::new);
+        reportPostRepository.save(ReportPostEntity.builder()
+                .text(text)
+                .post(post)
+                .build());
+        return post;
+    }
+
+    @Override
+    public void banPost(Long id) {
+        postRepository.deleteById(id);
     }
 
     private void createAndSaveSponsoredPost(Post post, User sponsor) {
@@ -113,70 +179,26 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    @Override
-    public Post findPostById(long id) throws Status435PostNotFoundException {
-        Post post = postRepository.findPostById(id);
-        if (post == null) {
-            throw new Status435PostNotFoundException();
+    private void deleteMarks(Post post) {
+        for (Picture picture : post.getPictures()) {
+            markRepository.deleteByPicture(picture);
         }
-        return post;
     }
 
-    @Override
-    public Post editPost(String username, long id, String text, List<MultipartFile> multipartFiles)
-            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException {
-        Post post = postRepository.findPostById(id);
-        if (post == null) {
-            throw new Status435PostNotFoundException();
+    private void checkMarks(PostDTO postDTO) throws Status446MarksBadRequest, Status437UserNotFoundException {
+        if (postDTO.getHeights() == null || postDTO.getPhotosCount() == null
+                || postDTO.getWidths() == null || postDTO.getUsernames() == null
+                || postDTO.getHeights().size() != postDTO.getWidths().size()
+                || postDTO.getWidths().size() != postDTO.getUsernames().size()
+                || postDTO.getUsernames().size() != postDTO.getPhotosCount().size()
+                || postDTO.getPhotosCount().stream().anyMatch(i -> i > postDTO.getPhotosCount().size())) {
+            throw new Status446MarksBadRequest();
         }
-        User user = userRepository.findUserByUsername(username);
-        if (post.getAuthor().equals(user)) {
-            throw new Status433NotYourPostException();
-        }
-        deletePictures(post.getPictures());
-        if (multipartFiles != null && !multipartFiles.isEmpty()) {
-            for (MultipartFile multipartFile : multipartFiles) {
-                String uri = fileService.saveFile(user, multipartFile);
-                Picture picture = new Picture();
-                picture.setPath(uri);
-                picture.setPost(post);
-                post.addPicture(picture);
+        for (String name : postDTO.getUsernames()) {
+            if (!userRepository.existsByUsername(name)) {
+                throw new Status437UserNotFoundException();
             }
         }
-        post.setText(text);
-        return post;
-    }
-
-    @Override
-    public List<Post> deletePost(String username, long id) throws Status433NotYourPostException, Status435PostNotFoundException {
-        Post post = postRepository.findPostById(id);
-        if (post == null) {
-            throw new Status435PostNotFoundException();
-        }
-        if (!post.getAuthor().equals(userRepository.findUserByUsername(username))) {
-            throw new Status433NotYourPostException();
-        }
-        if (sponsoredPostRepository.existsByPost(post)) {
-            sponsoredPostRepository.deleteByPost(post);
-        }
-        deletePictures(post.getPictures());
-        postRepository.deleteById(id);
-        return postRepository.findAllByAuthor(post.getAuthor());
-    }
-
-    @Override
-    public Post reportPost(String text, long id) throws Status435PostNotFoundException {
-        Post post = postRepository.findById(id).orElseThrow(Status435PostNotFoundException::new);
-        reportPostRepository.save(ReportPostEntity.builder()
-                .text(text)
-                .post(post)
-                .build());
-        return post;
-    }
-
-    @Override
-    public void banPost(Long id) {
-        postRepository.deleteById(id);
     }
 
     private void deletePictures(List<Picture> pictures) {

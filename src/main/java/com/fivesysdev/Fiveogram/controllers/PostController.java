@@ -35,7 +35,7 @@ public class PostController {
     public ResponseEntity<Post> addNewPost(@ModelAttribute PostDTO postDTO,
                                            @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status436SponsorNotFoundException,
-            Status443DidNotReceivePictureException, Status446MarksBadRequest {
+            Status443DidNotReceivePictureException, Status446MarksBadRequest, Status437UserNotFoundException {
         return new ResponseEntity<>(
                 postService.save(jwtUtil.validate(token), postDTO),
                 HttpStatus.OK);
@@ -50,11 +50,10 @@ public class PostController {
     public ResponseEntity<Post> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO,
                                          @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status435PostNotFoundException,
-            Status433NotYourPostException {
+            Status433NotYourPostException, Status437UserNotFoundException, Status446MarksBadRequest {
         return new ResponseEntity<>(
-                postService.editPost(jwtUtil.validate(token), id,
-                        postDTO.getText(), postDTO.getMultipartFiles()),
-                HttpStatus.OK);
+                postService.editPost(jwtUtil.validate(token), postDTO, id),
+        HttpStatus.OK);
     }
 
     @DeleteMapping("/{id:\\d+}/delete")

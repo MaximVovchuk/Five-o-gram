@@ -9,6 +9,7 @@ import com.fivesysdev.Fiveogram.models.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService {
     User findUserById(long id) throws Status437UserNotFoundException;
@@ -24,4 +25,6 @@ public interface UserService {
     User findUserByUsername(String username);
 
     List<User> searchByUsernameStartsWith(String text);
+
+    Set<Post> getPostsWhereImMarked(String username);
 }
