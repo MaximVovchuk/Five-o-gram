@@ -34,7 +34,7 @@ public class JWTUtil {
     }
 
     public String getUsername(String token) {
-        String jwt = token.substring(7);
+        String jwt = token.substring(7).trim();
         return validateTokenAndRetrieveUsername(jwt);
     }
 
@@ -46,20 +46,5 @@ public class JWTUtil {
 
         DecodedJWT jwt = verifier.verify(token);
         return jwt.getClaim("username").asString();
-    }
-
-    public Role getRole(String token) {
-        String jwt = token.substring(7);
-        return validateTokenAndRetrieveRole(jwt);
-    }
-
-    public Role validateTokenAndRetrieveRole(String token) throws JWTVerificationException {
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
-                .withSubject("User details")
-                .withIssuer("Five-o-gram")
-                .build();
-
-        DecodedJWT jwt = verifier.verify(token);
-        return Role.valueOf(jwt.getClaim("role").toString());
     }
 }

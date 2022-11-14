@@ -1,6 +1,5 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.dto.PostResponseDTO;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
@@ -130,7 +129,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Post> getRecommendations(String username) throws Status442NoRecommendationPostsException {
         List<Post> posts = new java.util.ArrayList<>(getFriendsList(username).stream().flatMap
-                (friend -> postService.findAll(friend).stream().map(PostResponseDTO::getPost).limit(5)).toList());
+                (friend -> postService.findAll(friend).stream().limit(5)).toList());
         if (posts.isEmpty()) {
             throw new Status442NoRecommendationPostsException();
         }

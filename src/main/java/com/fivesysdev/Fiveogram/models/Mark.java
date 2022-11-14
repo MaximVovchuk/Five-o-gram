@@ -10,6 +10,7 @@ import javax.persistence.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "marks")
 public class Mark extends BaseEntity {

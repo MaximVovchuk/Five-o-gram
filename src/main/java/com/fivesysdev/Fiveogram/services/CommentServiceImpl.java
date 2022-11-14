@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         if(text==null || text.isBlank()){
             throw new Status448TextIsNullException();
         }
-        Post post = postService.findPostById(id).getPost();
+        Post post = postService.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }

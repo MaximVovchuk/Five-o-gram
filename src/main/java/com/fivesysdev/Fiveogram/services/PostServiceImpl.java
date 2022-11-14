@@ -1,7 +1,7 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.dto.MarkDTO;
 import com.fivesysdev.Fiveogram.dto.PostDTO;
-import com.fivesysdev.Fiveogram.dto.PostResponseDTO;
 import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.models.reports.ReportPostEntity;
@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -44,18 +44,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostResponseDTO> findAll(User user) {
-        List<Post> posts = postRepository.findAllByAuthor(user);
-        List<Mark> marks = new ArrayList<>();
-        List<PostResponseDTO> postResponseDTOs = new ArrayList<>();
-        for (Post post : posts) {
-            for (Picture picture : post.getPictures()) {
-                marks.addAll(markRepository.findAllByPicture(picture));
-            }
-            PostResponseDTO postResponseDTO = new PostResponseDTO(post, marks);
-            postResponseDTOs.add(postResponseDTO);
-        }
-        return postResponseDTOs;
+    public List<Post> findAll(User user) {
+        return postRepository.findAllByAuthor(user);
     }
 
     @Override
@@ -73,9 +63,7 @@ public class PostServiceImpl implements PostService {
                 throw new Status436SponsorNotFoundException();
             }
         }
-        checkMarks(postDTO);
         Post post = createAndSavePost(user, postDTO.getText(), multipartFiles);
-        saveMarks(postDTO, post);
         if (sponsorId != null) {
             createAndSaveSponsoredPost(post, sponsor);
         }
@@ -84,29 +72,22 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public PostResponseDTO findPostById(long id) throws Status435PostNotFoundException {
+    public Post findPostById(long id) throws Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
-        List<Mark> marks = new ArrayList<>();
-        for (Picture picture : post.getPictures()) {
-            marks.addAll(markRepository.findAllByPicture(picture));
-        }
-        return new PostResponseDTO(post, marks);
+        return post;
     }
 
     @Override
     public Post editPost(String username, PostDTO postDTO, long id)
-            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException, Status437UserNotFoundException, Status446MarksBadRequestException {
+            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException{
         Post post = postRepository.findPostById(id);
         List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
-        checkMarks(postDTO);
-        deleteMarks(post);
-        saveMarks(postDTO, post);
         User user = userRepository.findUserByUsername(username);
         if (post.getAuthor().equals(user)) {
             throw new Status433NotYourPostException();
@@ -139,6 +120,7 @@ public class PostServiceImpl implements PostService {
             sponsoredPostRepository.deleteByPost(post);
         }
         deletePictures(post.getPictures());
+        deleteMarksByPost(post);
         postRepository.deleteById(id);
         return postRepository.findAllByAuthor(post.getAuthor());
     }
@@ -156,6 +138,28 @@ public class PostServiceImpl implements PostService {
     @Override
     public void banPost(Long id) {
         postRepository.deleteById(id);
+    }
+
+    @Override
+    public Post addMarks(String username, List<MarkDTO> markDTOs) throws Status449PictureNotFoundException, Status433NotYourPostException {
+        Post post = null;
+        deleteMarksByMarkDTOs(markDTOs);
+        for (MarkDTO markDTO : markDTOs) {
+            Picture picture = pictureRepository.findById(markDTO.getPhotoId())
+                    .orElseThrow(Status449PictureNotFoundException::new);
+            if (!Objects.equals(picture.getPost().getAuthor().getUsername(), username)) {
+                throw new Status433NotYourPostException();
+            }
+            post = post == null ? picture.getPost() : null;
+            markRepository.save(
+                    Mark.builder()
+                            .width(markDTO.getWidth())
+                            .height(markDTO.getHeight())
+                            .username(markDTO.getUsername())
+                            .picture(picture)
+                            .build());
+        }
+        return post;
     }
 
     private void createAndSaveSponsoredPost(Post post, User sponsor) {
@@ -184,36 +188,17 @@ public class PostServiceImpl implements PostService {
         return post;
     }
 
-    private void saveMarks(PostDTO postDTO, Post post) {
-        for (int i = 0; i < postDTO.getHeights().size(); i++) {
-            Mark mark = new Mark();
-            mark.setHeight(postDTO.getHeights().get(i));
-            mark.setWidth(postDTO.getWidths().get(i));
-            mark.setUsername(postDTO.getUsernames().get(i));
-            mark.setPicture(post.getPictures().get(postDTO.getPhotosCount().get(i) - 1));
-            markRepository.save(mark);
-        }
-    }
-
-    private void deleteMarks(Post post) {
+    private void deleteMarksByPost(Post post) {
         for (Picture picture : post.getPictures()) {
             markRepository.deleteByPicture(picture);
         }
     }
 
-    private void checkMarks(PostDTO postDTO) throws Status446MarksBadRequestException, Status437UserNotFoundException {
-        if (postDTO.getHeights() == null || postDTO.getPhotosCount() == null
-                || postDTO.getWidths() == null || postDTO.getUsernames() == null
-                || postDTO.getHeights().size() != postDTO.getWidths().size()
-                || postDTO.getWidths().size() != postDTO.getUsernames().size()
-                || postDTO.getUsernames().size() != postDTO.getPhotosCount().size()
-                || postDTO.getPhotosCount().stream().anyMatch(i -> i > postDTO.getMultipartFiles().size())) {
-            throw new Status446MarksBadRequestException();
-        }
-        for (String name : postDTO.getUsernames()) {
-            if (!userRepository.existsByUsername(name)) {
-                throw new Status437UserNotFoundException();
-            }
+    private void deleteMarksByMarkDTOs(List<MarkDTO> markDTOs){
+        List<Picture> pictures = markDTOs.stream()
+                .map(markDTO -> pictureRepository.findById(markDTO.getPhotoId()).orElseThrow()).toList();
+        for (Picture picture : pictures) {
+            markRepository.deleteByPicture(picture);
         }
     }
 
