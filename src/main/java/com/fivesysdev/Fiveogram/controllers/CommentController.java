@@ -33,7 +33,7 @@ public class CommentController {
             throws Status437UserNotFoundException, Status435PostNotFoundException,
             Status434CommentNotFoundException, Status432NotYourCommentException {
         return new ResponseEntity<>(
-                commentService.editComment(jwtUtil.validate(token), id, text),
+                commentService.editComment(jwtUtil.getUsername(token), id, text),
                 HttpStatus.OK);
     }
 
@@ -43,7 +43,7 @@ public class CommentController {
             throws Status437UserNotFoundException, Status435PostNotFoundException,
             Status434CommentNotFoundException, Status432NotYourCommentException {
         return new ResponseEntity<>(
-                commentService.deleteComment(jwtUtil.validate(token), id),
+                commentService.deleteComment(jwtUtil.getUsername(token), id),
                 HttpStatus.OK);
     }
 
@@ -52,7 +52,7 @@ public class CommentController {
                                         @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
         return new ResponseEntity<>(
-                commentLikeService.setLike(jwtUtil.validate(token), id),
+                commentLikeService.setLike(jwtUtil.getUsername(token), id),
                 HttpStatus.OK);
     }
 
@@ -61,7 +61,7 @@ public class CommentController {
                                            @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
         return new ResponseEntity<>(
-                commentLikeService.deleteLike(jwtUtil.validate(token), id),
+                commentLikeService.deleteLike(jwtUtil.getUsername(token), id),
                 HttpStatus.OK);
     }
 }

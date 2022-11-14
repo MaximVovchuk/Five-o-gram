@@ -1,6 +1,7 @@
 package com.fivesysdev.Fiveogram.services;
 
 import com.fivesysdev.Fiveogram.dto.PostDTO;
+import com.fivesysdev.Fiveogram.dto.PostResponseDTO;
 import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.models.reports.ReportPostEntity;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,19 +44,29 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findAll(User user) {
-        return postRepository.findAllByAuthor(user);
+    public List<PostResponseDTO> findAll(User user) {
+        List<Post> posts = postRepository.findAllByAuthor(user);
+        List<Mark> marks = new ArrayList<>();
+        List<PostResponseDTO> postResponseDTOs = new ArrayList<>();
+        for (Post post : posts) {
+            for (Picture picture : post.getPictures()) {
+                marks.addAll(markRepository.findAllByPicture(picture));
+            }
+            PostResponseDTO postResponseDTO = new PostResponseDTO(post, marks);
+            postResponseDTOs.add(postResponseDTO);
+        }
+        return postResponseDTOs;
     }
 
     @Override
-    public Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequest, Status437UserNotFoundException {
+    public Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequestException, Status437UserNotFoundException {
         User user = userRepository.findUserByUsername(username);
         List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
-        Long sponsorId = postDTO.getSponsorId();
-        User sponsor = null;
         if (multipartFiles.isEmpty()) {
             throw new Status443DidNotReceivePictureException();
         }
+        Long sponsorId = postDTO.getSponsorId();
+        User sponsor = null;
         if (sponsorId != null) {
             sponsor = userRepository.findUserById(sponsorId);
             if (sponsor == null) {
@@ -72,17 +84,21 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public Post findPostById(long id) throws Status435PostNotFoundException {
+    public PostResponseDTO findPostById(long id) throws Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
-        return post;
+        List<Mark> marks = new ArrayList<>();
+        for (Picture picture : post.getPictures()) {
+            marks.addAll(markRepository.findAllByPicture(picture));
+        }
+        return new PostResponseDTO(post, marks);
     }
 
     @Override
     public Post editPost(String username, PostDTO postDTO, long id)
-            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException, Status437UserNotFoundException, Status446MarksBadRequest {
+            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException, Status437UserNotFoundException, Status446MarksBadRequestException {
         Post post = postRepository.findPostById(id);
         List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
         if (post == null) {
@@ -185,14 +201,14 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private void checkMarks(PostDTO postDTO) throws Status446MarksBadRequest, Status437UserNotFoundException {
+    private void checkMarks(PostDTO postDTO) throws Status446MarksBadRequestException, Status437UserNotFoundException {
         if (postDTO.getHeights() == null || postDTO.getPhotosCount() == null
                 || postDTO.getWidths() == null || postDTO.getUsernames() == null
                 || postDTO.getHeights().size() != postDTO.getWidths().size()
                 || postDTO.getWidths().size() != postDTO.getUsernames().size()
                 || postDTO.getUsernames().size() != postDTO.getPhotosCount().size()
-                || postDTO.getPhotosCount().stream().anyMatch(i -> i > postDTO.getPhotosCount().size())) {
-            throw new Status446MarksBadRequest();
+                || postDTO.getPhotosCount().stream().anyMatch(i -> i > postDTO.getMultipartFiles().size())) {
+            throw new Status446MarksBadRequestException();
         }
         for (String name : postDTO.getUsernames()) {
             if (!userRepository.existsByUsername(name)) {

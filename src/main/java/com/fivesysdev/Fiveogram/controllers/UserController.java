@@ -37,15 +37,22 @@ public class UserController {
                                           @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException {
         return new ResponseEntity<>(
-                userService.setAvatar(jwtUtil.validate(token), multipartFile),
+                userService.setAvatar(jwtUtil.getUsername(token), multipartFile),
                 HttpStatus.OK);
+    }
+
+    @DeleteMapping("/avatar/{id}")
+    public void deleteAvatar(@PathVariable long id,
+                             @RequestHeader(value = "Authorization") String token)
+            throws Status447NotYourAvatarException {
+        userService.deleteAvatar(jwtUtil.validateTokenAndRetrieveUsername(token), id);
     }
 
     @PatchMapping("/editMyProfile")
     public ResponseEntity<User> editProfile(@ModelAttribute UserDTO userDTO,
                                             @RequestHeader(value = "Authorization") String token) {
         return new ResponseEntity<>(
-                userService.editMe(jwtUtil.validate(token), userDTO),
+                userService.editMe(jwtUtil.getUsername(token), userDTO),
                 HttpStatus.OK);
     }
 
@@ -60,7 +67,7 @@ public class UserController {
                                           @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status431SubscriptionException {
         return new ResponseEntity<>(
-                subscriptionService.subscribe(jwtUtil.validate(token), id),
+                subscriptionService.subscribe(jwtUtil.getUsername(token), id),
                 HttpStatus.OK);
     }
 
@@ -69,14 +76,24 @@ public class UserController {
                                             @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status431SubscriptionException {
         return new ResponseEntity<>(
-                subscriptionService.unsubscribe(jwtUtil.validate(token), id),
+                subscriptionService.unsubscribe(jwtUtil.getUsername(token), id),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/getUserSubscriptions")
+    public ResponseEntity<List<User>> getUserSubscriptions(@PathVariable long id) {
+        return new ResponseEntity<>(userService.getUserSubscriptions(id), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/getUserSubs")
+    public ResponseEntity<List<User>> getUserSubs(@PathVariable long id) {
+        return new ResponseEntity<>(userService.getUserSubs(id), HttpStatus.OK);
     }
 
     @GetMapping("/notifications")
     public ResponseEntity<List<Notification>> getNotifications(@RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException, Status437UserNotFoundException {
-        List<Notification> allNotifications = notificationService.getAllNotifications(jwtUtil.validate(token));
+        List<Notification> allNotifications = notificationService.getAllNotifications(jwtUtil.getUsername(token));
         return new ResponseEntity<>(
                 allNotifications,
                 HttpStatus.OK);
@@ -86,18 +103,17 @@ public class UserController {
     public ResponseEntity<List<Post>> getRecommendations(@RequestHeader(value = "Authorization") String token)
             throws Status442NoRecommendationPostsException {
         return new ResponseEntity<>(
-                userService.getRecommendations(jwtUtil.validate(token)),
+                userService.getRecommendations(jwtUtil.getUsername(token)),
                 HttpStatus.OK);
     }
 
     @GetMapping("/getPostsWhereImMarked")
     public ResponseEntity<Set<Post>> getPostsWhereImMarked(@RequestHeader(value = "Authorization") String token) {
-        Set<Post> postsWhereImMarked = userService.getPostsWhereImMarked(jwtUtil.validate(token));
+        Set<Post> postsWhereImMarked = userService.getPostsWhereImMarked(jwtUtil.getUsername(token));
         return new ResponseEntity<>(
                 postsWhereImMarked,
                 HttpStatus.OK);
     }
-
 
     @GetMapping("/search")
     public ResponseEntity<?> search(@RequestParam String startsWith) {

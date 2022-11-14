@@ -37,7 +37,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public Post likePost(String username,long id) throws Status438PostAlreadyLikedException, Status435PostNotFoundException {
-        Post post = postService.findPostById(id);
+        Post post = postService.findPostById(id).getPost();
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
@@ -57,7 +57,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public Post unlikePost(String username,long id) throws Status435PostNotFoundException {
-        Post post = postService.findPostById(id);
+        Post post = postService.findPostById(id).getPost();
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
@@ -67,7 +67,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public Set<Like> findAllPostLikes(long id) throws Status435PostNotFoundException {
-        Post post = postService.findPostById(id);
+        Post post = postService.findPostById(id).getPost();
         if (post == null) {
             throw new Status435PostNotFoundException();
         }

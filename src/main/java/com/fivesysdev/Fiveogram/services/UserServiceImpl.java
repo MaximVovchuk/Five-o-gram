@@ -1,12 +1,15 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.dto.PostResponseDTO;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
+import com.fivesysdev.Fiveogram.exceptions.Status447NotYourAvatarException;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.repositories.AvatarRepository;
 import com.fivesysdev.Fiveogram.repositories.MarkRepository;
+import com.fivesysdev.Fiveogram.repositories.SubscriptionRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
@@ -16,10 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,15 +31,22 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PostService postService;
     private final FileService fileService;
+    private final SubscriptionRepository subscriptionRepository;
     private final AvatarRepository avatarRepository;
     private final MarkRepository markRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, PostService postService,
-                           FileService fileService, AvatarRepository avatarRepository, MarkRepository markRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository,
+                           PostService postService,
+                           FileService fileService,
+                           SubscriptionRepository subscriptionRepository,
+                           AvatarRepository avatarRepository,
+                           MarkRepository markRepository,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.postService = postService;
         this.fileService = fileService;
+        this.subscriptionRepository = subscriptionRepository;
         this.avatarRepository = avatarRepository;
         this.markRepository = markRepository;
         this.passwordEncoder = passwordEncoder;
@@ -56,7 +67,7 @@ public class UserServiceImpl implements UserService {
             throw new Status441FileIsNullException();
         }
         User user = userRepository.findUserByUsername(username);
-        String uri = fileService.saveFile(user,multipartFile);
+        String uri = fileService.saveFile(user, multipartFile);
         Avatar avatar = new Avatar();
         avatar.setPath(uri);
         avatar.setUser(user);
@@ -68,11 +79,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getFriendsList(String username) {
         User user = userRepository.findUserByUsername(username);
-        List<User> result = new ArrayList<>();
-        for (Subscription subscription : user.getSubscriptions()) {
-            result.add(subscription.getFriend());
-        }
-        return result;
+        return getUserSubscriptions(user.getId());
     }
 
     @Override
@@ -98,19 +105,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public Set<Post> getPostsWhereImMarked(String username) {
         Set<Post> posts = new HashSet<>();
-        for(Mark mark : markRepository.findByUsername(username)){
+        for (Mark mark : markRepository.findByUsername(username)) {
             posts.add(mark.getPicture().getPost());
         }
         return posts;
     }
 
     @Override
+    public void deleteAvatar(String username, long id) throws Status447NotYourAvatarException {
+        Avatar avatar = avatarRepository.getById(id);
+        if (avatar.getUser().getUsername().equals(username)) {
+            avatarRepository.deleteById(id);
+        } else throw new Status447NotYourAvatarException();
+    }
+
+    public List<User> getUserSubscriptions(long id) {
+        return subscriptionRepository.findAllByOwner_Id(id).stream().map(Subscription::getFriend).collect(Collectors.toList());
+    }
+
+    public List<User> getUserSubs(long id) {
+        return subscriptionRepository.findAllByFriend_id(id).stream().map(Subscription::getOwner).collect(Collectors.toList());
+    }
+
+    @Override
     public List<Post> getRecommendations(String username) throws Status442NoRecommendationPostsException {
-        List<Post> posts = getFriendsList(username).stream().flatMap
-                (friend -> postService.findAll(friend).stream().limit(5)).toList();
-        if (!posts.isEmpty()) {
-            return posts;
+        List<Post> posts = new java.util.ArrayList<>(getFriendsList(username).stream().flatMap
+                (friend -> postService.findAll(friend).stream().map(PostResponseDTO::getPost).limit(5)).toList());
+        if (posts.isEmpty()) {
+            throw new Status442NoRecommendationPostsException();
         }
-        throw new Status442NoRecommendationPostsException();
+        posts.sort(Comparator.comparing(Post::getPubDate));
+        return posts;
     }
 }

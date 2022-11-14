@@ -3,6 +3,7 @@ package com.fivesysdev.Fiveogram.services;
 import com.fivesysdev.Fiveogram.exceptions.Status432NotYourCommentException;
 import com.fivesysdev.Fiveogram.exceptions.Status434CommentNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
+import com.fivesysdev.Fiveogram.exceptions.Status448TextIsNullException;
 import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
@@ -37,8 +38,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment save(String username,long id, String text) throws Status435PostNotFoundException {
-        Post post = postService.findPostById(id);
+    public Comment save(String username,long id, String text) throws Status435PostNotFoundException, Status448TextIsNullException {
+        if(text==null || text.isBlank()){
+            throw new Status448TextIsNullException();
+        }
+        Post post = postService.findPostById(id).getPost();
         if (post == null) {
             throw new Status435PostNotFoundException();
         }

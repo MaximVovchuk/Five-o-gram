@@ -33,7 +33,7 @@ public class JWTUtil {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String validate(String token) {
+    public String getUsername(String token) {
         String jwt = token.substring(7);
         return validateTokenAndRetrieveUsername(jwt);
     }

@@ -6,13 +6,15 @@ import com.fivesysdev.Fiveogram.models.Subscription;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.models.notifications.SubscriptionNotification;
 import com.fivesysdev.Fiveogram.repositories.SubscriptionRepository;
-import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional

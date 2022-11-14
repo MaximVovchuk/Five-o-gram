@@ -28,7 +28,7 @@ public class StoryController {
                                              @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException {
         return new ResponseEntity<>
-                (storyService.createNewStory(jwtUtil.validate(token), multipartFile), HttpStatus.OK);
+                (storyService.createNewStory(jwtUtil.getUsername(token), multipartFile), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
@@ -46,13 +46,13 @@ public class StoryController {
     @GetMapping()
     public ResponseEntity<List<Story>> getStories(@RequestHeader(value = "Authorization") String token) {
         return new ResponseEntity<>
-                (storyService.getStoriesList(jwtUtil.validate(token)), HttpStatus.OK);
+                (storyService.getStoriesList(jwtUtil.getUsername(token)), HttpStatus.OK);
     }
 
     @GetMapping("/archive")
     public ResponseEntity<List<Story>> getMyArchive(@RequestHeader(value = "Authorization") String token) {
         return new ResponseEntity<>
-                (storyService.getMyStoriesArchive(jwtUtil.validate(token)), HttpStatus.OK);
+                (storyService.getMyStoriesArchive(jwtUtil.getUsername(token)), HttpStatus.OK);
     }
 
     @PostMapping("/{id:\\d+}/report")
