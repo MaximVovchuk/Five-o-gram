@@ -3,6 +3,7 @@ package com.fivesysdev.Fiveogram.controllers;
 import com.fivesysdev.Fiveogram.models.reports.PostReport;
 import com.fivesysdev.Fiveogram.models.reports.StoryReport;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class ReportController {
     }
 
     @GetMapping("/stories")
-    public List<StoryReport> getStoryReports() {
-        return reportService.getStoryReports();
+    public ResponseEntity<List<StoryReport>> getStoryReports() {
+        return ResponseEntity.ok(reportService.getStoryReports());
     }
 
     @PostMapping("/{id:\\d+}/acceptStoryReport")
@@ -32,8 +33,8 @@ public class ReportController {
     }
 
     @GetMapping("/posts")
-    public List<PostReport> getPostReports() {
-        return reportService.getPostReports();
+    public ResponseEntity<List<PostReport>> getPostReports() {
+        return ResponseEntity.ok(reportService.getPostReports());
     }
 
     @PostMapping("/{id:\\d+}/acceptPostReport")

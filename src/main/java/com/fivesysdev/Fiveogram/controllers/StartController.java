@@ -26,9 +26,7 @@ public class StartController {
 
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody AuthenticationDTO authenticationDTO) throws Status440WrongPasswordException {
-        return new ResponseEntity<>(
-                loginService.login(authenticationDTO),
-                HttpStatus.OK);
+        return ResponseEntity.ok(loginService.login(authenticationDTO));
     }
 
     @PostMapping("/register")
