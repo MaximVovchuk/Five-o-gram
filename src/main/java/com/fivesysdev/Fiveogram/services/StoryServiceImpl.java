@@ -6,8 +6,8 @@ import com.fivesysdev.Fiveogram.exceptions.Status445StoryNotFoundException;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.models.Subscription;
 import com.fivesysdev.Fiveogram.models.User;
-import com.fivesysdev.Fiveogram.models.reports.ReportStoryEntity;
-import com.fivesysdev.Fiveogram.repositories.ReportStoryRepository;
+import com.fivesysdev.Fiveogram.models.reports.StoryReport;
+import com.fivesysdev.Fiveogram.repositories.StoryReportRepository;
 import com.fivesysdev.Fiveogram.repositories.StoryRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
@@ -27,13 +27,13 @@ public class StoryServiceImpl implements StoryService {
     private final UserService userService;
     private final FileService fileService;
     private final StoryRepository storyRepository;
-    private final ReportStoryRepository reportStoryRepository;
+    private final StoryReportRepository storyReportRepository;
 
-    public StoryServiceImpl(UserService userService, FileService fileService, StoryRepository storyRepository, ReportStoryRepository reportStoryRepository) {
+    public StoryServiceImpl(UserService userService, FileService fileService, StoryRepository storyRepository, StoryReportRepository storyReportRepository) {
         this.userService = userService;
         this.fileService = fileService;
         this.storyRepository = storyRepository;
-        this.reportStoryRepository = reportStoryRepository;
+        this.storyReportRepository = storyReportRepository;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class StoryServiceImpl implements StoryService {
     @Override
     public Story reportStory(String text, long id) throws Status445StoryNotFoundException {
         Story story = storyRepository.findById(id).orElseThrow(Status445StoryNotFoundException::new);
-        reportStoryRepository.save(ReportStoryEntity.builder()
+        storyReportRepository.save(StoryReport.builder()
                 .story(story)
                 .text(text)
                 .build());
@@ -93,7 +93,7 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    public void banPost(Long id) {
+    public void banStory(Long id) {
         storyRepository.deleteById(id);
     }
 }

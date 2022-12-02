@@ -9,7 +9,7 @@ import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentLikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
-import org.springframework.http.ResponseEntity;
+import com.fivesysdev.Fiveogram.util.Response;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -26,33 +26,33 @@ public class CommentController {
         this.jwtUtil = jwtUtil;
     }
 
-    @PatchMapping("/{id}/editComment")
-    public ResponseEntity<Comment> editComment(@PathVariable long id, @RequestParam String text,
+    @PatchMapping("/{id}/edit")
+    public Response<Comment> editComment(@PathVariable long id, @RequestParam String text,
                                                @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status435PostNotFoundException,
             Status434CommentNotFoundException, Status432NotYourCommentException {
-        return ResponseEntity.ok(commentService.editComment(jwtUtil.getUsername(token), id, text));
+        return new Response<>(commentService.editComment(jwtUtil.getUsername(token), id, text));
     }
 
-    @DeleteMapping("/{id}/deleteComment")
-    public ResponseEntity<Post> deleteComment(@PathVariable long id,
+    @DeleteMapping("/{id}/delete")
+    public Response<Post> deleteComment(@PathVariable long id,
                                               @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status435PostNotFoundException,
             Status434CommentNotFoundException, Status432NotYourCommentException {
-        return ResponseEntity.ok(commentService.deleteComment(jwtUtil.getUsername(token), id));
+        return new Response<>(commentService.deleteComment(jwtUtil.getUsername(token), id));
     }
 
     @PostMapping("/{id}/setLike")
-    public ResponseEntity<Post> setLike(@PathVariable long id,
+    public Response<Post> setLike(@PathVariable long id,
                                         @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
-        return ResponseEntity.ok(commentLikeService.setLike(jwtUtil.getUsername(token), id));
+        return new Response<>(commentLikeService.setLike(jwtUtil.getUsername(token), id));
     }
 
     @DeleteMapping("{id}/deleteLike")
-    public ResponseEntity<Post> deleteLike(@PathVariable long id,
+    public Response<Post> deleteLike(@PathVariable long id,
                                            @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
-        return ResponseEntity.ok(commentLikeService.deleteLike(jwtUtil.getUsername(token), id));
+        return new Response<>(commentLikeService.deleteLike(jwtUtil.getUsername(token), id));
     }
 }

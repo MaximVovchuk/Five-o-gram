@@ -1,10 +1,8 @@
 package com.fivesysdev.Fiveogram.services;
 
+import com.fivesysdev.Fiveogram.config.JWTUtil;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
-import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
-import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
-import com.fivesysdev.Fiveogram.exceptions.Status447NotYourAvatarException;
+import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.repositories.AvatarRepository;
 import com.fivesysdev.Fiveogram.repositories.MarkRepository;
@@ -18,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final SubscriptionRepository subscriptionRepository;
     private final AvatarRepository avatarRepository;
     private final MarkRepository markRepository;
+    private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
@@ -41,13 +37,14 @@ public class UserServiceImpl implements UserService {
                            SubscriptionRepository subscriptionRepository,
                            AvatarRepository avatarRepository,
                            MarkRepository markRepository,
-                           PasswordEncoder passwordEncoder) {
+                           JWTUtil jwtUtil, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.postService = postService;
         this.fileService = fileService;
         this.subscriptionRepository = subscriptionRepository;
         this.avatarRepository = avatarRepository;
         this.markRepository = markRepository;
+        this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -76,19 +73,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getFriendsList(String username) {
+    public List<User> getFriendsList(String username) throws Status437UserNotFoundException {
         User user = userRepository.findUserByUsername(username);
         return getUserSubscriptions(user.getId());
     }
 
     @Override
-    public User editMe(String username, UserDTO userDTO) {
+    public String editMe(String username, UserDTO userDTO) throws Status439UsernameBusyException {
         User user = userRepository.findUserByUsername(username);
+        if (!username.equals(userDTO.getUsername()) && userRepository.existsByUsername(userDTO.getUsername())) {
+            throw new Status439UsernameBusyException();
+        }
         user.setName(userDTO.getName());
         user.setUsername(userDTO.getUsername());
         user.setSurname(userDTO.getSurname());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return user;
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        return jwtUtil.generateToken(user.getUsername(),List.of(user.getRole()));
     }
 
     @Override
@@ -111,23 +111,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteAvatar(String username, long id) throws Status447NotYourAvatarException {
+    public void deleteAvatar(String username, long id)
+            throws Status447NotYourAvatarException, Status450AvatarNotFoundException {
+        if(!avatarRepository.existsById(id)){
+            throw new Status450AvatarNotFoundException();
+        }
         Avatar avatar = avatarRepository.getById(id);
         if (avatar.getUser().getUsername().equals(username)) {
             avatarRepository.deleteById(id);
         } else throw new Status447NotYourAvatarException();
     }
-
-    public List<User> getUserSubscriptions(long id) {
+    public List<User> getUserSubscriptions(long id) throws Status437UserNotFoundException {
+        if(!userRepository.existsById(Math.toIntExact(id))){
+            throw new Status437UserNotFoundException();
+        }
         return subscriptionRepository.findAllByOwner_Id(id).stream().map(Subscription::getFriend).collect(Collectors.toList());
     }
 
-    public List<User> getUserSubs(long id) {
+    public List<User> getUserSubs(long id) throws Status437UserNotFoundException {
+        if(!userRepository.existsById(id)){
+            throw new Status437UserNotFoundException();
+        }
         return subscriptionRepository.findAllByFriend_id(id).stream().map(Subscription::getOwner).collect(Collectors.toList());
     }
 
     @Override
-    public List<Post> getRecommendations(String username) throws Status442NoRecommendationPostsException {
+    public List<Post> getRecommendations(String username)
+            throws Status442NoRecommendationPostsException, Status437UserNotFoundException {
         List<Post> posts = new java.util.ArrayList<>(getFriendsList(username).stream().flatMap
                 (friend -> postService.findAll(friend).stream().limit(5)).toList());
         if (posts.isEmpty()) {

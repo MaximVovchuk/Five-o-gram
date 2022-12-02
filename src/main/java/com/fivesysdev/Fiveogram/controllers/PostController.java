@@ -10,7 +10,7 @@ import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
-import org.springframework.http.ResponseEntity;
+import com.fivesysdev.Fiveogram.util.Response;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,70 +33,70 @@ public class PostController {
     }
 
     @PostMapping("/newPost")
-    public ResponseEntity<Post> addNewPost(@ModelAttribute PostDTO postDTO,
+    public Response<Post> addNewPost(@ModelAttribute PostDTO postDTO,
                                            @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status436SponsorNotFoundException,
             Status443DidNotReceivePictureException, Status446MarksBadRequestException, Status437UserNotFoundException {
-        return ResponseEntity.ok(postService.save(jwtUtil.getUsername(token), postDTO));
+        return new Response<>(postService.save(jwtUtil.getUsername(token), postDTO));
     }
 
     @PostMapping("/addMarks")
-    public ResponseEntity<Post> addMarks(@RequestBody MarksToAddDTO marksToAddDTO,
+    public Response<Post> addMarks(@RequestBody MarksToAddDTO marksToAddDTO,
                                          @RequestHeader(value = "Authorization") String token)
-            throws Status449PictureNotFoundException, Status433NotYourPostException {
-        return ResponseEntity.ok(postService.addMarks(jwtUtil.getUsername(token), marksToAddDTO.getMarkDTOs()));
+            throws Status449PictureNotFoundException, Status433NotYourPostException, Status437UserNotFoundException {
+        return new Response<>(postService.addMarks(jwtUtil.getUsername(token), marksToAddDTO.getMarkDTOs()));
     }
 
-    @GetMapping("/{id:\\d+}")
-    public ResponseEntity<Post> getPost(@PathVariable long id) throws Status435PostNotFoundException {
-        return ResponseEntity.ok(postService.findPostById(id));
+    @GetMapping("/{id}")
+    public Response<Post> getPost(@PathVariable long id) throws Status435PostNotFoundException {
+        return new Response<>(postService.findPostById(id));
     }
 
-    @PatchMapping("/{id:\\d+}/edit")
-    public ResponseEntity<Post> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO,
+    @PatchMapping("/{id}/edit")
+    public Response<Post> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO,
                                          @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status435PostNotFoundException,
             Status433NotYourPostException, Status437UserNotFoundException, Status446MarksBadRequestException {
-        return ResponseEntity.ok(postService.editPost(jwtUtil.getUsername(token), postDTO, id));
+        return new Response<>(postService.editPost(jwtUtil.getUsername(token), postDTO, id));
     }
 
-    @DeleteMapping("/{id:\\d+}/delete")
-    public ResponseEntity<List<Post>> deletePost(@PathVariable long id,
+    @DeleteMapping("/{id}/delete")
+    public Response<List<Post>> deletePost(@PathVariable long id,
                                                  @RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException, Status433NotYourPostException {
-        return ResponseEntity.ok(postService.deletePost(jwtUtil.getUsername(token), id));
+        return new Response<>(postService.deletePost(jwtUtil.getUsername(token), id));
     }
 
-    @PostMapping("/{id:\\d+}/addComment")
-    public ResponseEntity<Comment> addComment(@PathVariable long id, @RequestParam @Nullable String text,
+    @PostMapping("/{id}/addComment")
+    public Response<Comment> addComment(@PathVariable long id, @RequestParam @Nullable String text,
                                               @RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException, Status448TextIsNullException {
-        return ResponseEntity.ok(commentService.save(jwtUtil.getUsername(token), id, text));
+        return new Response<>(commentService.save(jwtUtil.getUsername(token), id, text));
     }
 
-    @PostMapping("/{id:\\d+}/setLike")
-    public ResponseEntity<Post> addLike(@PathVariable long id,
+    @PostMapping("/{id}/setLike")
+    public Response<Post> addLike(@PathVariable long id,
                                         @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status438PostAlreadyLikedException,
             Status435PostNotFoundException {
-        return ResponseEntity.ok(likeService.likePost(jwtUtil.getUsername(token), id));
+        return new Response<>(likeService.likePost(jwtUtil.getUsername(token), id));
     }
 
-    @PostMapping("/{id:\\d+}/deleteLike")
-    public ResponseEntity<Post> deleteLike(@PathVariable long id,
+    @PostMapping("/{id}/deleteLike")
+    public Response<Post> deleteLike(@PathVariable long id,
                                            @RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException {
-        return ResponseEntity.ok(likeService.unlikePost(jwtUtil.getUsername(token), id));
+        return new Response<>(likeService.unlikePost(jwtUtil.getUsername(token), id));
     }
 
-    @GetMapping("/{id:\\d+}/getLikes")
-    public ResponseEntity<Set<Like>> getLikes(@PathVariable long id) throws Status435PostNotFoundException {
-        return ResponseEntity.ok(likeService.findAllPostLikes(id));
+    @GetMapping("/{id}/getLikes")
+    public Response<Set<Like>> getLikes(@PathVariable long id) throws Status435PostNotFoundException {
+        return new Response<>(likeService.findAllPostLikes(id));
     }
 
-    @PostMapping("/{id:\\d+}/report")
-    public ResponseEntity<Post> report(@PathVariable long id, @RequestBody String text)
+    @PostMapping("/{id}/report")
+    public Response<Post> report(@PathVariable long id, @RequestParam String text)
             throws Status435PostNotFoundException {
-        return ResponseEntity.ok(postService.reportPost(text, id));
+        return new Response<>(postService.reportPost(text, id));
     }
 }

@@ -1,24 +1,23 @@
 package com.fivesysdev.Fiveogram.models.reports;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fivesysdev.Fiveogram.models.BaseEntity;
 import com.fivesysdev.Fiveogram.models.Post;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
+@ToString
+@Builder
 @AllArgsConstructor
-public class PostReport {
-    @JsonIgnoreProperties({"commentList","likesList"})
+@NoArgsConstructor
+@Table(name = "post_reports")
+@Entity
+public class PostReport extends BaseEntity {
+    @ManyToOne()
+    @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
-    List<String> reportTexts = new ArrayList<>();
-    public void addReportText(String text){
-        reportTexts.add(text);
-    }
-
-    public PostReport(Post post) {
-        this.post = post;
-    }
+    @Column(name = "text")
+    private String text;
 }

@@ -1,10 +1,7 @@
 package com.fivesysdev.Fiveogram.serviceInterfaces;
 
 import com.fivesysdev.Fiveogram.dto.UserDTO;
-import com.fivesysdev.Fiveogram.exceptions.Status437UserNotFoundException;
-import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
-import com.fivesysdev.Fiveogram.exceptions.Status442NoRecommendationPostsException;
-import com.fivesysdev.Fiveogram.exceptions.Status447NotYourAvatarException;
+import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +14,11 @@ public interface UserService {
 
     User setAvatar(String username, MultipartFile multipartFile) throws Status441FileIsNullException;
 
-    List<Post> getRecommendations(String username) throws Status442NoRecommendationPostsException;
+    List<Post> getRecommendations(String username) throws Status442NoRecommendationPostsException, Status437UserNotFoundException;
 
-    List<User> getFriendsList(String username);
+    List<User> getFriendsList(String username) throws Status437UserNotFoundException;
 
-    User editMe(String username, UserDTO userDTO);
+    String editMe(String username, UserDTO userDTO) throws Status439UsernameBusyException;
 
     User findUserByUsername(String username);
 
@@ -29,9 +26,9 @@ public interface UserService {
 
     Set<Post> getPostsWhereImMarked(String username);
 
-    void deleteAvatar(String username, long id) throws Status447NotYourAvatarException;
+    void deleteAvatar(String username, long id) throws Status447NotYourAvatarException, Status450AvatarNotFoundException;
 
-    List<User> getUserSubscriptions(long id);
+    List<User> getUserSubscriptions(long id) throws Status437UserNotFoundException;
 
-    List<User> getUserSubs(long id);
+    List<User> getUserSubs(long id) throws Status437UserNotFoundException;
 }

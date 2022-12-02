@@ -22,5 +22,5 @@ public interface StoryService {
 
     Story reportStory(String text, long id) throws Status445StoryNotFoundException;
 
-    void banPost(Long id);
+    void banStory(Long id);
 }

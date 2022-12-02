@@ -24,5 +24,5 @@ public interface PostService {
 
     void banPost(Long id);
 
-    Post addMarks(String username, List<MarkDTO> markDTOs) throws Status449PictureNotFoundException, Status433NotYourPostException;
+    Post addMarks(String username, List<MarkDTO> markDTOs) throws Status449PictureNotFoundException, Status433NotYourPostException, Status437UserNotFoundException;
 }

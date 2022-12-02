@@ -6,12 +6,8 @@ import com.fivesysdev.Fiveogram.exceptions.Status439UsernameBusyException;
 import com.fivesysdev.Fiveogram.exceptions.Status440WrongPasswordException;
 import com.fivesysdev.Fiveogram.services.LoginService;
 import com.fivesysdev.Fiveogram.services.RegistrationService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import com.fivesysdev.Fiveogram.util.Response;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,14 +21,14 @@ public class StartController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthenticationDTO authenticationDTO) throws Status440WrongPasswordException {
-        return ResponseEntity.ok(loginService.login(authenticationDTO));
+    public Response<String> login(@RequestBody AuthenticationDTO authenticationDTO)
+            throws Status440WrongPasswordException {
+        return new Response<>(loginService.login(authenticationDTO));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerPage(@RequestBody @Valid UserDTO userDTO,
-                                          BindingResult bindingResult) throws Status439UsernameBusyException {
-        String token = registrationService.register(userDTO, bindingResult);
-        return ResponseEntity.ok(token);
+    public Response<String> registerPage(@RequestBody UserDTO userDTO)
+            throws Status439UsernameBusyException {
+        return new Response<>(registrationService.register(userDTO));
     }
 }

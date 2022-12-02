@@ -8,7 +8,6 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -31,7 +30,7 @@ public class Comment extends BaseEntity{
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     @JsonIgnoreProperties({"author","text","pubDate","likesList","commentList"})
     private Post post;
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @ToString.Exclude
     private List<CommentLike> commentLikes;

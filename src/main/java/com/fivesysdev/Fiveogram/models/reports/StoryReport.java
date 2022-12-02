@@ -1,21 +1,24 @@
 package com.fivesysdev.Fiveogram.models.reports;
 
+import com.fivesysdev.Fiveogram.models.BaseEntity;
 import com.fivesysdev.Fiveogram.models.Story;
-import lombok.Data;
+import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.*;
 
-@Data
-public class StoryReport {
-    private final Story story;
-    List<String> reportTexts = new ArrayList<>();
+@Getter
+@Setter
+@ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "story_reports")
+@Entity
+public class StoryReport extends BaseEntity {
+    @ManyToOne()
+    @JoinColumn(name = "story_id", referencedColumnName = "id")
+    private Story story;
+    @Column(name = "text")
+    private String text;
 
-    public void addReportText(String text) {
-        reportTexts.add(text);
-    }
-
-    public StoryReport(Story story) {
-        this.story = story;
-    }
 }

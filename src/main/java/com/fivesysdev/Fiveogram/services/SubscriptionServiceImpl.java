@@ -12,10 +12,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -36,10 +33,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new Status437UserNotFoundException();
         }
         if (Objects.equals(owner, newFriend)) {
-            throw new Status431SubscriptionException("You can`t friend yourself");
+            throw new Status431SubscriptionException("You can`t subscribe to yourself");
         }
         if (subscriptionRepository.findSubscriptionByFriendAndOwner(newFriend, owner) != null) {
-            throw new Status431SubscriptionException("You are already friends");
+            throw new Status431SubscriptionException("You`ve already subscribe this user");
         }
         Subscription subscription = new Subscription(owner, newFriend);
         subscriptionRepository.save(subscription);
@@ -57,7 +54,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new Status437UserNotFoundException();
         }
         if (subscriptionRepository.findSubscriptionByFriendAndOwner(friend, owner) == null) {
-            throw new Status431SubscriptionException("You are not friends");
+            throw new Status431SubscriptionException("You haven`t subscribe him");
         }
         subscriptionRepository.deleteByFriendAndOwner(friend, owner);
         return friend;

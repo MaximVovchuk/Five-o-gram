@@ -4,7 +4,7 @@ import com.fivesysdev.Fiveogram.dto.MarkDTO;
 import com.fivesysdev.Fiveogram.dto.PostDTO;
 import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
-import com.fivesysdev.Fiveogram.models.reports.ReportPostEntity;
+import com.fivesysdev.Fiveogram.models.reports.PostReport;
 import com.fivesysdev.Fiveogram.repositories.*;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
@@ -14,14 +14,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final ReportPostRepository reportPostRepository;
+    private final PostReportRepository postReportRepository;
     private final SponsoredPostRepository sponsoredPostRepository;
     private final PictureRepository pictureRepository;
     private final MarkRepository markRepository;
@@ -29,14 +30,14 @@ public class PostServiceImpl implements PostService {
 
     public PostServiceImpl(PostRepository postRepository,
                            UserRepository userRepository,
-                           ReportPostRepository reportPostRepository,
+                           PostReportRepository postReportRepository,
                            SponsoredPostRepository sponsoredPostRepository,
                            FileService fileService,
                            PictureRepository pictureRepository,
                            MarkRepository markRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
-        this.reportPostRepository = reportPostRepository;
+        this.postReportRepository = postReportRepository;
         this.sponsoredPostRepository = sponsoredPostRepository;
         this.fileService = fileService;
         this.pictureRepository = pictureRepository;
@@ -89,7 +90,7 @@ public class PostServiceImpl implements PostService {
             throw new Status435PostNotFoundException();
         }
         User user = userRepository.findUserByUsername(username);
-        if (post.getAuthor().equals(user)) {
+        if (!post.getAuthor().equals(user)) {
             throw new Status433NotYourPostException();
         }
         deletePictures(post.getPictures());
@@ -128,7 +129,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post reportPost(String text, long id) throws Status435PostNotFoundException {
         Post post = postRepository.findById(id).orElseThrow(Status435PostNotFoundException::new);
-        reportPostRepository.save(ReportPostEntity.builder()
+        postReportRepository.save(PostReport.builder()
                 .text(text)
                 .post(post)
                 .build());
@@ -141,14 +142,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post addMarks(String username, List<MarkDTO> markDTOs) throws Status449PictureNotFoundException, Status433NotYourPostException {
+    public Post addMarks(String username, List<MarkDTO> markDTOs) throws Status449PictureNotFoundException, Status433NotYourPostException, Status437UserNotFoundException {
         Post post = null;
         deleteMarksByMarkDTOs(markDTOs);
         for (MarkDTO markDTO : markDTOs) {
             Picture picture = pictureRepository.findById(markDTO.getPhotoId())
                     .orElseThrow(Status449PictureNotFoundException::new);
-            if (!Objects.equals(picture.getPost().getAuthor().getUsername(), username)) {
+            if (!username.equals(picture.getPost().getAuthor().getUsername())) {
                 throw new Status433NotYourPostException();
+            }
+            if(!userRepository.existsByUsername(markDTO.getUsername())){
+                throw new Status437UserNotFoundException();
             }
             post = post == null ? picture.getPost() : null;
             markRepository.save(
@@ -195,8 +199,8 @@ public class PostServiceImpl implements PostService {
     }
 
     private void deleteMarksByMarkDTOs(List<MarkDTO> markDTOs){
-        List<Picture> pictures = markDTOs.stream()
-                .map(markDTO -> pictureRepository.findById(markDTO.getPhotoId()).orElseThrow()).toList();
+        Set<Picture> pictures = markDTOs.stream()
+                .map(markDTO -> pictureRepository.findById(markDTO.getPhotoId()).orElseThrow()).collect(Collectors.toSet());
         for (Picture picture : pictures) {
             markRepository.deleteByPicture(picture);
         }

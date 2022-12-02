@@ -6,7 +6,7 @@ import com.fivesysdev.Fiveogram.exceptions.Status444NotYourStoryException;
 import com.fivesysdev.Fiveogram.exceptions.Status445StoryNotFoundException;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
-import org.springframework.http.ResponseEntity;
+import com.fivesysdev.Fiveogram.util.Response;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,36 +24,36 @@ public class StoryController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Story> addNewStory(@ModelAttribute MultipartFile multipartFile,
+    public Response<Story> addNewStory(@ModelAttribute MultipartFile multipartFile,
                                              @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException {
-        return ResponseEntity.ok(storyService.createNewStory(jwtUtil.getUsername(token), multipartFile));
+        return new Response<>(storyService.createNewStory(jwtUtil.getUsername(token), multipartFile));
     }
 
     @DeleteMapping("{id}")
     public void deleteStory(@PathVariable Long id,
                             @RequestHeader(value = "Authorization") String token)
             throws Status444NotYourStoryException, Status445StoryNotFoundException {
-        storyService.deleteById(jwtUtil.validateTokenAndRetrieveUsername(token), id);
+        storyService.deleteById(jwtUtil.getUsername(token), id);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Story> getStory(@PathVariable Long id) throws Status445StoryNotFoundException {
-        return ResponseEntity.ok(storyService.getStoryById(id));
+    @GetMapping("/{id}")
+    public Response<Story> getStory(@PathVariable Long id) throws Status445StoryNotFoundException {
+        return new Response<>(storyService.getStoryById(id));
     }
 
     @GetMapping()
-    public ResponseEntity<List<Story>> getStories(@RequestHeader(value = "Authorization") String token) {
-        return ResponseEntity.ok(storyService.getStoriesList(jwtUtil.getUsername(token)));
+    public Response<List<Story>> getStories(@RequestHeader(value = "Authorization") String token) {
+        return new Response<>(storyService.getStoriesList(jwtUtil.getUsername(token)));
     }
 
     @GetMapping("/archive")
-    public ResponseEntity<List<Story>> getMyArchive(@RequestHeader(value = "Authorization") String token) {
-        return ResponseEntity.ok(storyService.getMyStoriesArchive(jwtUtil.getUsername(token)));
+    public Response<List<Story>> getMyArchive(@RequestHeader(value = "Authorization") String token) {
+        return new Response<>(storyService.getMyStoriesArchive(jwtUtil.getUsername(token)));
     }
-
-    @PostMapping("/{id:\\d+}/report")
-    public ResponseEntity<Story> report(@PathVariable long id, @RequestBody String text) throws Status445StoryNotFoundException {
-        return ResponseEntity.ok(storyService.reportStory(text, id));
+    @PostMapping("/{id}/report")
+    public Response<Story> report(@PathVariable long id, @RequestParam String text)
+            throws Status445StoryNotFoundException {
+        return new Response<>(storyService.reportStory(text, id));
     }
 }

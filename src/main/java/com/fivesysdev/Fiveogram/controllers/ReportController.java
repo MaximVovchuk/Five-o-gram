@@ -1,9 +1,10 @@
 package com.fivesysdev.Fiveogram.controllers;
 
-import com.fivesysdev.Fiveogram.models.reports.PostReport;
-import com.fivesysdev.Fiveogram.models.reports.StoryReport;
+import com.fivesysdev.Fiveogram.dto.PostReportDTO;
+import com.fivesysdev.Fiveogram.dto.StoryReportDTO;
+import com.fivesysdev.Fiveogram.exceptions.Status551ReportWIthThisIdIsNotFound;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
-import org.springframework.http.ResponseEntity;
+import com.fivesysdev.Fiveogram.util.Response;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,31 +19,31 @@ public class ReportController {
     }
 
     @GetMapping("/stories")
-    public ResponseEntity<List<StoryReport>> getStoryReports() {
-        return ResponseEntity.ok(reportService.getStoryReports());
+    public Response<List<StoryReportDTO>> getStoryReports() {
+        return new Response<>(reportService.getStoryReports());
     }
 
-    @PostMapping("/{id:\\d+}/acceptStoryReport")
-    public void acceptStoryReport(@PathVariable Long id) {
+    @PostMapping("/{id}/acceptStoryReport")
+    public void acceptStoryReport(@PathVariable Long id) throws Status551ReportWIthThisIdIsNotFound {
         reportService.acceptStoryReport(id);
     }
 
-    @PostMapping("/{id:\\d+}/declineStoryReport")
+    @PostMapping("/{id}/declineStoryReport")
     public void declineStoryReport(@PathVariable Long id) {
         reportService.declineStoryReport(id);
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostReport>> getPostReports() {
-        return ResponseEntity.ok(reportService.getPostReports());
+    public Response<List<PostReportDTO>> getPostReports() {
+        return new Response<>(reportService.getPostReports());
     }
 
-    @PostMapping("/{id:\\d+}/acceptPostReport")
-    public void acceptPostReport(@PathVariable Long id) {
+    @PostMapping("/{id}/acceptPostReport")
+    public void acceptPostReport(@PathVariable Long id) throws Status551ReportWIthThisIdIsNotFound {
         reportService.acceptPostReport(id);
     }
 
-    @PostMapping("/{id:\\d+}/declinePostReport")
+    @PostMapping("/{id}/declinePostReport")
     public void declinePostReport(@PathVariable Long id) {
         reportService.declinePostReport(id);
     }

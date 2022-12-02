@@ -38,6 +38,9 @@ public class CommentLikeServiceImpl implements CommentLikeService {
             throw new Status434CommentNotFoundException();
         }
         User whoLiked = userRepository.findUserByUsername(username);
+        if(commentLikeRepository.existsByAuthorAndComment(whoLiked,comment)){
+            return comment.getPost();
+        }
         CommentLike commentLike = CommentLike.builder()
                 .comment(comment)
                 .author(whoLiked)
