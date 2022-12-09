@@ -19,9 +19,4 @@ public class MessageServiceImpl implements MessageService {
     public void save(MessageModel model) {
         messageRepository.save(model);
     }
-
-    @Override
-    public List<MessageModel> getMessagesByChatRoom(ChatRoom chatRoom) {
-        return messageRepository.findAllByChatRoom(chatRoom);
-    }
 }
