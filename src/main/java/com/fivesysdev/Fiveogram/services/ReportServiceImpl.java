@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.services;
 
-import com.fivesysdev.Fiveogram.exceptions.Status551ReportWIthThisIdIsNotFound;
+import com.fivesysdev.Fiveogram.exceptions.Status451ReportWIthThisIdIsNotFound;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.dto.PostReportDTO;
@@ -62,9 +62,9 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public void acceptPostReport(Long id) throws Status551ReportWIthThisIdIsNotFound {
+    public void acceptPostReport(Long id) throws Status451ReportWIthThisIdIsNotFound {
         if(!postReportRepository.existsByPost_Id(id)) {
-            throw new Status551ReportWIthThisIdIsNotFound();
+            throw new Status451ReportWIthThisIdIsNotFound();
         }
         postReportRepository.deleteByPost_Id(id);
         postService.banPost(id);
@@ -103,9 +103,9 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public void acceptStoryReport(Long id) throws Status551ReportWIthThisIdIsNotFound {
+    public void acceptStoryReport(Long id) throws Status451ReportWIthThisIdIsNotFound {
         if(!storyReportRepository.existsByStory_Id(id)) {
-            throw new Status551ReportWIthThisIdIsNotFound();
+            throw new Status451ReportWIthThisIdIsNotFound();
         }
         storyReportRepository.deleteByStory_Id(id);
         storyService.banStory(id);

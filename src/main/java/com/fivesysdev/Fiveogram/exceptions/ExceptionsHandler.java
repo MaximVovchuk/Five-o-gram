@@ -18,6 +18,6 @@ public class ExceptionsHandler {
     }
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Object> handleException(UsernameNotFoundException ex){
-        return ResponseEntity.status(428).body("User with this username is not found");
+        return ResponseEntity.status(429).body("User with this username is not found");
     }
 }
