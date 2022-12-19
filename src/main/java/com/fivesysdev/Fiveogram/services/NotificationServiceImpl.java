@@ -4,9 +4,11 @@ import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.models.notifications.*;
 import com.fivesysdev.Fiveogram.repositories.*;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +76,16 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
         return notifications;
+    }
+
+    @Scheduled(fixedRate = 86400000) //24 hours
+    public void deleteOldNotifications(){
+        List<TextNotification> notifications = notificationRepository.findAll();
+        for (TextNotification notification : notifications) {
+            if(notification.getCreatedAt().plusDays(30).isBefore(LocalDateTime.now())){
+                notificationRepository.delete(notification);
+            }
+        }
     }
 }
 

@@ -12,7 +12,6 @@ import com.fivesysdev.Fiveogram.repositories.StoryRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@EnableScheduling
 public class StoryServiceImpl implements StoryService {
     private final UserService userService;
     private final FileService fileService;

@@ -32,7 +32,6 @@ public class ChatWebsocketEndpoint {
         this.messageService = SpringContext.getApplicationContext().getBean(MessageService.class);
     }
 
-
     @OnMessage
     public String onMessage(Session session, String message, @PathParam("chatRoomId") long chatRoomId) throws IOException {
         System.out.println("Handling message: " + message);
