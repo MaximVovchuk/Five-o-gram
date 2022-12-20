@@ -7,6 +7,7 @@ import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.models.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface PostService {
     List<Post> findAll(User user);
@@ -25,4 +26,6 @@ public interface PostService {
     void banPost(Long id);
 
     Post addMarks(String username, List<MarkDTO> markDTOs) throws Status449PictureNotFoundException, Status433NotYourPostException, Status437UserNotFoundException;
+
+    Set<Post> getRecommendations(String username);
 }

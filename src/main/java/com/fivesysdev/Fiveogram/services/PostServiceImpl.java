@@ -7,12 +7,15 @@ import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.models.reports.PostReport;
 import com.fivesysdev.Fiveogram.repositories.*;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.HashtagService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +30,8 @@ public class PostServiceImpl implements PostService {
     private final PictureRepository pictureRepository;
     private final MarkRepository markRepository;
     private final FileService fileService;
+    private final HashtagService hashtagService;
+    private final LikeRepository likeRepository;
 
     public PostServiceImpl(PostRepository postRepository,
                            UserRepository userRepository,
@@ -34,7 +39,8 @@ public class PostServiceImpl implements PostService {
                            SponsoredPostRepository sponsoredPostRepository,
                            FileService fileService,
                            PictureRepository pictureRepository,
-                           MarkRepository markRepository) {
+                           MarkRepository markRepository,
+                           HashtagService hashtagService, LikeRepository likeRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.postReportRepository = postReportRepository;
@@ -42,6 +48,8 @@ public class PostServiceImpl implements PostService {
         this.fileService = fileService;
         this.pictureRepository = pictureRepository;
         this.markRepository = markRepository;
+        this.hashtagService = hashtagService;
+        this.likeRepository = likeRepository;
     }
 
     @Override
@@ -65,6 +73,7 @@ public class PostServiceImpl implements PostService {
             }
         }
         Post post = createAndSavePost(user, postDTO.getText(), multipartFiles);
+        hashtagService.saveAllHashtagsFromPost(post);
         if (sponsorId != null) {
             createAndSaveSponsoredPost(post, sponsor);
         }
@@ -104,6 +113,8 @@ public class PostServiceImpl implements PostService {
             }
         }
         post.setText(postDTO.getText());
+        hashtagService.deleteAllHashtagsFromPost(post);
+        hashtagService.saveAllHashtagsFromPost(post);
         return post;
     }
 
@@ -164,6 +175,23 @@ public class PostServiceImpl implements PostService {
                             .build());
         }
         return post;
+    }
+
+    @Override
+    public Set<Post> getRecommendations(String username) {
+        User user = userRepository.findUserByUsername(username);
+        Set<Post> resultSet = new HashSet<>();
+        List<List<String>> RawHashtags = likeRepository.findAllByWhoLikes(user).stream().map(Like::getPost)
+                .map(post -> post.getHashtags().stream().map(Hashtag::getContent).collect(Collectors.toList())).toList();
+        Set<String> hashtags = new HashSet<>();
+        for (List<String> rawHashtag : RawHashtags) {
+            hashtags.addAll(rawHashtag);
+        }
+        for (String hashtag : hashtags) {
+            List<Post> posts = hashtagService.getPostsByHashtags(List.of(hashtag));
+            resultSet.add(posts.stream().max(Comparator.comparingInt(post -> post.getLikesList().size())).orElseThrow());
+        }
+        return resultSet;
     }
 
     private void createAndSaveSponsoredPost(Post post, User sponsor) {

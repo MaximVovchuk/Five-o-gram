@@ -8,6 +8,7 @@ import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.HashtagService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.util.Response;
@@ -24,12 +25,18 @@ public class PostController {
     private final CommentService commentService;
     private final LikeService likeService;
     private final JWTUtil jwtUtil;
+    private final HashtagService hashtagService;
 
-    public PostController(PostService postService, CommentService commentService, LikeService likeService, JWTUtil jwtUtil) {
+    public PostController(PostService postService,
+                          CommentService commentService,
+                          LikeService likeService,
+                          JWTUtil jwtUtil,
+                          HashtagService hashtagService) {
         this.postService = postService;
         this.commentService = commentService;
         this.likeService = likeService;
         this.jwtUtil = jwtUtil;
+        this.hashtagService = hashtagService;
     }
 
     @PostMapping("/newPost")
@@ -98,5 +105,14 @@ public class PostController {
     public Response<Post> report(@PathVariable long id, @RequestParam String text)
             throws Status435PostNotFoundException {
         return new Response<>(postService.reportPost(text, id));
+    }
+    @GetMapping("/search")
+    public Response<List<Post>> searchByHashtags(@RequestBody List<String> hashtags){
+        return new Response<>(hashtagService.getPostsByHashtags(hashtags));
+    }
+
+    @GetMapping("/getRecommendations")
+    public Response<Set<Post>> getMyRecommendations(@RequestHeader(value = "Authorization") String token){
+        return new Response<>(postService.getRecommendations(jwtUtil.getUsername(token)));
     }
 }

@@ -14,7 +14,7 @@ public interface UserService {
 
     User setAvatar(String username, MultipartFile multipartFile) throws Status441FileIsNullException;
 
-    List<Post> getRecommendations(String username) throws Status442NoRecommendationPostsException, Status437UserNotFoundException;
+    List<Post> getFeed(String username) throws Status442NoFeedPostsException, Status437UserNotFoundException;
 
     List<User> getFriendsList(String username) throws Status437UserNotFoundException;
 

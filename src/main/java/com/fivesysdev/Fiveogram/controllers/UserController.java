@@ -88,10 +88,10 @@ public class UserController {
         return new Response<>(notificationService.getAllNotifications(jwtUtil.getUsername(token)));
     }
 
-    @GetMapping("/getRecommendations")
-    public Response<List<Post>> getRecommendations(@RequestHeader(value = "Authorization") String token)
-            throws Status442NoRecommendationPostsException, Status437UserNotFoundException {
-        return new Response<>(userService.getRecommendations(jwtUtil.getUsername(token)));
+    @GetMapping("/getFeed")
+    public Response<List<Post>> getFeed(@RequestHeader(value = "Authorization") String token)
+            throws Status442NoFeedPostsException, Status437UserNotFoundException {
+        return new Response<>(userService.getFeed(jwtUtil.getUsername(token)));
     }
 
     @GetMapping("/getPostsWhereImMarked")
