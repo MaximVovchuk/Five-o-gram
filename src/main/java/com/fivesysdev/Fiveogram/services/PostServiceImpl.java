@@ -4,20 +4,19 @@ import com.fivesysdev.Fiveogram.dto.MarkDTO;
 import com.fivesysdev.Fiveogram.dto.PostDTO;
 import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
+import com.fivesysdev.Fiveogram.models.notifications.MarkNotification;
 import com.fivesysdev.Fiveogram.models.reports.PostReport;
 import com.fivesysdev.Fiveogram.repositories.*;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.HashtagService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +31,7 @@ public class PostServiceImpl implements PostService {
     private final FileService fileService;
     private final HashtagService hashtagService;
     private final LikeRepository likeRepository;
+    private final NotificationService notificationService;
 
     public PostServiceImpl(PostRepository postRepository,
                            UserRepository userRepository,
@@ -40,7 +40,9 @@ public class PostServiceImpl implements PostService {
                            FileService fileService,
                            PictureRepository pictureRepository,
                            MarkRepository markRepository,
-                           HashtagService hashtagService, LikeRepository likeRepository) {
+                           HashtagService hashtagService,
+                           LikeRepository likeRepository,
+                           NotificationService notificationService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.postReportRepository = postReportRepository;
@@ -50,6 +52,7 @@ public class PostServiceImpl implements PostService {
         this.markRepository = markRepository;
         this.hashtagService = hashtagService;
         this.likeRepository = likeRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -92,7 +95,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post editPost(String username, PostDTO postDTO, long id)
-            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException{
+            throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
         if (post == null) {
@@ -153,7 +156,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post addMarks(String username, List<MarkDTO> markDTOs) throws Status449PictureNotFoundException, Status433NotYourPostException, Status437UserNotFoundException {
+    public Post addMarks(String username, List<MarkDTO> markDTOs)
+            throws Status449PictureNotFoundException, Status433NotYourPostException,
+            Status437UserNotFoundException {
         Post post = null;
         deleteMarksByMarkDTOs(markDTOs);
         for (MarkDTO markDTO : markDTOs) {
@@ -162,17 +167,19 @@ public class PostServiceImpl implements PostService {
             if (!username.equals(picture.getPost().getAuthor().getUsername())) {
                 throw new Status433NotYourPostException();
             }
-            if(!userRepository.existsByUsername(markDTO.getUsername())){
+            if (!userRepository.existsByUsername(markDTO.getUsername())) {
                 throw new Status437UserNotFoundException();
             }
             post = post == null ? picture.getPost() : null;
-            markRepository.save(
-                    Mark.builder()
-                            .width(markDTO.getWidth())
-                            .height(markDTO.getHeight())
-                            .username(markDTO.getUsername())
-                            .picture(picture)
-                            .build());
+            Mark mark = Mark.builder()
+                    .width(markDTO.getWidth())
+                    .height(markDTO.getHeight())
+                    .username(markDTO.getUsername())
+                    .picture(picture)
+                    .build();
+            notificationService.sendNotification(
+                    new MarkNotification(picture.getPost(), userRepository.findUserByUsername(username)));
+            markRepository.save(mark);
         }
         return post;
     }
@@ -216,8 +223,32 @@ public class PostServiceImpl implements PostService {
             post.addPicture(picture);
             pictureRepository.save(picture);
         }
-
+        checkForMarksInTextAndSendNotifications(post);
         return post;
+    }
+
+    private void checkForMarksInTextAndSendNotifications(Post post) {
+        String[] texts = post.getText().split("@");
+        String[] words = Arrays.copyOfRange(texts, 1, texts.length);
+        List<String> marks = new ArrayList<>();
+        for (String word : words) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < word.length(); i++) {
+                char c = word.charAt(i);
+                if (c == ' ') {
+                    marks.add(sb.toString());
+                    break;
+                }
+                sb.append(c);
+            }
+        }
+        for (String mark : marks) {
+            User user = userRepository.findUserByUsername(mark);
+            if (user != null) {
+                notificationService.sendNotification(
+                        new MarkNotification(post, user));
+            }
+        }
     }
 
     private void deleteMarksByPost(Post post) {
@@ -226,7 +257,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private void deleteMarksByMarkDTOs(List<MarkDTO> markDTOs){
+    private void deleteMarksByMarkDTOs(List<MarkDTO> markDTOs) {
         Set<Picture> pictures = markDTOs.stream()
                 .map(markDTO -> pictureRepository.findById(markDTO.getPhotoId()).orElseThrow()).collect(Collectors.toSet());
         for (Picture picture : pictures) {

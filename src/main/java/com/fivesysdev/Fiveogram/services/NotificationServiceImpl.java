@@ -21,17 +21,21 @@ public class NotificationServiceImpl implements NotificationService {
     private final SubscriptionRepository subscriptionRepository;
     private final LikeRepository likeRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     public NotificationServiceImpl(NotificationRepository notificationRepository,
                                    CommentRepository commentRepository,
                                    SubscriptionRepository subscriptionRepository,
                                    LikeRepository likeRepository,
-                                   CommentLikeRepository commentLikeRepository) {
+                                   CommentLikeRepository commentLikeRepository, PostRepository postRepository, UserRepository userRepository) {
         this.notificationRepository = notificationRepository;
         this.commentRepository = commentRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.likeRepository = likeRepository;
         this.commentLikeRepository = commentLikeRepository;
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     public void sendNotification(Notification notification) {
@@ -72,6 +76,12 @@ public class NotificationServiceImpl implements NotificationService {
                             commentLikeRepository.findById(textNotification.getEntityId());
                     commentLikeOptional.ifPresent(commentLike ->
                             notifications.add(new CommentLikeNotification(commentLike)));
+                }
+                case MARK -> {
+                    Optional<Post> postOptional =
+                            postRepository.findById(textNotification.getEntityId());
+                    postOptional.ifPresent(post ->
+                            notifications.add(new MarkNotification(post,userRepository.findUserByUsername(username))));
                 }
             }
         }
