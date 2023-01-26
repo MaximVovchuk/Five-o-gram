@@ -3,12 +3,11 @@ package com.fivesysdev.Fiveogram.ws;
 import com.fivesysdev.Fiveogram.models.MessageModel;
 import com.google.gson.Gson;
 
-import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
 public class MessageModelDecoder implements Decoder.Text<MessageModel> {
-    
+
     Gson gson = new Gson();
 
     @Override

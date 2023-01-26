@@ -30,6 +30,7 @@ public class ChatWebsocketEndpoint {
         this.chatRoomService = SpringContext.getApplicationContext().getBean(ChatRoomService.class);
         this.userService = SpringContext.getApplicationContext().getBean(UserService.class);
         this.messageService = SpringContext.getApplicationContext().getBean(MessageService.class);
+        
     }
 
     @OnMessage

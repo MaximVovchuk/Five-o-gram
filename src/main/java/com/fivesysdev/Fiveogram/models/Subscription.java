@@ -1,10 +1,7 @@
 package com.fivesysdev.Fiveogram.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -14,6 +11,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriptions")

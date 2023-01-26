@@ -25,6 +25,7 @@ public class FileUtil {
         } catch (StringIndexOutOfBoundsException ex) {
             throw new Status441FileIsNullException();
         }
+
     }
 
     public static String getFileName(String fileOriginName) throws Status441FileIsNullException {

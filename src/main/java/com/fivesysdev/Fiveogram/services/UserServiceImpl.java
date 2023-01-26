@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Post> getFeed(String username)
             throws Status442NoFeedPostsException, Status437UserNotFoundException {
-        List<Post> posts = new java.util.ArrayList<>(getFriendsList(username).stream().flatMap
+        List<Post> posts = new ArrayList<>(getFriendsList(username).stream().flatMap
                 (friend -> postService.findAll(friend).stream().limit(5)).toList());
         if (posts.isEmpty()) {
             throw new Status442NoFeedPostsException();

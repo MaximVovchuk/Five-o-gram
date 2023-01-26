@@ -8,8 +8,8 @@ import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
 
-public class MessageModelEncoder implements Encoder.Text<MessageModel>{
-    
+public class MessageModelEncoder implements Encoder.Text<MessageModel> {
+
     Gson gson = new Gson();
 
     @Override
@@ -19,10 +19,10 @@ public class MessageModelEncoder implements Encoder.Text<MessageModel>{
 
     @Override
     public void init(EndpointConfig config) {
-        }
+    }
 
     @Override
     public void destroy() {
-        }
-    
+    }
+
 }

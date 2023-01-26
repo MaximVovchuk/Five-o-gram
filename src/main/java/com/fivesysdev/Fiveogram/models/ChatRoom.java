@@ -51,10 +51,6 @@ public class ChatRoom extends BaseEntity {
         users.remove(user);
     }
 
-    public void addUsers(List<User> users) {
-        this.users.addAll(users);
-    }
-
     public void addSession(Session session) {
         sessions.add(session);
     }

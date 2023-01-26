@@ -16,11 +16,11 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity{
+public class User extends BaseEntity {
     @Column(name = "name")
     private String name;
     @Column(name = "surname")
@@ -44,6 +44,12 @@ public class User extends BaseEntity{
     @JsonIgnore
     @ToString.Exclude
     private List<Story> stories;
+
+    public User() {
+        subscriptions = new ArrayList<>();
+        avatars = new ArrayList<>();
+        stories = new ArrayList<>();
+    }
 
     public void addAvatar(Avatar avatar) {
         avatars.add(avatar);

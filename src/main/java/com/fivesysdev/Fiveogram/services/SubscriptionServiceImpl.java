@@ -26,6 +26,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.notificationService = notificationService;
     }
 
+    @Override
+    public Subscription findSubscriptionByFriendAndOwner(User friend, User owner) {
+        return subscriptionRepository.findSubscriptionByFriendAndOwner(friend,owner);
+    }
+
     public User subscribe(String username, long id) throws Status431SubscriptionException, Status437UserNotFoundException {
         User newFriend = userService.findUserById(id);
         User owner = userService.findUserByUsername(username);
