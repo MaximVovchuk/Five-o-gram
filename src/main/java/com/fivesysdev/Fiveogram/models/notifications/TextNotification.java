@@ -2,10 +2,7 @@ package com.fivesysdev.Fiveogram.models.notifications;
 
 import com.fivesysdev.Fiveogram.models.BaseEntity;
 import com.fivesysdev.Fiveogram.models.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "notifications")
 public class TextNotification extends BaseEntity {

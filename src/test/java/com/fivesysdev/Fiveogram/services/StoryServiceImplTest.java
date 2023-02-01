@@ -46,6 +46,23 @@ class StoryServiceImplTest {
     private MultipartFile multipartFile;
 
     @Test
+    public void createNewStory_ShouldReturnStory_WhenEverythingIsValid() throws Exception {
+        String username = "test_user";
+        User author = User.builder().username(username).build();
+        when(userService.findUserByUsername(username)).thenReturn(author);
+        String fileUrl = "test_url";
+        when(fileService.saveFile(any(User.class), any(MultipartFile.class))).thenReturn(fileUrl);
+        when(storyRepository.save(any(Story.class))).thenReturn(new Story(author, fileUrl, LocalDateTime.now(), false));
+
+        Story actualStory = storyService.createNewStory(username, multipartFile);
+
+        assertNotNull(actualStory);
+        assertEquals(author, actualStory.getAuthor());
+        assertEquals(fileUrl, actualStory.getPictureUrl());
+        assertNotNull(actualStory.getCreatedAt());
+    }
+
+    @Test
     public void testGetStoriesList() {
         User user = User.builder().username("testuser").build();
         User friend1 = User.builder().username("friend1").build();

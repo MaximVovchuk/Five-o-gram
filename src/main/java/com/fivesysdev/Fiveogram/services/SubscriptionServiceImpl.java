@@ -40,7 +40,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (Objects.equals(owner, newFriend)) {
             throw new Status431SubscriptionException("You can`t subscribe to yourself");
         }
-        if (subscriptionRepository.findSubscriptionByFriendAndOwner(newFriend, owner) != null) {
+        if (subscriptionRepository.existsByFriendAndOwner(newFriend, owner)) {
             throw new Status431SubscriptionException("You`ve already subscribe this user");
         }
         Subscription subscription = new Subscription(owner, newFriend);
@@ -58,7 +58,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (friend == null) {
             throw new Status437UserNotFoundException();
         }
-        if (subscriptionRepository.findSubscriptionByFriendAndOwner(friend, owner) == null) {
+        if (!subscriptionRepository.existsByFriendAndOwner(friend, owner)) {
             throw new Status431SubscriptionException("You haven`t subscribe him");
         }
         subscriptionRepository.deleteByFriendAndOwner(friend, owner);

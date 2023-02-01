@@ -1,0 +1,251 @@
+create sequence friendship_id_seq;
+
+alter sequence friendship_id_seq owner to postgres;
+
+create sequence reports_id_seq
+    maxvalue 2147483647;
+
+alter sequence reports_id_seq owner to postgres;
+
+create table users
+(
+    id       bigint generated always as identity (maxvalue 2147483647)
+        primary key,
+    name     varchar,
+    surname  varchar,
+    username varchar not null
+        unique,
+    password varchar,
+    role     bigint
+);
+
+alter table users
+    owner to postgres;
+
+create table subscriptions
+(
+    id        bigint generated always as identity,
+    owner_id  bigint
+        constraint friendship_owner_id_fkey
+            references users,
+    friend_id bigint
+        constraint friendship_friend_id_fkey
+            references users
+);
+
+alter table subscriptions
+    owner to postgres;
+
+alter sequence friendship_id_seq owned by subscriptions.id;
+
+create table posts
+(
+    id         bigint generated always as identity
+        primary key,
+    author_id  bigint
+        references users,
+    text       varchar,
+    created_at timestamp default now()
+);
+
+alter table posts
+    owner to postgres;
+
+create table likes
+(
+    id           bigint generated always as identity
+        primary key,
+    post_id      bigint
+        references posts,
+    who_likes_id bigint
+        references users
+);
+
+alter table likes
+    owner to postgres;
+
+create table comments
+(
+    id         bigint generated always as identity
+        primary key,
+    author_id  bigint
+        references users,
+    text       varchar,
+    post_id    bigint
+        references posts,
+    created_at timestamp default now()
+);
+
+alter table comments
+    owner to postgres;
+
+create table sponsored_posts
+(
+    id         bigint generated always as identity
+        primary key,
+    sponsor_id bigint
+        references users,
+    post_id    integer
+        references posts
+);
+
+alter table sponsored_posts
+    owner to postgres;
+
+create table notifications
+(
+    id         integer generated always as identity
+        primary key,
+    user_id    integer
+        references users,
+    created_at timestamp default now(),
+    entity_id  bigint,
+    type       varchar(1)
+);
+
+alter table notifications
+    owner to postgres;
+
+create table avatars
+(
+    id      bigint generated always as identity
+        primary key,
+    user_id bigint  not null
+        references users,
+    path    varchar not null
+);
+
+alter table avatars
+    owner to postgres;
+
+create table pictures
+(
+    id      bigint generated always as identity
+        primary key,
+    post_id bigint  not null
+        references posts,
+    path    varchar not null
+);
+
+alter table pictures
+    owner to postgres;
+
+create table comment_likes
+(
+    id         integer generated always as identity
+        primary key,
+    author_id  integer
+        references users,
+    comment_id integer
+        references comments
+);
+
+alter table comment_likes
+    owner to postgres;
+
+create table stories
+(
+    id          bigint generated always as identity
+        primary key,
+    author_id   bigint
+        references users,
+    picture_url varchar not null
+        unique,
+    created_at  timestamp default now(),
+    is_expired  boolean   default false
+);
+
+alter table stories
+    owner to postgres;
+
+create table post_reports
+(
+    id      bigint generated always as identity (maxvalue 2147483647)
+        constraint reports_pkey
+            primary key,
+    post_id integer
+        constraint reports_post_id_fkey
+            references posts,
+    text    varchar
+);
+
+alter table post_reports
+    owner to postgres;
+
+alter sequence reports_id_seq owned by post_reports.id;
+
+create table story_reports
+(
+    id       bigint generated always as identity
+        primary key,
+    story_id integer
+        constraint story_reports_post_id_fkey
+            references stories,
+    text     varchar
+);
+
+alter table story_reports
+    owner to postgres;
+
+create table marks
+(
+    id         bigint generated always as identity
+        primary key,
+    picture_id integer
+        references pictures,
+    width      integer,
+    height     integer,
+    username   varchar
+);
+
+alter table marks
+    owner to postgres;
+
+create table chat_rooms
+(
+    id       integer generated always as identity
+        primary key,
+    admin_id integer
+        references users
+);
+
+alter table chat_rooms
+    owner to postgres;
+
+create table chat_room_users
+(
+    user_id      integer
+        references users,
+    chat_room_id integer
+        references chat_rooms
+);
+
+alter table chat_room_users
+    owner to postgres;
+
+create table messages
+(
+    id           integer generated always as identity
+        primary key,
+    content      varchar,
+    user_id      integer
+        references users,
+    chat_room_id integer
+        references chat_rooms
+);
+
+alter table messages
+    owner to postgres;
+
+create table hashtag
+(
+    id      integer generated always as identity
+        primary key,
+    content varchar,
+    post_id integer
+        references posts
+);
+
+alter table hashtag
+    owner to postgres;
+

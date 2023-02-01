@@ -41,6 +41,9 @@ public class RegistrationService {
         if (fromDB != null) {
             throw new Status439UsernameBusyException();
         }
+        if(user.getPassword().isBlank() || user.getUsername().isBlank()){
+            throw new IllegalArgumentException();
+        }
     }
 
     private User convertToUser(UserDTO userDTO) {

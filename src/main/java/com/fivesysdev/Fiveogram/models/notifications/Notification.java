@@ -26,6 +26,10 @@ public interface Notification {
     default List<User> getRecipients() {
         return recipients;
     }
+    default void setRecipients(List<User> users){
+        recipients.clear();
+        recipients.addAll(users);
+    }
 
     default void clearRecipients() {
         recipients.clear();
