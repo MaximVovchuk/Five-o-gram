@@ -97,7 +97,6 @@ public class PostServiceImpl implements PostService {
     public Post editPost(String username, PostDTO postDTO, long id)
             throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
-        List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
@@ -105,6 +104,7 @@ public class PostServiceImpl implements PostService {
         if (!post.getAuthor().equals(user)) {
             throw new Status433NotYourPostException();
         }
+        List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
         deletePictures(post.getPictures());
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             for (MultipartFile multipartFile : multipartFiles) {
@@ -257,14 +257,17 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private void deleteMarksByMarkDTOs(List<MarkDTO> markDTOs) {
-        Set<Picture> pictures = markDTOs.stream()
-                .map(markDTO -> pictureRepository.findById(markDTO.getPhotoId()).orElseThrow()).collect(Collectors.toSet());
-        for (Picture picture : pictures) {
-            markRepository.deleteByPicture(picture);
+    private void deleteMarksByMarkDTOs(List<MarkDTO> markDTOs) throws Status449PictureNotFoundException {
+        try {
+            Set<Picture> pictures = markDTOs.stream()
+                    .map(markDTO -> pictureRepository.findById(markDTO.getPhotoId()).orElseThrow()).collect(Collectors.toSet());
+            for (Picture picture : pictures) {
+                markRepository.deleteByPicture(picture);
+            }
+        } catch (NoSuchElementException e) {
+            throw new Status449PictureNotFoundException();
         }
     }
-
     private void deletePictures(List<Picture> pictures) {
         for (Picture picture : pictures) {
             pictureRepository.delete(picture);
