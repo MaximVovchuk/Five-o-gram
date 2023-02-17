@@ -7,7 +7,9 @@ import com.fivesysdev.Fiveogram.exceptions.Status440WrongPasswordException;
 import com.fivesysdev.Fiveogram.services.LoginService;
 import com.fivesysdev.Fiveogram.services.RegistrationService;
 import com.fivesysdev.Fiveogram.util.Response;
+import jakarta.mail.MessagingException;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -22,7 +24,7 @@ public class StartController {
 
     @GetMapping("/login")
     public Response<String> login(@RequestBody AuthenticationDTO authenticationDTO)
-            throws Status440WrongPasswordException {
+            throws Status440WrongPasswordException, MessagingException {
         return new Response<>(loginService.login(authenticationDTO));
     }
 
