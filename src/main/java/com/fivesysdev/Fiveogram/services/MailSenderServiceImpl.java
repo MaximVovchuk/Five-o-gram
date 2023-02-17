@@ -4,6 +4,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.MailSenderService;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -11,11 +12,14 @@ import java.util.Properties;
 
 @Service
 public class MailSenderServiceImpl implements MailSenderService {
+
+    @Value("${spring.mail.username}")
+    private String username;
+    @Value("${spring.mail.password}")
+    private String password;
     private final Session session;
 
     MailSenderServiceImpl() {
-        String username = "instacloneproject1@gmail.com";
-        String password = "nlzaaylrqxelcznl";
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");
         prop.put("mail.smtp.port", "587");
