@@ -56,7 +56,11 @@ public class SubscriptionServiceImplTest {
         assertThrows(Status437UserNotFoundException.class,
                 () -> subscriptionService.subscribe("testuser", 1L));
     }
-
+    @Test
+    public void testFindSubscriptionByFriendAndOwner(){
+        subscriptionService.findSubscriptionByFriendAndOwner(new User(),new User());
+        verify(subscriptionRepository).findSubscriptionByFriendAndOwner(any(),any());
+    }
     @Test
     public void testSubscribeYourself() throws Status437UserNotFoundException {
         User testuser = User.builder().username("testuser").build();

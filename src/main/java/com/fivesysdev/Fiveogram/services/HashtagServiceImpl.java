@@ -6,10 +6,8 @@ import com.fivesysdev.Fiveogram.repositories.HashtagRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.HashtagService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class HashtagServiceImpl implements HashtagService {
@@ -27,7 +25,7 @@ public class HashtagServiceImpl implements HashtagService {
     @Override
     public void saveAllHashtagsFromPost(Post post) {
         String[] texts = post.getText().split("#");
-        String[] words = Arrays.copyOfRange(texts,1,texts.length);
+        String[] words = Arrays.copyOfRange(texts, 1, texts.length);
         List<String> hashtags = new ArrayList<>();
         for (String word : words) {
             StringBuilder sb = new StringBuilder();
@@ -51,19 +49,20 @@ public class HashtagServiceImpl implements HashtagService {
         hashtagRepository.deleteAllByPost(post);
     }
 
+
     @Override
     public List<Post> getPostsByHashtags(List<String> hashtags) {
         if (hashtags.isEmpty()) return new ArrayList<>();
-        List<Post> posts = hashtagRepository.findAllByContent(hashtags.get(0)).stream()
-                .map(Hashtag::getPost).toList();
-        if (hashtags.size() == 1) return posts;
-        List<Post> result = new ArrayList<>();
-        for (Post post : posts) {
-            List<String> hashtagTexts = post.getHashtags().stream().map(Hashtag::getContent).toList();
-            if (new HashSet<>(hashtagTexts).containsAll(hashtags)) {
+        List<Hashtag> foundHashtags = new ArrayList<>();
+        for (String hashtag : hashtags) {
+            foundHashtags.addAll(hashtagRepository.findAllByContent(hashtag));
+        }
+        Set<Post> result = new HashSet<>();
+        foundHashtags.stream().map(Hashtag::getPost).forEach(post -> {
+            if (post.getHashtags().stream().map(Hashtag::getContent).collect(Collectors.toSet()).containsAll(hashtags)) {
                 result.add(post);
             }
-        }
-        return result;
+        });
+        return result.stream().toList();
     }
 }

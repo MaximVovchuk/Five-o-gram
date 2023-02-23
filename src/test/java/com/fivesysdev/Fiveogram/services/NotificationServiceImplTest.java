@@ -43,7 +43,7 @@ class NotificationServiceImplTest {
         Notification notification = new SubscriptionNotification(subscription);
         notificationService.sendNotification(notification);
 
-        verify(notificationRepository, times(1)).save(any(TextNotification.class));
+        verify(notificationRepository).save(any(TextNotification.class));
     }
 
     @Test

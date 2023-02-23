@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class CommentLikeServiceImpl implements CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
     private final CommentRepository commentRepository;
@@ -31,7 +32,6 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
 
     @Override
-    @Transactional
     public Post setLike(String username, long id) throws Status434CommentNotFoundException {
         Comment comment = commentRepository.findCommentById(id);
         if (comment == null) {
@@ -52,7 +52,6 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     }
 
     @Override
-    @Transactional
     public Post deleteLike(String username, long id) throws Status434CommentNotFoundException {
         Comment comment = commentRepository.findCommentById(id);
         if (comment == null) {
