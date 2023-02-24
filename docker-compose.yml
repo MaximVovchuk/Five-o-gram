@@ -1,0 +1,28 @@
+version: '3'
+services:
+  app:
+    build: ./
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    environment:
+      - MYAPP_JDBC_URL=jdbc:postgresql://postgres:5432/Fiveogram
+      - MYAPP_JDBC_USER=postgres
+      - MYAPP_JDBC_PASS=postgres
+    restart: unless-stopped
+    networks:
+      - backend
+  postgres:
+    image: postgres:13
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: Fiveogram
+    restart: unless-stopped
+    networks:
+      - backend
+networks:
+  backend:

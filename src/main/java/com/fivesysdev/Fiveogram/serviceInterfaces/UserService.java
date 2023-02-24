@@ -31,4 +31,6 @@ public interface UserService {
     List<User> getUserSubscriptions(long id) throws Status437UserNotFoundException;
 
     List<User> getUserSubs(long id) throws Status437UserNotFoundException;
+
+    void deleteMe(String username);
 }

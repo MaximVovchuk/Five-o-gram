@@ -136,6 +136,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteMe(String username) {
+        userRepository.deleteByUsername(username);
+    }
+
+    @Override
     public List<Post> getFeed(String username)
             throws Status442NoFeedPostsException, Status437UserNotFoundException {
         List<Post> posts = new ArrayList<>(getFriendsList(username).stream().flatMap
