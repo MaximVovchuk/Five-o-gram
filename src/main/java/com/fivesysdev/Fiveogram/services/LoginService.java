@@ -4,27 +4,22 @@ import com.fivesysdev.Fiveogram.config.JWTUtil;
 import com.fivesysdev.Fiveogram.config.JwtUser;
 import com.fivesysdev.Fiveogram.dto.AuthenticationDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status440WrongPasswordException;
-import com.fivesysdev.Fiveogram.models.Role;
+import com.fivesysdev.Fiveogram.roles.Role;
 import com.fivesysdev.Fiveogram.serviceInterfaces.MailSenderService;
 import jakarta.mail.MessagingException;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 @Service
+@AllArgsConstructor
 public class LoginService {
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
     private final MailSenderService mailSenderService;
-
-    public LoginService(AuthService authService, PasswordEncoder passwordEncoder, JWTUtil jwtUtil, MailSenderService mailSenderService) {
-        this.authService = authService;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.mailSenderService = mailSenderService;
-    }
 
     public String login(AuthenticationDTO authenticationDTO) throws Status440WrongPasswordException, MessagingException {
         JwtUser userDetails;

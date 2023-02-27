@@ -9,6 +9,7 @@ import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.ChatRoomRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ChatRoomService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,14 +18,10 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@AllArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserService userService;
-
-    public ChatRoomServiceImpl(ChatRoomRepository chatRoomRepository, UserService userService) {
-        this.chatRoomRepository = chatRoomRepository;
-        this.userService = userService;
-    }
 
     @Override
     public ChatRoom findById(Long id, String username) throws Status452ChatRoomNotFoundException, Status453NotYourChatRoomException {
@@ -50,12 +47,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     @Transactional
-    public void addUserToChatRoom(Long chatRoomId, Long userId, String username)
+    public void addUserToChatRoom(Long chatRoomId, List<Long> userIds, String username)
             throws Status452ChatRoomNotFoundException, Status437UserNotFoundException,
             Status454YouAreNotAnAdminException {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(Status452ChatRoomNotFoundException::new);
         if (chatRoom.getAdmin().getUsername().equals(username)) {
-            chatRoom.addUser(userService.findUserById(userId));
+            for (Long userId : userIds) {
+                chatRoom.addUser(userService.findUserById(userId));
+            }
         } else {
             throw new Status454YouAreNotAnAdminException();
         }

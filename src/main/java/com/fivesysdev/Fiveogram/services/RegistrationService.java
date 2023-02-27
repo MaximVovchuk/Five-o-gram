@@ -3,9 +3,10 @@ package com.fivesysdev.Fiveogram.services;
 import com.fivesysdev.Fiveogram.config.JWTUtil;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status439UsernameBusyException;
-import com.fivesysdev.Fiveogram.models.Role;
+import com.fivesysdev.Fiveogram.roles.Role;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,18 +15,12 @@ import java.util.List;
 
 
 @Service
+@AllArgsConstructor
 public class RegistrationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
     private final ModelMapper modelMapper;
-
-    public RegistrationService(UserRepository userRepository, PasswordEncoder passwordEncoder, JWTUtil jwtUtil, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.modelMapper = modelMapper;
-    }
 
     public String register(UserDTO userDTO) throws Status439UsernameBusyException {
         User user = convertToUser(userDTO);

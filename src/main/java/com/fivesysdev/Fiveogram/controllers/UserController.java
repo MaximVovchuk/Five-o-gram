@@ -103,8 +103,4 @@ public class UserController {
     public Response<?> search(@RequestParam String startsWith) {
         return new Response<>(userService.searchByUsernameStartsWith(startsWith));
     }
-    @DeleteMapping("/delete")
-    public void deleteMe(@RequestHeader(value = "Authorization") String token){
-        userService.deleteMe(jwtUtil.getUsername(token));
-    }
 }

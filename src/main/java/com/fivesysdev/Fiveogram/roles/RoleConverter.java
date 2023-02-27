@@ -1,4 +1,4 @@
-package com.fivesysdev.Fiveogram.models;
+package com.fivesysdev.Fiveogram.roles;
 
 
 import javax.persistence.AttributeConverter;

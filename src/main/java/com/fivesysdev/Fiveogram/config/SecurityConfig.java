@@ -1,6 +1,6 @@
 package com.fivesysdev.Fiveogram.config;
 
-import com.fivesysdev.Fiveogram.models.Role;
+import com.fivesysdev.Fiveogram.roles.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

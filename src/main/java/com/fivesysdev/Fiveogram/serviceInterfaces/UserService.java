@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService {
-    User findUserById(long id) throws Status437UserNotFoundException;
+    User findUserById(Long id) throws Status437UserNotFoundException;
 
     User setAvatar(String username, MultipartFile multipartFile) throws Status441FileIsNullException;
 
@@ -26,11 +26,9 @@ public interface UserService {
 
     Set<Post> getPostsWhereImMarked(String username);
 
-    void deleteAvatar(String username, long id) throws Status447NotYourAvatarException, Status450AvatarNotFoundException;
+    void deleteAvatar(String username, Long id) throws Status447NotYourAvatarException, Status450AvatarNotFoundException;
 
-    List<User> getUserSubscriptions(long id) throws Status437UserNotFoundException;
+    List<User> getUserSubscriptions(Long id) throws Status437UserNotFoundException;
 
-    List<User> getUserSubs(long id) throws Status437UserNotFoundException;
-
-    void deleteMe(String username);
+    List<User> getUserSubs(Long id) throws Status437UserNotFoundException;
 }

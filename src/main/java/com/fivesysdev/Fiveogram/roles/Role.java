@@ -1,4 +1,4 @@
-package com.fivesysdev.Fiveogram.models;
+package com.fivesysdev.Fiveogram.roles;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -6,15 +6,15 @@ public enum Role implements GrantedAuthority {
     USER(1L, "user"),
     ADMIN(2L, "admin");
 
-    private final long code;
+    private final Long code;
     private final String authority;
 
-    Role(long code, String authority) {
+    Role(Long code, String authority) {
         this.code = code;
         this.authority = authority;
     }
 
-    public long getCode() {
+    public Long getCode() {
         return code;
     }
     @Override

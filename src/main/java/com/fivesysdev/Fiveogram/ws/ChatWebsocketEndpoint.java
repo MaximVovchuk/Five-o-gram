@@ -30,7 +30,7 @@ public class ChatWebsocketEndpoint {
         this.chatRoomService = SpringContext.getApplicationContext().getBean(ChatRoomService.class);
         this.userService = SpringContext.getApplicationContext().getBean(UserService.class);
         this.messageService = SpringContext.getApplicationContext().getBean(MessageService.class);
-        
+
     }
 
     @OnMessage
@@ -39,7 +39,8 @@ public class ChatWebsocketEndpoint {
         User user = userService.findUserByUsername(session.getUserPrincipal().getName());
         ChatRoom chatRoom = chatRooms.stream().filter
                 (chatRoom1 -> chatRoom1.getId() == chatRoomId).findAny().orElseThrow();
-        MessageModel model = new MessageModel(message, user, chatRoom);
+        MessageModel model = MessageModel.builder()
+                .chatRoom(chatRoom).user(user).content(message).build();
         messageService.save(model);
         for (Session s : chatRoom.getSessions()) {
             s.getBasicRemote().sendText(message);

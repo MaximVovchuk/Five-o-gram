@@ -59,7 +59,7 @@ public class SubscriptionServiceImplTest {
     @Test
     public void testFindSubscriptionByFriendAndOwner(){
         subscriptionService.findSubscriptionByFriendAndOwner(new User(),new User());
-        verify(subscriptionRepository).findSubscriptionByFriendAndOwner(any(),any());
+        verify(subscriptionRepository).findByFriend_IdAndOwner_Id(0L,0L);
     }
     @Test
     public void testSubscribeYourself() throws Status437UserNotFoundException {

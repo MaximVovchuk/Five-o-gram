@@ -9,9 +9,11 @@ import com.fivesysdev.Fiveogram.models.ChatRoom;
 import java.util.List;
 
 public interface ChatRoomService {
-    ChatRoom findById(Long id,String username) throws Status452ChatRoomNotFoundException, Status453NotYourChatRoomException;
-    ChatRoom newChatRoom(String username, List<Long> usersId) throws Status437UserNotFoundException;
-    void addUserToChatRoom(Long chatRoomId,Long userId,String username) throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException;
+    ChatRoom findById(Long id, String username) throws Status452ChatRoomNotFoundException, Status453NotYourChatRoomException;
 
-    void deleteUserFromChatRoom(Long chatRoomId, Long userId,String username) throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException;
+    ChatRoom newChatRoom(String username, List<Long> usersId) throws Status437UserNotFoundException;
+
+    void addUserToChatRoom(Long chatRoomId, List<Long> userIds, String username) throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException;
+
+    void deleteUserFromChatRoom(Long chatRoomId, Long userId, String username) throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException;
 }
