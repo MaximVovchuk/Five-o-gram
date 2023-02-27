@@ -15,6 +15,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
@@ -29,24 +31,16 @@ public class CommentServiceImpl implements CommentService {
     private final PostService postService;
     private final SponsoredPostRepository sponsoredPostRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, UserService userService, NotificationService notificationService, PostService postService, SponsoredPostRepository sponsoredPostRepository) {
-        this.commentRepository = commentRepository;
-        this.userService = userService;
-        this.notificationService = notificationService;
-        this.postService = postService;
-        this.sponsoredPostRepository = sponsoredPostRepository;
-    }
-
     @Override
-    public Comment save(String username,long id, String text) throws Status435PostNotFoundException, Status448TextIsNullException {
-        if(text==null || text.isBlank()){
+    public Comment save(String username, long id, String text) throws Status435PostNotFoundException, Status448TextIsNullException {
+        if (text == null || text.isBlank()) {
             throw new Status448TextIsNullException();
         }
         Post post = postService.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
         }
-        Comment comment = createComment(username,post, text);
+        Comment comment = createComment(username, post, text);
         commentRepository.save(comment);
         Notification notification = new CommentNotification(comment);
         if (sponsoredPostRepository.existsByPost(post)) {
@@ -57,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment editComment(String username,long id, String text) throws Status434CommentNotFoundException, Status432NotYourCommentException {
+    public Comment editComment(String username, long id, String text) throws Status434CommentNotFoundException, Status432NotYourCommentException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
             throw new Status434CommentNotFoundException();
@@ -70,21 +64,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Post deleteComment(String username,long id) throws Status434CommentNotFoundException, Status432NotYourCommentException{
+    public Post deleteComment(String username, long id) throws Status434CommentNotFoundException, Status432NotYourCommentException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
             throw new Status434CommentNotFoundException();
         }
         User user = userService.findUserByUsername(username);
         if (oldComment.getAuthor().equals(user)
-                || oldComment.getPost().getAuthor().equals(user)){
+                || oldComment.getPost().getAuthor().equals(user)) {
             commentRepository.deleteById(id);
             return oldComment.getPost();
         }
         throw new Status432NotYourCommentException();
     }
 
-    public Comment createComment(String username,Post post, String text) {
+    public Comment createComment(String username, Post post, String text) {
         Comment comment = new Comment();
         comment.setAuthor(userService.findUserByUsername(username));
         comment.setText(text);

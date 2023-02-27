@@ -8,6 +8,7 @@ import com.fivesysdev.Fiveogram.repositories.AvatarRepository;
 import com.fivesysdev.Fiveogram.repositories.MarkRepository;
 import com.fivesysdev.Fiveogram.repositories.SubscriptionRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
+import com.fivesysdev.Fiveogram.roles.Role;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import org.junit.jupiter.api.Test;
@@ -224,7 +225,7 @@ public class UserServiceImplTest {
         user2.setUsername("testuser2");
         when(subscriptionRepository.findAllByFriend_id(user1.getId()))
                 .thenReturn(List.of(new Subscription(user2, user1)));
-        when(userRepository.existsById(user1.getId())).thenReturn(true);
+        when(userRepository.existsById(1L)).thenReturn(true);
         List<User> subscribers = userService.getUserSubs(1L);
         assertEquals(1, subscribers.size());
         assertEquals("testuser2", subscribers.get(0).getUsername());

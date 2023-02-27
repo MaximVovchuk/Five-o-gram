@@ -91,7 +91,7 @@ class ChatRoomServiceImplTest {
         when(chatRoomRepository.findById(1L)).thenReturn(Optional.of(chatRoom));
         User user3 = new User();
         when(userService.findUserById(4L)).thenReturn(user3);
-        chatRoomService.addUserToChatRoom(1L, 4L, "admin");
+        chatRoomService.addUserToChatRoom(1L, List.of(4L), "admin");
         assertTrue(chatRoom.getUsers().contains(user3));
     }
 
@@ -99,7 +99,7 @@ class ChatRoomServiceImplTest {
     void testAddUserToChatroomThrows454() {
         when(chatRoomRepository.findById(1L)).thenReturn(Optional.of(chatRoom));
         assertThrows(Status454YouAreNotAnAdminException.class,
-                () -> chatRoomService.addUserToChatRoom(1L, 4L, "user1"));
+                () -> chatRoomService.addUserToChatRoom(1L, List.of(4L), "user1"));
     }
 
     @Test

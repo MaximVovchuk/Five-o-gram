@@ -11,6 +11,8 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.HashtagService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
+import com.fivesysdev.Fiveogram.util.StringUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 @Transactional
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
@@ -32,29 +35,6 @@ public class PostServiceImpl implements PostService {
     private final HashtagService hashtagService;
     private final LikeRepository likeRepository;
     private final NotificationService notificationService;
-
-    // TODO: 27/2/23 cleanup constructors in services (@Service already constructor-based)
-    public PostServiceImpl(PostRepository postRepository,
-                           UserRepository userRepository,
-                           PostReportRepository postReportRepository,
-                           SponsoredPostRepository sponsoredPostRepository,
-                           FileService fileService,
-                           PictureRepository pictureRepository,
-                           MarkRepository markRepository,
-                           HashtagService hashtagService,
-                           LikeRepository likeRepository,
-                           NotificationService notificationService) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-        this.postReportRepository = postReportRepository;
-        this.sponsoredPostRepository = sponsoredPostRepository;
-        this.fileService = fileService;
-        this.pictureRepository = pictureRepository;
-        this.markRepository = markRepository;
-        this.hashtagService = hashtagService;
-        this.likeRepository = likeRepository;
-        this.notificationService = notificationService;
-    }
 
     @Override
     public List<Post> findAll(User user) {
@@ -230,20 +210,7 @@ public class PostServiceImpl implements PostService {
 
     private void checkForMarksInTextAndSendNotifications(Post post) {
         String[] texts = post.getText().split("@");
-        // TODO: 27/2/23 move to separate util class (boilerplate usage)
-        String[] words = Arrays.copyOfRange(texts, 1, texts.length);
-        List<String> marks = new ArrayList<>();
-        for (String word : words) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < word.length(); i++) {
-                char c = word.charAt(i);
-                if (c == ' ') {
-                    marks.add(sb.toString());
-                    break;
-                }
-                sb.append(c);
-            }
-        }
+        List<String> marks = StringUtil.get(texts);
         for (String mark : marks) {
             User user = userRepository.findUserByUsername(mark);
             if (user != null) {

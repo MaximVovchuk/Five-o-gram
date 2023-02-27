@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.fivesysdev.Fiveogram.config.JWTUtil;
 import com.fivesysdev.Fiveogram.dto.UserDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status439UsernameBusyException;
-import com.fivesysdev.Fiveogram.models.Role;
+import com.fivesysdev.Fiveogram.roles.Role;
 import com.fivesysdev.Fiveogram.models.User;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 

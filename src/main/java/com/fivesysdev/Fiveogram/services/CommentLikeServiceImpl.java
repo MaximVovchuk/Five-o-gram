@@ -12,24 +12,18 @@ import com.fivesysdev.Fiveogram.repositories.CommentRepository;
 import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentLikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class CommentLikeServiceImpl implements CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-
-    public CommentLikeServiceImpl(CommentLikeRepository commentLikeRepository, CommentRepository commentRepository, UserRepository userRepository, NotificationService notificationService) {
-        this.commentLikeRepository = commentLikeRepository;
-        this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
-        this.notificationService = notificationService;
-    }
-
 
     @Override
     public Post setLike(String username, long id) throws Status434CommentNotFoundException {
@@ -38,7 +32,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
             throw new Status434CommentNotFoundException();
         }
         User whoLiked = userRepository.findUserByUsername(username);
-        if(commentLikeRepository.existsByAuthorAndComment(whoLiked,comment)){
+        if (commentLikeRepository.existsByAuthorAndComment(whoLiked, comment)) {
             return comment.getPost();
         }
         CommentLike commentLike = CommentLike.builder()

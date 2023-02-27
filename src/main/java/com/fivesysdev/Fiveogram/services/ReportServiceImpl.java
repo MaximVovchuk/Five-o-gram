@@ -12,6 +12,7 @@ import com.fivesysdev.Fiveogram.repositories.StoryReportRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,18 +22,12 @@ import java.util.List;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class ReportServiceImpl implements ReportService {
     private final PostReportRepository postReportRepository;
     private final StoryReportRepository storyReportRepository;
     private final PostService postService;
     private final StoryService storyService;
-
-    public ReportServiceImpl(PostReportRepository postReportRepository, StoryReportRepository storyReportRepository, PostService postService, StoryService storyService) {
-        this.postReportRepository = postReportRepository;
-        this.storyReportRepository = storyReportRepository;
-        this.postService = postService;
-        this.storyService = storyService;
-    }
 
     // TODO: 26/2/23 overflowed method: search reports by mostly reported users better
     @Override

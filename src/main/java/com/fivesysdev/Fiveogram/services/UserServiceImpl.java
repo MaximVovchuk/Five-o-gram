@@ -11,6 +11,7 @@ import com.fivesysdev.Fiveogram.repositories.UserRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PostService postService;
@@ -31,31 +33,14 @@ public class UserServiceImpl implements UserService {
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository,
-                           PostService postService,
-                           FileService fileService,
-                           SubscriptionRepository subscriptionRepository,
-                           AvatarRepository avatarRepository,
-                           MarkRepository markRepository,
-                           JWTUtil jwtUtil, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.postService = postService;
-        this.fileService = fileService;
-        this.subscriptionRepository = subscriptionRepository;
-        this.avatarRepository = avatarRepository;
-        this.markRepository = markRepository;
-        this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    public User findUserById(long id) throws Status437UserNotFoundException {
+    @Override
+    public User findUserById(Long id) throws Status437UserNotFoundException {
         User user = userRepository.findUserById(id);
         if (user == null) {
             throw new Status437UserNotFoundException();
         }
         return user;
     }
-
 
     @Override
     public User setAvatar(String username, MultipartFile multipartFile) throws Status441FileIsNullException {
@@ -88,7 +73,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userDTO.getUsername());
         user.setSurname(userDTO.getSurname());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        return jwtUtil.generateToken(user.getUsername(),List.of(user.getRole()));
+        return jwtUtil.generateToken(user.getUsername(), List.of(user.getRole()));
     }
 
     @Override
@@ -111,9 +96,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteAvatar(String username, long id)
+    public void deleteAvatar(String username, Long id)
             throws Status447NotYourAvatarException, Status450AvatarNotFoundException {
-        if(!avatarRepository.existsById(id)){
+        if (!avatarRepository.existsById(id)) {
             throw new Status450AvatarNotFoundException();
         }
         Avatar avatar = avatarRepository.getById(id);
@@ -122,16 +107,16 @@ public class UserServiceImpl implements UserService {
         } else throw new Status447NotYourAvatarException();
     }
 
-    // TODO: 26/2/23 do not primitives at all
-    public List<User> getUserSubscriptions(long id) throws Status437UserNotFoundException {
-        if(!userRepository.existsById(Math.toIntExact(id))){
+    @Override
+    public List<User> getUserSubscriptions(Long id) throws Status437UserNotFoundException {
+        if (!userRepository.existsById(id)) {
             throw new Status437UserNotFoundException();
         }
         return subscriptionRepository.findAllByOwner_Id(id).stream().map(Subscription::getFriend).collect(Collectors.toList());
     }
-
-    public List<User> getUserSubs(long id) throws Status437UserNotFoundException {
-        if(!userRepository.existsById(id)){
+    @Override
+    public List<User> getUserSubs(Long id) throws Status437UserNotFoundException {
+        if (!userRepository.existsById(id)) {
             throw new Status437UserNotFoundException();
         }
         return subscriptionRepository.findAllByFriend_id(id).stream().map(Subscription::getOwner).collect(Collectors.toList());

@@ -4,18 +4,20 @@ import com.fivesysdev.Fiveogram.models.Hashtag;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.repositories.HashtagRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.HashtagService;
+import com.fivesysdev.Fiveogram.util.StringUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class HashtagServiceImpl implements HashtagService {
     private final HashtagRepository hashtagRepository;
-
-    public HashtagServiceImpl(HashtagRepository hashtagRepository) {
-        this.hashtagRepository = hashtagRepository;
-    }
 
     @Override
     public void save(Hashtag hashtag) {
@@ -25,19 +27,7 @@ public class HashtagServiceImpl implements HashtagService {
     @Override
     public void saveAllHashtagsFromPost(Post post) {
         String[] texts = post.getText().split("#");
-        String[] words = Arrays.copyOfRange(texts, 1, texts.length);
-        List<String> hashtags = new ArrayList<>();
-        for (String word : words) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < word.length(); i++) {
-                char c = word.charAt(i);
-                if (c == ' ') {
-                    hashtags.add(sb.toString());
-                    break;
-                }
-                sb.append(c);
-            }
-        }
+        List<String> hashtags = StringUtil.get(texts);
         for (String hashtagText : hashtags) {
             Hashtag hashtag = new Hashtag(hashtagText, post);
             save(hashtag);

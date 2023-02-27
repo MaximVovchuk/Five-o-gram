@@ -3,17 +3,16 @@ package com.fivesysdev.Fiveogram.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Setter
 @Getter
 @ToString
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "messages")
 public class MessageModel extends BaseEntity {
@@ -21,16 +20,9 @@ public class MessageModel extends BaseEntity {
     private String content;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonIgnoreProperties({"name","surname","password","role","subscriptions"})
+    @JsonIgnoreProperties({"name", "surname", "password", "role", "subscriptions"})
     private User user;
     @ManyToOne
     @JoinColumn(name = "chat_room_id", referencedColumnName = "id")
     private ChatRoom chatRoom;
-
-    // TODO: 27/2/23 use builder better?
-    public MessageModel(String content, User user, ChatRoom chatRoom) {
-        this.content = content;
-        this.user = user;
-        this.chatRoom = chatRoom;
-    }
 }

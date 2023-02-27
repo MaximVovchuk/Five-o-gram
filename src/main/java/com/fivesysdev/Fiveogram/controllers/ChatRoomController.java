@@ -37,12 +37,11 @@ public class ChatRoomController {
         return new Response<>(chatRoomService.findById(id,jwtUtil.getUsername(token)).getMessages());
     }
 
-    // TODO: 26/2/23 send multiple IDs instead of single ID to add
     @PostMapping("/addUser/{chatRoomId}")
     public void addUserToChatRoom(@RequestHeader(value = "Authorization") String token,
-                                  @PathVariable Long chatRoomId, @RequestParam Long userId)
+                                  @PathVariable Long chatRoomId, @RequestBody List<Long> userIds)
             throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException {
-        chatRoomService.addUserToChatRoom(chatRoomId, userId, jwtUtil.getUsername(token));
+        chatRoomService.addUserToChatRoom(chatRoomId, userIds, jwtUtil.getUsername(token));
     }
 
     @DeleteMapping("/deleteUser/{chatRoomId}")

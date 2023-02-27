@@ -9,7 +9,6 @@ import lombok.Data;
 public class MarkNotification implements Notification{
     private final NotificationType type = NotificationType.MARK;
     private final Post post;
-    //TODO test
     @JsonIgnore
     private final long entityId;
 

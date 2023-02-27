@@ -4,6 +4,7 @@ import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.models.notifications.*;
 import com.fivesysdev.Fiveogram.repositories.*;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
+import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final CommentRepository commentRepository;
@@ -23,20 +25,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-
-    public NotificationServiceImpl(NotificationRepository notificationRepository,
-                                   CommentRepository commentRepository,
-                                   SubscriptionRepository subscriptionRepository,
-                                   LikeRepository likeRepository,
-                                   CommentLikeRepository commentLikeRepository, PostRepository postRepository, UserRepository userRepository) {
-        this.notificationRepository = notificationRepository;
-        this.commentRepository = commentRepository;
-        this.subscriptionRepository = subscriptionRepository;
-        this.likeRepository = likeRepository;
-        this.commentLikeRepository = commentLikeRepository;
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-    }
 
     public void sendNotification(Notification notification) {
         for (User recipient : notification.getRecipients()) {
@@ -81,7 +69,7 @@ public class NotificationServiceImpl implements NotificationService {
                     Optional<Post> postOptional =
                             postRepository.findById(textNotification.getEntityId());
                     postOptional.ifPresent(post ->
-                            notifications.add(new MarkNotification(post,userRepository.findUserByUsername(username))));
+                            notifications.add(new MarkNotification(post, userRepository.findUserByUsername(username))));
                 }
             }
         }
@@ -89,10 +77,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Scheduled(fixedRate = 86400000) //24 hours
-    public void deleteOldNotifications(){
+    public void deleteOldNotifications() {
         List<TextNotification> notifications = notificationRepository.findAll();
         for (TextNotification notification : notifications) {
-            if(notification.getCreatedAt().plusDays(30).isBefore(LocalDateTime.now())){
+            if (notification.getCreatedAt().plusDays(30).isBefore(LocalDateTime.now())) {
                 notificationRepository.delete(notification);
             }
         }

@@ -9,27 +9,22 @@ import com.fivesysdev.Fiveogram.repositories.SubscriptionRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+
 @Service
+@AllArgsConstructor
 @Transactional
 public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
     private final NotificationService notificationService;
-
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserService userService, NotificationService notificationService) {
-        this.subscriptionRepository = subscriptionRepository;
-        this.userService = userService;
-        this.notificationService = notificationService;
-    }
-
-    // TODO: 26/2/23 better use ID for JPA queries against full entity (optimization)
     @Override
     public Subscription findSubscriptionByFriendAndOwner(User friend, User owner) {
-        return subscriptionRepository.findSubscriptionByFriendAndOwner(friend,owner);
+        return subscriptionRepository.findByFriend_IdAndOwner_Id(friend.getId(), owner.getId());
     }
 
     public User subscribe(String username, long id) throws Status431SubscriptionException, Status437UserNotFoundException {
