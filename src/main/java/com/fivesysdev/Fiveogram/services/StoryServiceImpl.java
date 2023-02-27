@@ -69,6 +69,7 @@ public class StoryServiceImpl implements StoryService {
 
     @Override
     public void deleteById(String username, Long id) throws Status444NotYourStoryException, Status445StoryNotFoundException {
+        // TODO: 26/2/23 use internal method getStoryById instead
         Story story = storyRepository.findById(id).orElseThrow(Status445StoryNotFoundException::new);
         if (story.isExpired()) throw new Status445StoryNotFoundException();
         if (story.getAuthor() != userService.findUserByUsername(username)) throw new Status444NotYourStoryException();

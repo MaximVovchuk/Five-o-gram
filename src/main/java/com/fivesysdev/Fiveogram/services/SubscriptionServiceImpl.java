@@ -26,6 +26,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.notificationService = notificationService;
     }
 
+    // TODO: 26/2/23 better use ID for JPA queries against full entity (optimization)
     @Override
     public Subscription findSubscriptionByFriendAndOwner(User friend, User owner) {
         return subscriptionRepository.findSubscriptionByFriendAndOwner(friend,owner);

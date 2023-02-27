@@ -27,6 +27,7 @@ public class MessageModel extends BaseEntity {
     @JoinColumn(name = "chat_room_id", referencedColumnName = "id")
     private ChatRoom chatRoom;
 
+    // TODO: 27/2/23 use builder better?
     public MessageModel(String content, User user, ChatRoom chatRoom) {
         this.content = content;
         this.user = user;

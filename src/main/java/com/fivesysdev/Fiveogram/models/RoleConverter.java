@@ -5,6 +5,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.util.stream.Stream;
 
+// TODO: 27/2/23 move converters to separate package
 @Converter(autoApply = true)
 public class RoleConverter implements AttributeConverter<Role, Long> {
 

@@ -45,6 +45,7 @@ public class User extends BaseEntity {
     @ToString.Exclude
     private List<Story> stories;
 
+    // TODO: 27/2/23 needs to remove?
     public User() {
         subscriptions = new ArrayList<>();
         avatars = new ArrayList<>();

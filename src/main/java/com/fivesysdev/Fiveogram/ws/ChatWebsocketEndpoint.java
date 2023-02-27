@@ -39,6 +39,7 @@ public class ChatWebsocketEndpoint {
         User user = userService.findUserByUsername(session.getUserPrincipal().getName());
         ChatRoom chatRoom = chatRooms.stream().filter
                 (chatRoom1 -> chatRoom1.getId() == chatRoomId).findAny().orElseThrow();
+        // TODO: 25/2/23 use builder for entities better
         MessageModel model = new MessageModel(message, user, chatRoom);
         messageService.save(model);
         for (Session s : chatRoom.getSessions()) {

@@ -2,6 +2,7 @@ package com.fivesysdev.Fiveogram.models;
 
 import org.springframework.security.core.GrantedAuthority;
 
+// TODO: 27/2/23 move enums to separate packages
 public enum Role implements GrantedAuthority {
     USER(1L, "user"),
     ADMIN(2L, "admin");

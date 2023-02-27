@@ -121,6 +121,8 @@ public class UserServiceImpl implements UserService {
             avatarRepository.deleteById(id);
         } else throw new Status447NotYourAvatarException();
     }
+
+    // TODO: 26/2/23 do not primitives at all
     public List<User> getUserSubscriptions(long id) throws Status437UserNotFoundException {
         if(!userRepository.existsById(Math.toIntExact(id))){
             throw new Status437UserNotFoundException();
