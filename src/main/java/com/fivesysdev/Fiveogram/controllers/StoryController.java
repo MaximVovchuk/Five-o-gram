@@ -5,27 +5,26 @@ import com.fivesysdev.Fiveogram.exceptions.Status441FileIsNullException;
 import com.fivesysdev.Fiveogram.exceptions.Status444NotYourStoryException;
 import com.fivesysdev.Fiveogram.exceptions.Status445StoryNotFoundException;
 import com.fivesysdev.Fiveogram.models.Story;
+import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
 import com.fivesysdev.Fiveogram.util.Response;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/story")
 public class StoryController {
     private final StoryService storyService;
+    private final ReportService reportService;
     private final JWTUtil jwtUtil;
-
-    public StoryController(StoryService storyService, JWTUtil jwtUtil) {
-        this.storyService = storyService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @PostMapping("/new")
     public Response<Story> addNewStory(@ModelAttribute MultipartFile multipartFile,
-                                             @RequestHeader(value = "Authorization") String token)
+                                       @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException {
         return new Response<>(storyService.createNewStory(jwtUtil.getUsername(token), multipartFile));
     }
@@ -51,9 +50,10 @@ public class StoryController {
     public Response<List<Story>> getMyArchive(@RequestHeader(value = "Authorization") String token) {
         return new Response<>(storyService.getMyStoriesArchive(jwtUtil.getUsername(token)));
     }
+
     @PostMapping("/{id}/report")
     public Response<Story> report(@PathVariable long id, @RequestParam String text)
             throws Status445StoryNotFoundException {
-        return new Response<>(storyService.reportStory(text, id));
+        return new Response<>(reportService.reportStory(id, text));
     }
 }

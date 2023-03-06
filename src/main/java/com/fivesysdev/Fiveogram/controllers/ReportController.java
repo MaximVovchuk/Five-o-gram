@@ -29,7 +29,7 @@ public class ReportController {
     }
 
     @PostMapping("/{id}/declineStoryReport")
-    public void declineStoryReport(@PathVariable Long id) {
+    public void declineStoryReport(@PathVariable Long id) throws Status451ReportWithThisIdIsNotFound {
         reportService.declineStoryReport(id);
     }
 
@@ -44,7 +44,7 @@ public class ReportController {
     }
 
     @PostMapping("/{id}/declinePostReport")
-    public void declinePostReport(@PathVariable Long id) {
+    public void declinePostReport(@PathVariable Long id) throws Status451ReportWithThisIdIsNotFound {
         reportService.declinePostReport(id);
     }
 }

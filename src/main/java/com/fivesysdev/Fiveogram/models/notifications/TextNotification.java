@@ -23,13 +23,12 @@ public class TextNotification extends BaseEntity {
     public NotificationType type;
 
     @Column(name = "entity_id")
-    public long entityId;
+    public Long entityId;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-
-    public TextNotification(User owner, NotificationType type, long entityId) {
+    public TextNotification(User owner, NotificationType type, Long entityId) {
         this.owner = owner;
         this.type = type;
         this.entityId = entityId;

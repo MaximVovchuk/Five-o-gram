@@ -7,11 +7,9 @@ import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.Comment;
 import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
-import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.HashtagService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.LikeService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.*;
 import com.fivesysdev.Fiveogram.util.Response;
+import lombok.AllArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,25 +17,15 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/post")
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;
+    private final ReportService reportService;
     private final LikeService likeService;
     private final JWTUtil jwtUtil;
     private final HashtagService hashtagService;
-
-    public PostController(PostService postService,
-                          CommentService commentService,
-                          LikeService likeService,
-                          JWTUtil jwtUtil,
-                          HashtagService hashtagService) {
-        this.postService = postService;
-        this.commentService = commentService;
-        this.likeService = likeService;
-        this.jwtUtil = jwtUtil;
-        this.hashtagService = hashtagService;
-    }
 
     @PostMapping("/newPost")
     public Response<Post> addNewPost(@ModelAttribute PostDTO postDTO,
@@ -104,7 +92,7 @@ public class PostController {
     @PostMapping("/{id}/report")
     public Response<Post> report(@PathVariable long id, @RequestParam String text)
             throws Status435PostNotFoundException {
-        return new Response<>(postService.reportPost(text, id));
+        return new Response<>(reportService.reportPost(id,text));
     }
     @GetMapping("/search")
     public Response<List<Post>> searchByHashtags(@RequestBody List<String> hashtags){

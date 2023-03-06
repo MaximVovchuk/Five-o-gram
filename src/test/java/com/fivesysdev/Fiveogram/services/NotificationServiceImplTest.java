@@ -91,10 +91,10 @@ class NotificationServiceImplTest {
     public void testDeleteOldNotifications() {
         List<TextNotification> notifications = new ArrayList<>();
         User user = new User();
-        TextNotification oldNotification = new TextNotification(user, NotificationType.COMMENT, 1);
+        TextNotification oldNotification = new TextNotification(user, NotificationType.COMMENT, 1L);
         oldNotification.setCreatedAt(LocalDateTime.now().minusDays(40));
         notifications.add(oldNotification);
-        TextNotification newNotification = new TextNotification(user, NotificationType.COMMENT, 2);
+        TextNotification newNotification = new TextNotification(user, NotificationType.COMMENT, 2L);
         newNotification.setCreatedAt(LocalDateTime.now().minusDays(10));
         notifications.add(newNotification);
         when(notificationRepository.findAll()).thenReturn(notifications);

@@ -29,7 +29,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotification(Notification notification) {
         for (User recipient : notification.getRecipients()) {
             notificationRepository.save(new TextNotification(recipient,
-                    notification.getType(), notification.getEntityId()));
+                    notification.getType(), notification.getEntityId(), LocalDateTime.now()));
         }
         notification.clearRecipients();
     }

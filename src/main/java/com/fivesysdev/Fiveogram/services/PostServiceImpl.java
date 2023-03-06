@@ -5,12 +5,8 @@ import com.fivesysdev.Fiveogram.dto.PostDTO;
 import com.fivesysdev.Fiveogram.exceptions.*;
 import com.fivesysdev.Fiveogram.models.*;
 import com.fivesysdev.Fiveogram.models.notifications.MarkNotification;
-import com.fivesysdev.Fiveogram.models.reports.PostReport;
 import com.fivesysdev.Fiveogram.repositories.*;
-import com.fivesysdev.Fiveogram.serviceInterfaces.FileService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.HashtagService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
-import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
+import com.fivesysdev.Fiveogram.serviceInterfaces.*;
 import com.fivesysdev.Fiveogram.util.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +23,6 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final PostReportRepository postReportRepository;
     private final SponsoredPostRepository sponsoredPostRepository;
     private final PictureRepository pictureRepository;
     private final MarkRepository markRepository;
@@ -119,16 +114,6 @@ public class PostServiceImpl implements PostService {
         deleteMarksByPost(post);
         postRepository.deleteById(id);
         return postRepository.findAllByAuthor(post.getAuthor());
-    }
-
-    @Override
-    public Post reportPost(String text, long id) throws Status435PostNotFoundException {
-        Post post = postRepository.findById(id).orElseThrow(Status435PostNotFoundException::new);
-        postReportRepository.save(PostReport.builder()
-                .text(text)
-                .post(post)
-                .build());
-        return post;
     }
 
     @Override

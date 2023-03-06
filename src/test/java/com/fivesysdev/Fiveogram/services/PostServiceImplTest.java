@@ -260,23 +260,6 @@ class PostServiceImplTest {
     }
 
     @Test
-    public void testReportPost() throws Status435PostNotFoundException {
-        Post post = new Post();
-        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
-
-        Post actualPost = postService.reportPost("Test text", 1L);
-
-        verify(postReportRepository).save(any());
-        assertEquals(actualPost, post);
-    }
-
-    @Test
-    public void testReportPostThrows435() {
-        when(postRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(Status435PostNotFoundException.class,
-                () -> postService.reportPost("test text", 1L));
-    }
-    @Test
     public void testBanPost(){
         postService.banPost(1L);
         verify(postRepository).deleteById(1L);
