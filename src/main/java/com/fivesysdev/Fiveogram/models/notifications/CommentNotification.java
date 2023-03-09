@@ -8,6 +8,7 @@ import lombok.Data;
 public class CommentNotification implements Notification {
     private final NotificationType type = NotificationType.COMMENT;
     private final Comment comment;
+    // TODO: 9/3/23 use wrappers instead of primitives
     @JsonIgnore
     private final long entityId;
 

@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/story")
+// TODO: 9/3/23 rename all endpoint avoiding CRUD namings
 public class StoryController {
     private final StoryService storyService;
     private final ReportService reportService;

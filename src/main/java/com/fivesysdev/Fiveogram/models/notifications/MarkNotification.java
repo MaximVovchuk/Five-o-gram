@@ -9,6 +9,7 @@ import lombok.Data;
 public class MarkNotification implements Notification{
     private final NotificationType type = NotificationType.MARK;
     private final Post post;
+    // TODO: 9/3/23 use wrappers instead of primitives
     @JsonIgnore
     private final long entityId;
 

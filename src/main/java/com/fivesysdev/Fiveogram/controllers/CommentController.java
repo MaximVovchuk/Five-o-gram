@@ -26,6 +26,8 @@ public class CommentController {
         this.jwtUtil = jwtUtil;
     }
 
+    // TODO: 9/3/23 remove CRUD naming
+    // TODO: 9/3/23 use wrappers for long
     @PatchMapping("/{id}/edit")
     public Response<Comment> editComment(@PathVariable long id, @RequestParam String text,
                                                @RequestHeader(value = "Authorization") String token)
@@ -33,7 +35,8 @@ public class CommentController {
             Status434CommentNotFoundException, Status432NotYourCommentException {
         return new Response<>(commentService.editComment(jwtUtil.getUsername(token), id, text));
     }
-
+    // TODO: 9/3/23 remove CRUD naming
+    // TODO: 9/3/23 use wrappers for long
     @DeleteMapping("/{id}/delete")
     public Response<Post> deleteComment(@PathVariable long id,
                                               @RequestHeader(value = "Authorization") String token)
@@ -41,14 +44,16 @@ public class CommentController {
             Status434CommentNotFoundException, Status432NotYourCommentException {
         return new Response<>(commentService.deleteComment(jwtUtil.getUsername(token), id));
     }
-
+    // TODO: 9/3/23 remove CRUD naming
+    // TODO: 9/3/23 use wrappers for long
     @PostMapping("/{id}/setLike")
     public Response<Post> setLike(@PathVariable long id,
                                         @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
         return new Response<>(commentLikeService.setLike(jwtUtil.getUsername(token), id));
     }
-
+    // TODO: 9/3/23 remove CRUD naming
+    // TODO: 9/3/23 use wrappers for long
     @DeleteMapping("{id}/deleteLike")
     public Response<Post> deleteLike(@PathVariable long id,
                                            @RequestHeader(value = "Authorization") String token)

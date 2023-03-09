@@ -17,6 +17,7 @@ public class StartController {
     private final LoginService loginService;
     private final RegistrationService registrationService;
 
+    // TODO: 9/3/23 use constructor annotations
     public StartController(LoginService loginService, RegistrationService registrationService) {
         this.loginService = loginService;
         this.registrationService = registrationService;

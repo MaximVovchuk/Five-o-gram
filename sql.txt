@@ -1,3 +1,5 @@
+todo file needs to be removed? or use .sql extension instead of .txt
+
 create sequence friendship_id_seq;
 
 alter sequence friendship_id_seq owner to postgres;

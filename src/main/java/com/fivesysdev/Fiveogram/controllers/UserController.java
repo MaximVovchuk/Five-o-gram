@@ -18,12 +18,15 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
+// TODO: 9/3/23 same as in the other controllers: rename endpoints to avoid CRUD namings, use wrappers instead primitives
+// TODO: 9/3/23 create separate controllers to handle related entities queries (for notifications, subscriptions etc)
 public class UserController {
     private final SubscriptionService subscriptionService;
     private final UserService userService;
     private final NotificationService notificationService;
-    private final JWTUtil jwtUtil;
 
+    private final JWTUtil jwtUtil;
+    // TODO: 9/3/23 use constructor annotations
     public UserController(SubscriptionService subscriptionService, UserService userService, NotificationService notificationService, JWTUtil jwtUtil) {
         this.subscriptionService = subscriptionService;
         this.userService = userService;

@@ -19,11 +19,13 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final JWTUtil jwtUtil;
 
+    // TODO: 9/3/23 use constructor annotations
     public ChatRoomController(ChatRoomService chatRoomService, JWTUtil jwtUtil) {
         this.chatRoomService = chatRoomService;
         this.jwtUtil = jwtUtil;
     }
 
+    // TODO: 9/3/23 rename
     @PostMapping("/new")
     public Response<ChatRoom> newChatRoom(@RequestHeader(value = "Authorization") String token,
                                           @RequestBody List<Long> usersId) throws Status437UserNotFoundException {
@@ -37,6 +39,7 @@ public class ChatRoomController {
         return new Response<>(chatRoomService.findById(id,jwtUtil.getUsername(token)).getMessages());
     }
 
+    // TODO: 9/3/23 rename to "chatroomId/user
     @PostMapping("/addUser/{chatRoomId}")
     public void addUserToChatRoom(@RequestHeader(value = "Authorization") String token,
                                   @PathVariable Long chatRoomId, @RequestBody List<Long> userIds)
@@ -44,6 +47,7 @@ public class ChatRoomController {
         chatRoomService.addUserToChatRoom(chatRoomId, userIds, jwtUtil.getUsername(token));
     }
 
+    // TODO: 9/3/23 rename to "chatroomId/user
     @DeleteMapping("/deleteUser/{chatRoomId}")
     public void deleteUserFromChatRoom(@RequestHeader(value = "Authorization") String token,
                                        @PathVariable Long chatRoomId, @RequestParam Long userId)

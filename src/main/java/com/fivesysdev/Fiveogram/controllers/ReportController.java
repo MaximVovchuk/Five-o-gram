@@ -38,6 +38,7 @@ public class ReportController {
         return new Response<>(reportService.getPostReports());
     }
 
+    // TODO: 9/3/23 use single endpoint to review postReport instead of two separate methods below
     @PostMapping("/{id}/acceptPostReport")
     public void acceptPostReport(@PathVariable Long id) throws Status451ReportWithThisIdIsNotFound {
         reportService.acceptPostReport(id);

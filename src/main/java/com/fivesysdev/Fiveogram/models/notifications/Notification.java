@@ -32,7 +32,7 @@ public interface Notification {
     default void clearRecipients() {
         recipients.clear();
     }
-
+    // TODO: 9/3/23 use wrappers instead of primitives
     default long getEntityId() {
         return entityId;
     }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+// TODO: 9/3/23 make sure if you need constructors in dtos and remove it if its not used anywhere
 public class MarkDTO {
     public int height;
     public int width;
