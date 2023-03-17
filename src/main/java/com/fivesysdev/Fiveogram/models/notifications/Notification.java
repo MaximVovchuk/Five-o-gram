@@ -13,7 +13,7 @@ public interface Notification {
     List<User> recipients = new ArrayList<>();
 
     NotificationType type = null;
-    long entityId = 0;
+    Long entityId = 0L;
     LocalDateTime createdAt = null;
 
     default void addRecipient(User user) {
@@ -32,8 +32,7 @@ public interface Notification {
     default void clearRecipients() {
         recipients.clear();
     }
-    // TODO: 9/3/23 use wrappers instead of primitives
-    default long getEntityId() {
+    default Long getEntityId() {
         return entityId;
     }
 

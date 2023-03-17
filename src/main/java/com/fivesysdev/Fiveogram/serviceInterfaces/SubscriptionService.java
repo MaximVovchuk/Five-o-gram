@@ -10,7 +10,7 @@ import com.fivesysdev.Fiveogram.models.User;
 
 public interface SubscriptionService {
     Subscription findSubscriptionByFriendAndOwner(User friend,User owner);
-    User subscribe(String username,long id) throws Status431SubscriptionException, Status437UserNotFoundException;
+    User subscribe(String username,Long id) throws Status431SubscriptionException, Status437UserNotFoundException;
 
-    User unsubscribe(String username,long id) throws Status431SubscriptionException, Status437UserNotFoundException;
+    User unsubscribe(String username,Long id) throws Status431SubscriptionException, Status437UserNotFoundException;
 }

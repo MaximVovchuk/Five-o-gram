@@ -3,6 +3,7 @@ package com.fivesysdev.Fiveogram.controllers;
 import com.fivesysdev.Fiveogram.dto.PostReportDTO;
 import com.fivesysdev.Fiveogram.dto.StoryReportDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status451ReportWithThisIdIsNotFound;
+import com.fivesysdev.Fiveogram.models.ReportStatus;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
 import com.fivesysdev.Fiveogram.util.Response;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +24,10 @@ public class ReportController {
         return new Response<>(reportService.getStoryReports());
     }
 
-    @PostMapping("/{id}/acceptStoryReport")
-    public void acceptStoryReport(@PathVariable Long id) throws Status451ReportWithThisIdIsNotFound {
-        reportService.acceptStoryReport(id);
-    }
-
-    @PostMapping("/{id}/declineStoryReport")
-    public void declineStoryReport(@PathVariable Long id) throws Status451ReportWithThisIdIsNotFound {
-        reportService.declineStoryReport(id);
+    @PostMapping("/story/{id}")
+    public void responseToStoryReport(@PathVariable Long id, @RequestParam ReportStatus reportStatus)
+            throws Status451ReportWithThisIdIsNotFound {
+        reportService.responseToStoryReport(id, reportStatus);
     }
 
     @GetMapping("/posts")
@@ -38,14 +35,9 @@ public class ReportController {
         return new Response<>(reportService.getPostReports());
     }
 
-    // TODO: 9/3/23 use single endpoint to review postReport instead of two separate methods below
-    @PostMapping("/{id}/acceptPostReport")
-    public void acceptPostReport(@PathVariable Long id) throws Status451ReportWithThisIdIsNotFound {
-        reportService.acceptPostReport(id);
-    }
-
-    @PostMapping("/{id}/declinePostReport")
-    public void declinePostReport(@PathVariable Long id) throws Status451ReportWithThisIdIsNotFound {
-        reportService.declinePostReport(id);
+    @PostMapping("/post/{id}")
+    public void responseToPostReport(@PathVariable Long id, @RequestParam ReportStatus reportStatus)
+            throws Status451ReportWithThisIdIsNotFound {
+        reportService.responseToPostReport(id, reportStatus);
     }
 }

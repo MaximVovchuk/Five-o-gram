@@ -14,11 +14,11 @@ public interface PostService {
 
     Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequestException, Status437UserNotFoundException;
 
-    Post findPostById(long id) throws Status435PostNotFoundException;
+    Post findPostById(Long id) throws Status435PostNotFoundException;
 
-    Post editPost(String username, PostDTO postDTO, long id) throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException, Status437UserNotFoundException, Status446MarksBadRequestException;
+    Post editPost(String username, PostDTO postDTO, Long id) throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException, Status437UserNotFoundException, Status446MarksBadRequestException;
 
-    List<Post> deletePost(String username, long id) throws Status433NotYourPostException, Status435PostNotFoundException;
+    List<Post> deletePost(String username, Long id) throws Status433NotYourPostException, Status435PostNotFoundException;
 
     void banPost(Long id);
 

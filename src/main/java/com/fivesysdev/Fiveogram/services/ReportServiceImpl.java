@@ -6,6 +6,7 @@ import com.fivesysdev.Fiveogram.exceptions.Status435PostNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status445StoryNotFoundException;
 import com.fivesysdev.Fiveogram.exceptions.Status451ReportWithThisIdIsNotFound;
 import com.fivesysdev.Fiveogram.models.Post;
+import com.fivesysdev.Fiveogram.models.ReportStatus;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.models.reports.PostReport;
 import com.fivesysdev.Fiveogram.models.reports.PostsToBan;
@@ -89,25 +90,16 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public void acceptPostReport(Long id) throws Status451ReportWithThisIdIsNotFound {
+    public void responseToPostReport(Long id, ReportStatus reportStatus) throws Status451ReportWithThisIdIsNotFound {
         if (!postReportRepository.existsByPost_Id(id)) {
             throw new Status451ReportWithThisIdIsNotFound();
         }
         postReportRepository.findByPost_Id(id).stream().map(PostReport::getId)
                 .forEach(postsToBanRepository::deleteByPostReport_Id);
         postReportRepository.deleteAllByPost_Id(id);
-        postService.banPost(id);
-    }
-
-    @Override
-    @Transactional
-    public void declinePostReport(Long id) throws Status451ReportWithThisIdIsNotFound {
-        if (!postReportRepository.existsByPost_Id(id)) {
-            throw new Status451ReportWithThisIdIsNotFound();
+        if (reportStatus == ReportStatus.ACCEPTED) {
+            postService.banPost(id);
         }
-        postReportRepository.findByPost_Id(id).stream().map(PostReport::getId)
-                .forEach(postsToBanRepository::deleteByPostReport_Id);
-        postReportRepository.deleteAllByPost_Id(id);
     }
 
     @Override
@@ -163,25 +155,15 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public void acceptStoryReport(Long id) throws Status451ReportWithThisIdIsNotFound {
+    public void responseToStoryReport(Long id, ReportStatus reportStatus) throws Status451ReportWithThisIdIsNotFound {
         if (!storyReportRepository.existsByStory_Id(id)) {
             throw new Status451ReportWithThisIdIsNotFound();
         }
         storyReportRepository.findByStory_Id(id).stream().map(StoryReport::getId)
                 .forEach(storyToBanRepository::deleteByStoryReport_Id);
         storyReportRepository.deleteAllByStory_Id(id);
-        storyService.banStory(id);
-    }
-
-    @Override
-    @Transactional
-    public void declineStoryReport(Long id) throws Status451ReportWithThisIdIsNotFound {
-        if (!storyReportRepository.existsByStory_Id(id)) {
-            throw new Status451ReportWithThisIdIsNotFound();
+        if (reportStatus == ReportStatus.ACCEPTED) {
+            storyService.banStory(id);
         }
-        storyReportRepository.findByStory_Id(id).stream().map(StoryReport::getId)
-                .forEach(storyToBanRepository::deleteByStoryReport_Id);
-        storyReportRepository.deleteAllByStory_Id(id);
     }
-
 }

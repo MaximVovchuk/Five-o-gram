@@ -20,7 +20,7 @@ public interface StoryService {
 
     Story getStoryById(Long id) throws Status445StoryNotFoundException;
 
-    Story reportStory(String text, long id) throws Status445StoryNotFoundException;
+    Story reportStory(String text, Long id) throws Status445StoryNotFoundException;
 
     void banStory(Long id);
 }

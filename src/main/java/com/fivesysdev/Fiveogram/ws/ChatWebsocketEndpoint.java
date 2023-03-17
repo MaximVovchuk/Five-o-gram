@@ -15,6 +15,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -34,11 +35,11 @@ public class ChatWebsocketEndpoint {
     }
 
     @OnMessage
-    public String onMessage(Session session, String message, @PathParam("chatRoomId") long chatRoomId) throws IOException {
+    public String onMessage(Session session, String message, @PathParam("chatRoomId") Long chatRoomId) throws IOException {
         System.out.println("Handling message: " + message);
         User user = userService.findUserByUsername(session.getUserPrincipal().getName());
         ChatRoom chatRoom = chatRooms.stream().filter
-                (chatRoom1 -> chatRoom1.getId() == chatRoomId).findAny().orElseThrow();
+                (chatRoom1 -> Objects.equals(chatRoom1.getId(), chatRoomId)).findAny().orElseThrow();
         MessageModel model = MessageModel.builder()
                 .chatRoom(chatRoom).user(user).content(message).build();
         messageService.save(model);
@@ -49,21 +50,21 @@ public class ChatWebsocketEndpoint {
     }
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("chatRoomId") long chatRoomId)
+    public void onOpen(Session session, @PathParam("chatRoomId") Long chatRoomId)
             throws Status453NotYourChatRoomException, Status452ChatRoomNotFoundException {
         System.out.println("On open: " + session.getId());
         ChatRoom chatRoom = chatRooms.stream().filter
-                        (chatRoom1 -> chatRoom1.getId() == chatRoomId).findAny()
+                        (chatRoom1 -> Objects.equals(chatRoom1.getId(), chatRoomId)).findAny()
                 .orElse(chatRoomService.findById(chatRoomId, session.getUserPrincipal().getName()));
         chatRoom.addSession(session);
         chatRooms.add(chatRoom);
     }
 
     @OnClose
-    public void onClose(Session session, @PathParam("chatRoomId") long chatRoomId) {
+    public void onClose(Session session, @PathParam("chatRoomId") Long chatRoomId) {
         System.out.println("On close: " + session.getId());
         ChatRoom chatRoom = chatRooms.stream().filter
-                (chatRoom1 -> chatRoom1.getId() == chatRoomId).findAny().orElse(new ChatRoom());
+                (chatRoom1 -> Objects.equals(chatRoom1.getId(), chatRoomId)).findAny().orElse(new ChatRoom());
         chatRoom.removeSession(session);
     }
 

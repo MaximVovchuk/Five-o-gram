@@ -9,6 +9,6 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     User findUserByUsername(String username);
     List<User> findByUsernameStartsWith(String startsWith);
-    User findUserById(long id);
+    User findUserById(Long id);
     boolean existsByUsername(String username);
 }

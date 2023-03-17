@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public Post findPostById(long id) throws Status435PostNotFoundException {
+    public Post findPostById(Long id) throws Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();
@@ -70,7 +70,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post editPost(String username, PostDTO postDTO, long id)
+    public Post editPost(String username, PostDTO postDTO, Long id)
             throws Status441FileIsNullException, Status433NotYourPostException, Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
@@ -99,7 +99,7 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<Post> deletePost(String username, long id) throws Status433NotYourPostException, Status435PostNotFoundException {
+    public List<Post> deletePost(String username, Long id) throws Status433NotYourPostException, Status435PostNotFoundException {
         Post post = postRepository.findPostById(id);
         if (post == null) {
             throw new Status435PostNotFoundException();

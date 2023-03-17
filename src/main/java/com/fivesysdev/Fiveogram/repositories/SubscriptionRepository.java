@@ -13,7 +13,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     void deleteByFriendAndOwner(User friend, User owner);
 
-    List<Subscription> findAllByOwner_Id(long id);
+    List<Subscription> findAllByOwner_Id(Long id);
 
-    List<Subscription> findAllByFriend_id(long id);
+    List<Subscription> findAllByFriend_id(Long id);
 }

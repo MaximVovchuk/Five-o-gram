@@ -9,9 +9,8 @@ public class LikeNotification implements Notification {
     private final NotificationType type = NotificationType.LIKE;
     //just Like
     private final Like like;
-    // TODO: 9/3/23 use wrappers instead of primitives
     @JsonIgnore
-    private final long entityId;
+    private final Long entityId;
 
     public LikeNotification(Like like){
         this.like = like;
@@ -23,7 +22,7 @@ public class LikeNotification implements Notification {
         return this.type;
     }
     @Override
-    public long getEntityId() {
+    public Long getEntityId() {
         return entityId;
     }
 }

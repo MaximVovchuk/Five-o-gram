@@ -8,9 +8,8 @@ import lombok.Data;
 public class SubscriptionNotification implements Notification {
     private final NotificationType type = NotificationType.SUBSCRIPTION;
     private final Subscription subscription;
-    // TODO: 9/3/23 use wrappers instead of primitives
     @JsonIgnore
-    private final long entityId;
+    private final Long entityId;
     public SubscriptionNotification(Subscription subscription){
         this.subscription = subscription;
         this.entityId = subscription.getId();
@@ -22,7 +21,7 @@ public class SubscriptionNotification implements Notification {
         return this.type;
     }
     @Override
-    public long getEntityId() {
+    public Long getEntityId() {
         return entityId;
     }
 }

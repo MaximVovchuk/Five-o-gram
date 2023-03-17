@@ -297,7 +297,7 @@ public class UserServiceImplTest {
         User testuser = new User();
         testuser.setId(1L);
         testuser.setUsername("testuser");
-        when(subscriptionRepository.findAllByOwner_Id(1)).thenReturn(Arrays.asList(
+        when(subscriptionRepository.findAllByOwner_Id(1L)).thenReturn(Arrays.asList(
                 new Subscription(testuser, friend1),
                 new Subscription(testuser, friend2)
         ));
@@ -328,7 +328,7 @@ public class UserServiceImplTest {
         User testuser = new User();
         testuser.setId(1L);
         testuser.setUsername("testuser");
-        when(subscriptionRepository.findAllByOwner_Id(1)).thenReturn(new ArrayList<>());
+        when(subscriptionRepository.findAllByOwner_Id(1L)).thenReturn(new ArrayList<>());
         when(userRepository.findUserByUsername("testuser")).thenReturn(testuser);
         when(userRepository.existsById(1L)).thenReturn(true);
 
@@ -340,7 +340,7 @@ public class UserServiceImplTest {
         User testuser = new User();
         testuser.setId(1L);
         testuser.setUsername("testuser");
-        when(subscriptionRepository.findAllByOwner_Id(1)).thenReturn(new ArrayList<>());
+        when(subscriptionRepository.findAllByOwner_Id(1L)).thenReturn(new ArrayList<>());
         when(userRepository.findUserByUsername("testuser")).thenReturn(testuser);
 
         assertThrows(Status437UserNotFoundException.class, () -> userService.getFeed("testuser"));

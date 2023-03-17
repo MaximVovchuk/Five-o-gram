@@ -26,7 +26,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     private final NotificationService notificationService;
 
     @Override
-    public Post setLike(String username, long id) throws Status434CommentNotFoundException {
+    public Post setLike(String username, Long id) throws Status434CommentNotFoundException {
         Comment comment = commentRepository.findCommentById(id);
         if (comment == null) {
             throw new Status434CommentNotFoundException();
@@ -46,7 +46,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
     }
 
     @Override
-    public Post deleteLike(String username, long id) throws Status434CommentNotFoundException {
+    public Post deleteLike(String username, Long id) throws Status434CommentNotFoundException {
         Comment comment = commentRepository.findCommentById(id);
         if (comment == null) {
             throw new Status434CommentNotFoundException();

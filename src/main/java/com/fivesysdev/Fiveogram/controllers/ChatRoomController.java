@@ -9,24 +9,19 @@ import com.fivesysdev.Fiveogram.models.ChatRoom;
 import com.fivesysdev.Fiveogram.models.MessageModel;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ChatRoomService;
 import com.fivesysdev.Fiveogram.util.Response;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/chatRoom")
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final JWTUtil jwtUtil;
 
-    // TODO: 9/3/23 use constructor annotations
-    public ChatRoomController(ChatRoomService chatRoomService, JWTUtil jwtUtil) {
-        this.chatRoomService = chatRoomService;
-        this.jwtUtil = jwtUtil;
-    }
-
-    // TODO: 9/3/23 rename
-    @PostMapping("/new")
+    @PostMapping()
     public Response<ChatRoom> newChatRoom(@RequestHeader(value = "Authorization") String token,
                                           @RequestBody List<Long> usersId) throws Status437UserNotFoundException {
         return new Response<>(chatRoomService.newChatRoom(jwtUtil.getUsername(token), usersId));
@@ -34,21 +29,19 @@ public class ChatRoomController {
 
     @GetMapping("/{id}")
     public Response<List<MessageModel>> getMessages(@RequestHeader(value = "Authorization") String token,
-                                                    @PathVariable long id)
+                                                    @PathVariable Long id)
             throws Status452ChatRoomNotFoundException, Status453NotYourChatRoomException {
         return new Response<>(chatRoomService.findById(id,jwtUtil.getUsername(token)).getMessages());
     }
 
-    // TODO: 9/3/23 rename to "chatroomId/user
-    @PostMapping("/addUser/{chatRoomId}")
+    @PostMapping("/{chatRoomId}/user")
     public void addUserToChatRoom(@RequestHeader(value = "Authorization") String token,
                                   @PathVariable Long chatRoomId, @RequestBody List<Long> userIds)
             throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException {
         chatRoomService.addUserToChatRoom(chatRoomId, userIds, jwtUtil.getUsername(token));
     }
 
-    // TODO: 9/3/23 rename to "chatroomId/user
-    @DeleteMapping("/deleteUser/{chatRoomId}")
+    @DeleteMapping("/{chatRoomId}/user")
     public void deleteUserFromChatRoom(@RequestHeader(value = "Authorization") String token,
                                        @PathVariable Long chatRoomId, @RequestParam Long userId)
             throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException {

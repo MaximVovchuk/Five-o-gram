@@ -47,7 +47,7 @@ class CommentServiceImplTest {
     @Test
     void testSave_shouldSaveCommentAndSendNotification() throws Status435PostNotFoundException, Status448TextIsNullException {
         String username = "user1";
-        long postId = 1;
+        Long postId = 1L;
         String text = "Comment text";
         User user = new User();
         Post post = new Post();
@@ -56,7 +56,7 @@ class CommentServiceImplTest {
         Comment comment = new Comment();
         comment.setText(text);
         comment.setAuthor(user);
-        comment.setId(1);
+        comment.setId(1L);
         comment.setPost(post);
         SponsoredPost sponsoredPost = new SponsoredPost();
         User sponsor = new User();
@@ -81,13 +81,13 @@ class CommentServiceImplTest {
 
     @Test
     void testSave_shouldThrowStatus435PostNotFoundException() throws Status435PostNotFoundException {
-        when(postService.findPostById(1)).thenReturn(null);
-        assertThrows(Status435PostNotFoundException.class, () -> commentService.save("user1", 1, "Comment text"));
+        when(postService.findPostById(1L)).thenReturn(null);
+        assertThrows(Status435PostNotFoundException.class, () -> commentService.save("user1", 1L, "Comment text"));
     }
 
     @Test
     void testSave_shouldThrowStatus448TextIsNullException() {
-        assertThrows(Status448TextIsNullException.class, () -> commentService.save("user1", 1, null));
+        assertThrows(Status448TextIsNullException.class, () -> commentService.save("user1", 1L, null));
     }
 
     @Test

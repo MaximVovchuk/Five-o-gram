@@ -8,20 +8,16 @@ import com.fivesysdev.Fiveogram.services.LoginService;
 import com.fivesysdev.Fiveogram.services.RegistrationService;
 import com.fivesysdev.Fiveogram.util.Response;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class StartController {
     private final LoginService loginService;
     private final RegistrationService registrationService;
-
-    // TODO: 9/3/23 use constructor annotations
-    public StartController(LoginService loginService, RegistrationService registrationService) {
-        this.loginService = loginService;
-        this.registrationService = registrationService;
-    }
 
     @GetMapping("/login")
     public Response<String> login(@RequestBody AuthenticationDTO authenticationDTO)

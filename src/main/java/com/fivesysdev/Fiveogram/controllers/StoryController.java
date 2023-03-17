@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/story")
-// TODO: 9/3/23 rename all endpoint avoiding CRUD namings
 public class StoryController {
     private final StoryService storyService;
     private final ReportService reportService;
@@ -52,8 +51,8 @@ public class StoryController {
         return new Response<>(storyService.getMyStoriesArchive(jwtUtil.getUsername(token)));
     }
 
-    @PostMapping("/{id}/report")
-    public Response<Story> report(@PathVariable long id, @RequestParam String text)
+    @PostMapping("/report/{id}")
+    public Response<Story> report(@PathVariable Long id, @RequestParam String text)
             throws Status445StoryNotFoundException {
         return new Response<>(reportService.reportStory(id, text));
     }

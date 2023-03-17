@@ -8,9 +8,8 @@ import lombok.Data;
 public class CommentLikeNotification implements Notification {
     private final NotificationType type = NotificationType.COMMENTLIKE;
     private final CommentLike commentLike;
-    // TODO: 9/3/23 use wrappers instead of primitives
     @JsonIgnore
-    private final long entityId;
+    private final Long entityId;
     public CommentLikeNotification(CommentLike commentLike){
         this.commentLike = commentLike;
         this.entityId = commentLike.getId();
@@ -23,7 +22,7 @@ public class CommentLikeNotification implements Notification {
     }
 
     @Override
-    public long getEntityId() {
+    public Long getEntityId() {
         return this.entityId;
     }
 }

@@ -27,7 +27,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscriptionRepository.findByFriend_IdAndOwner_Id(friend.getId(), owner.getId());
     }
 
-    public User subscribe(String username, long id) throws Status431SubscriptionException, Status437UserNotFoundException {
+    public User subscribe(String username, Long id) throws Status431SubscriptionException, Status437UserNotFoundException {
         User newFriend = userService.findUserById(id);
         User owner = userService.findUserByUsername(username);
         if (newFriend == null) {
@@ -48,7 +48,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public User unsubscribe(String username, long id) throws Status431SubscriptionException, Status437UserNotFoundException {
+    public User unsubscribe(String username, Long id) throws Status431SubscriptionException, Status437UserNotFoundException {
         User friend = userService.findUserById(id);
         User owner = userService.findUserByUsername(username);
         if (friend == null) {

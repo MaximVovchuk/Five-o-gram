@@ -4,11 +4,16 @@ import com.fivesysdev.Fiveogram.dto.PostReportDTO;
 import com.fivesysdev.Fiveogram.dto.StoryReportDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status451ReportWithThisIdIsNotFound;
 import com.fivesysdev.Fiveogram.models.Post;
+import com.fivesysdev.Fiveogram.models.ReportStatus;
 import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.models.reports.PostReport;
+import com.fivesysdev.Fiveogram.models.reports.PostsToBan;
 import com.fivesysdev.Fiveogram.models.reports.StoryReport;
+import com.fivesysdev.Fiveogram.models.reports.StoryToBan;
 import com.fivesysdev.Fiveogram.repositories.PostReportRepository;
+import com.fivesysdev.Fiveogram.repositories.PostsToBanRepository;
 import com.fivesysdev.Fiveogram.repositories.StoryReportRepository;
+import com.fivesysdev.Fiveogram.repositories.StoryToBanRepository;
 import com.fivesysdev.Fiveogram.serviceInterfaces.PostService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
 import org.junit.jupiter.api.Test;
@@ -35,10 +40,13 @@ public class ReportServiceImplTest {
 
     @Mock
     private PostReportRepository postReportRepository;
+    @Mock
+    private PostsToBanRepository postsToBanRepository;
 
     @Mock
     private StoryReportRepository storyReportRepository;
-
+    @Mock
+    private StoryToBanRepository storyToBanRepository;
     @Mock
     private PostService postService;
 
@@ -47,23 +55,27 @@ public class ReportServiceImplTest {
 
     @Test
     public void getPostReports_shouldReturnEmptyList_whenNoReportsFound() {
-        when(postReportRepository.findAll()).thenReturn(Collections.emptyList());
+        when(postsToBanRepository.findAll()).thenReturn(Collections.emptyList());
         List<PostReportDTO> postReports = reportService.getPostReports();
         assertThat(postReports).isEmpty();
     }
+
     @Test
     public void getPostReports_whenPostReportsArePresent_returnsSortedPostReportDTOs() {
         // Arrange
         Post post1 = new Post();
         post1.setId(1L);
         Post post2 = new Post();
-        post1.setId(2L);
-        List<PostReport> postReports = Arrays.asList(
-                new PostReport(post1, "Report 1"),
-                new PostReport(post1, "Report 2"),
-                new PostReport(post2, "Report 3")
+        post2.setId(2L);
+        PostReport postReport1 = new PostReport(post1, "Report 1");
+        PostReport postReport2 = new PostReport(post1, "Report 2");
+        PostReport postReport3 = new PostReport(post2, "Report 3");
+        List<PostsToBan> postsToBan = Arrays.asList(
+                new PostsToBan(postReport1),
+                new PostsToBan(postReport2),
+                new PostsToBan(postReport3)
         );
-        when(postReportRepository.findAll()).thenReturn(postReports);
+        when(postsToBanRepository.findAll()).thenReturn(postsToBan);
 
         // Act
         List<PostReportDTO> result = reportService.getPostReports();
@@ -80,7 +92,7 @@ public class ReportServiceImplTest {
     @Test
     public void getPostReports_whenPostReportsAreEmpty_returnsEmptyList() {
         // Arrange
-        when(postReportRepository.findAll()).thenReturn(Collections.emptyList());
+        when(postsToBanRepository.findAll()).thenReturn(Collections.emptyList());
 
         // Act
         List<PostReportDTO> result = reportService.getPostReports();
@@ -93,7 +105,7 @@ public class ReportServiceImplTest {
     public void acceptPostReport_shouldCallBanPost_whenReportFound() throws Status451ReportWithThisIdIsNotFound {
         Long id = 1L;
         when(postReportRepository.existsByPost_Id(id)).thenReturn(true);
-        reportService.acceptPostReport(id);
+        reportService.responseToPostReport(id, ReportStatus.ACCEPTED);
         verify(postService, Mockito.times(1)).banPost(id);
     }
 
@@ -101,7 +113,7 @@ public class ReportServiceImplTest {
     public void acceptPostReport_shouldThrowException_whenReportNotFound() {
         Long id = 1L;
         when(postReportRepository.existsByPost_Id(id)).thenReturn(false);
-        assertThrows(Status451ReportWithThisIdIsNotFound.class, () -> reportService.acceptPostReport(id));
+        assertThrows(Status451ReportWithThisIdIsNotFound.class, () -> reportService.responseToPostReport(id, ReportStatus.ACCEPTED));
     }
 
 //    @Test
@@ -113,13 +125,11 @@ public class ReportServiceImplTest {
 
     @Test
     public void testGetStoryReports() {
-        StoryReport storyReport = new StoryReport();
         Story story = new Story();
         story.setId(1L);
-        storyReport.setStory(story);
-        storyReport.setText("Report text");
+        StoryReport storyReport = new StoryReport(story, "Report text");
         StoryReport storyReport1 = new StoryReport(story, "Lol");
-        when(storyReportRepository.findAll()).thenReturn(new ArrayList<>(List.of(storyReport, storyReport1)));
+        when(storyToBanRepository.findAll()).thenReturn(Arrays.asList(new StoryToBan(storyReport), new StoryToBan(storyReport1)));
         List<StoryReportDTO> storyReports = reportService.getStoryReports();
         assertEquals(1, storyReports.size());
         assertEquals("Report text", storyReports.get(0).getReportTexts().get(0));
@@ -127,10 +137,11 @@ public class ReportServiceImplTest {
     }
 
     @Test
-    public void testGetStoryReportsAreEmpty(){
-        when(storyReportRepository.findAll()).thenReturn(new ArrayList<>());
+    public void testGetStoryReportsAreEmpty() {
+        when(storyToBanRepository.findAll()).thenReturn(new ArrayList<>());
         assertThat(reportService.getStoryReports()).isEmpty();
     }
+
     @Test
     public void acceptStoryReport_whenStoryReportExists_deletesReportAndBansStory() throws Status451ReportWithThisIdIsNotFound {
         // Arrange
@@ -138,15 +149,13 @@ public class ReportServiceImplTest {
         Story story = new Story();
         story.setId(id);
         when(storyReportRepository.existsByStory_Id(id)).thenReturn(true);
-        doNothing().when(storyReportRepository).deleteByStory_Id(id);
-        doNothing().when(storyService).banStory(id);
 
         // Act
-        reportService.acceptStoryReport(id);
+        reportService.responseToStoryReport(id, ReportStatus.ACCEPTED);
 
         // Assert
         verify(storyReportRepository).existsByStory_Id(id);
-        verify(storyReportRepository).deleteByStory_Id(id);
+        verify(storyReportRepository).deleteAllByStory_Id(id);
         verify(storyService).banStory(id);
     }
 
@@ -158,7 +167,7 @@ public class ReportServiceImplTest {
 
         // Act & Assert
         assertThrows(Status451ReportWithThisIdIsNotFound.class,
-                () -> reportService.acceptStoryReport(id));
+                () -> reportService.responseToStoryReport(id, ReportStatus.ACCEPTED));
         verify(storyReportRepository).existsByStory_Id(id);
         verify(storyReportRepository, never()).deleteByStory_Id(id);
         verify(storyService, never()).banStory(id);
@@ -168,13 +177,13 @@ public class ReportServiceImplTest {
     public void declineStoryReport_deletesStoryReport() throws Status451ReportWithThisIdIsNotFound {
         // Arrange
         Long id = 1L;
-        doNothing().when(storyReportRepository).deleteByStory_Id(id);
-
+        when(storyReportRepository.existsByStory_Id(id)).thenReturn(true);
         // Act
-        reportService.declineStoryReport(id);
+        reportService.responseToStoryReport(id, ReportStatus.REJECTED);
 
         // Assert
-        verify(storyReportRepository).deleteByStory_Id(id);
+        verify(storyReportRepository).existsByStory_Id(id);
+        verify(storyReportRepository, never()).deleteByStory_Id(id);
     }
 
 }

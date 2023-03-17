@@ -32,7 +32,7 @@ public class CommentServiceImpl implements CommentService {
     private final SponsoredPostRepository sponsoredPostRepository;
 
     @Override
-    public Comment save(String username, long id, String text) throws Status435PostNotFoundException, Status448TextIsNullException {
+    public Comment save(String username, Long id, String text) throws Status435PostNotFoundException, Status448TextIsNullException {
         if (text == null || text.isBlank()) {
             throw new Status448TextIsNullException();
         }
@@ -51,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment editComment(String username, long id, String text) throws Status434CommentNotFoundException, Status432NotYourCommentException {
+    public Comment editComment(String username, Long id, String text) throws Status434CommentNotFoundException, Status432NotYourCommentException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
             throw new Status434CommentNotFoundException();
@@ -64,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Post deleteComment(String username, long id) throws Status434CommentNotFoundException, Status432NotYourCommentException {
+    public Post deleteComment(String username, Long id) throws Status434CommentNotFoundException, Status432NotYourCommentException {
         Comment oldComment = commentRepository.findCommentById(id);
         if (oldComment == null) {
             throw new Status434CommentNotFoundException();

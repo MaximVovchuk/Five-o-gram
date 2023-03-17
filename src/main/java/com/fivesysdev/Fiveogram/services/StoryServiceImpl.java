@@ -75,7 +75,7 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    public Story reportStory(String text, long id) throws Status445StoryNotFoundException {
+    public Story reportStory(String text, Long id) throws Status445StoryNotFoundException {
         Story story = getStoryById(id);
         storyReportRepository.save(StoryReport.builder()
                 .story(story)

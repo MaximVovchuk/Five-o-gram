@@ -55,14 +55,14 @@ class ChatRoomServiceImplTest {
     }
 
     @Test
-    void testFindByIdWhenUserBelongsToChatRoom() throws Exception {
+    void testFindByIdWhenUserBeLongsToChatRoom() throws Exception {
         when(chatRoomRepository.findById(1L)).thenReturn(Optional.of(chatRoom));
         ChatRoom result = chatRoomService.findById(1L, "user1");
         assertEquals(chatRoom, result);
     }
 
     @Test
-    void testFindByIdWhenUserDoesNotBelongToChatRoom() {
+    void testFindByIdWhenUserDoesNotBeLongToChatRoom() {
         when(chatRoomRepository.findById(1L)).thenReturn(Optional.of(chatRoom));
         Executable executable = () -> chatRoomService.findById(1L, "user3");
         assertThrows(Status453NotYourChatRoomException.class, executable);

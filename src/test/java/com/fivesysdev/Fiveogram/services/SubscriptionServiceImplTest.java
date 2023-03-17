@@ -59,7 +59,7 @@ public class SubscriptionServiceImplTest {
     @Test
     public void testFindSubscriptionByFriendAndOwner(){
         subscriptionService.findSubscriptionByFriendAndOwner(new User(),new User());
-        verify(subscriptionRepository).findByFriend_IdAndOwner_Id(0L,0L);
+        verify(subscriptionRepository).findByFriend_IdAndOwner_Id(null,null);
     }
     @Test
     public void testSubscribeYourself() throws Status437UserNotFoundException {
@@ -115,9 +115,9 @@ public class SubscriptionServiceImplTest {
     @Test
     public void testUnsubscribeIfYouDidNotSubscribeHim() throws Status437UserNotFoundException {
         String username = "testuser";
-        long userId = 1L;
+        Long userId = 1L;
         String friendname = "testfriend";
-        long friendId = 2L;
+        Long friendId = 2L;
 
         User testuser = User.builder().username(username).build();
         testuser.setId(userId);

@@ -2,14 +2,12 @@ package com.fivesysdev.Fiveogram.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fivesysdev.Fiveogram.models.Post;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 public class PostReportDTO {
     @JsonIgnoreProperties({"commentList", "likesList"})
     private Post post;
