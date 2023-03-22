@@ -1,0 +1,33 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: users creation
+      author: maks
+      changes:
+        - sqlFile:
+            path: 0001-user.sql
+            relativeToChangelogFile: true
+
+  - changeSet:
+      id: password reset token
+      author: maks
+      changes:
+        - sqlFile:
+           path: 0002-main-content.sql
+           relativeToChangelogFile: true
+
+  - changeSet:
+      id: parent
+      author: maks
+      changes:
+        - sqlFile:
+            path: 0003-report.sql
+            relativeToChangelogFile: true
+
+  - changeSet:
+      id: insert to parent profile
+      author: maks
+      changes:
+        - sqlFile:
+            path: 0004-chat.sql
+            relativeToChangelogFile: true

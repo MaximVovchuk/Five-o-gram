@@ -160,7 +160,6 @@ public class ReportServiceImpl implements ReportService {
             storyToBanRepository.save(new StoryToBan(storyReport));
         }
     }
-
     @Override
     @Transactional
     public void acceptStoryReport(Long id) throws Status451ReportWithThisIdIsNotFound {
