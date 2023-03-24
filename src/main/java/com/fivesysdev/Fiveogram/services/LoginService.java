@@ -23,8 +23,8 @@ public class LoginService {
 
     public String login(AuthenticationDTO authenticationDTO) throws Status440WrongPasswordException, MessagingException {
         JwtUser userDetails;
-        userDetails = authService.loadUserByUsername(authenticationDTO.getUsername());
-        if (!passwordEncoder.matches(authenticationDTO.getPassword(), userDetails.getPassword())) {
+        userDetails = authService.loadUserByUsername(authenticationDTO.username());
+        if (!passwordEncoder.matches(authenticationDTO.password(), userDetails.getPassword())) {
             throw new Status440WrongPasswordException();
         }
         mailSenderService.sendMessage("Subject","Basic Text","maxik.volk.k@gmail.com");

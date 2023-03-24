@@ -17,6 +17,7 @@ public class FileUtil {
         out.write(file);
         out.flush();
         out.close();
+        System.out.println("File "+ fileName + " uploaded successfully");
     }
 
     public static String getSuffix(String fileName) throws Status441FileIsNullException {

@@ -67,9 +67,7 @@ class PostServiceImplTest {
         List<MultipartFile> multipartFiles = new ArrayList<>();
         MultipartFile mock = mock(MultipartFile.class);
         multipartFiles.add(mock);
-        PostDTO postDTO = new PostDTO();
-        postDTO.setText("test post");
-        postDTO.setMultipartFiles(multipartFiles);
+        PostDTO postDTO = PostDTO.builder().text("test post").multipartFiles(multipartFiles).build();
 
         when(userRepository.findUserByUsername("testuser")).thenReturn(user);
         when(fileService.saveFile(user, mock)).thenReturn("/file");
@@ -86,10 +84,7 @@ class PostServiceImplTest {
         List<MultipartFile> multipartFiles = new ArrayList<>();
         MultipartFile mock = mock(MultipartFile.class);
         multipartFiles.add(mock);
-        PostDTO postDTO = new PostDTO();
-        postDTO.setText("test post");
-        postDTO.setMultipartFiles(multipartFiles);
-        postDTO.setSponsorId(1L);
+        PostDTO postDTO = PostDTO.builder().text("test post").sponsorId(1L).multipartFiles(multipartFiles).build();
 
         when(userRepository.findUserById(1L)).thenReturn(new User());
         when(userRepository.findUserByUsername("testuser")).thenReturn(user);
@@ -108,10 +103,7 @@ class PostServiceImplTest {
         List<MultipartFile> multipartFiles = new ArrayList<>();
         MultipartFile mock = mock(MultipartFile.class);
         multipartFiles.add(mock);
-        PostDTO postDTO = new PostDTO();
-        postDTO.setText("test post");
-        postDTO.setMultipartFiles(multipartFiles);
-        postDTO.setSponsorId(1L);
+        PostDTO postDTO = PostDTO.builder().text("test post").sponsorId(1L).multipartFiles(multipartFiles).build();
 
         when(userRepository.findUserByUsername("testuser")).thenReturn(user);
         when(userRepository.findUserById(1L)).thenReturn(null);
@@ -124,9 +116,8 @@ class PostServiceImplTest {
     public void testSaveThrows443() {
         User user = new User();
         user.setUsername("testuser");
-        PostDTO postDTO = new PostDTO();
-        postDTO.setText("test post");
-        postDTO.setMultipartFiles(new ArrayList<>());
+        PostDTO postDTO = PostDTO.builder().text("test post").multipartFiles(new ArrayList<>()).build();
+
 
         when(userRepository.findUserByUsername("testuser")).thenReturn(user);
 
@@ -164,9 +155,7 @@ class PostServiceImplTest {
         List<MultipartFile> multipartFiles = new ArrayList<>();
         MultipartFile file = mock(MultipartFile.class);
         multipartFiles.add(file);
-        PostDTO postDTO = new PostDTO();
-        postDTO.setText("edited test post");
-        postDTO.setMultipartFiles(multipartFiles);
+        PostDTO postDTO = PostDTO.builder().text("edited test post").multipartFiles(multipartFiles).build();
 
         when(postRepository.findPostById(1L)).thenReturn(post);
         when(userRepository.findUserByUsername("testuser")).thenReturn(user);
@@ -191,9 +180,8 @@ class PostServiceImplTest {
         List<MultipartFile> multipartFiles = new ArrayList<>();
         MultipartFile file = mock(MultipartFile.class);
         multipartFiles.add(file);
-        PostDTO postDTO = new PostDTO();
-        postDTO.setText("edited test post");
-        postDTO.setMultipartFiles(multipartFiles);
+        PostDTO postDTO = PostDTO.builder().text("test post").multipartFiles(multipartFiles).build();
+
 
         when(postRepository.findPostById(1L)).thenReturn(post);
         when(userRepository.findUserByUsername("testuser")).thenReturn(user);
@@ -207,7 +195,7 @@ class PostServiceImplTest {
     public void testEditUserThrows435() {
         when(postRepository.findPostById(1L)).thenReturn(null);
         assertThrows(Status435PostNotFoundException.class,
-                () -> postService.editPost("test", new PostDTO(), 1L));
+                () -> postService.editPost("test", PostDTO.builder().build(), 1L));
     }
 
     @Test
@@ -260,7 +248,7 @@ class PostServiceImplTest {
     }
 
     @Test
-    public void testBanPost(){
+    public void testBanPost() {
         postService.banPost(1L);
         verify(postRepository).deleteById(1L);
     }
@@ -274,11 +262,7 @@ class PostServiceImplTest {
         author.setUsername(username);
         post.setAuthor(author);
         picture.setPost(post);
-        MarkDTO markDTO = new MarkDTO();
-        markDTO.setPhotoId(1L);
-        markDTO.setUsername(username);
-        markDTO.setWidth(100);
-        markDTO.setHeight(200);
+        MarkDTO markDTO = MarkDTO.builder().height(200).width(100).photoId(1L).username(username).build();
         List<MarkDTO> markDTOs = new ArrayList<>();
         markDTOs.add(markDTO);
         when(pictureRepository.findById(anyLong())).thenReturn(Optional.of(picture));
@@ -295,8 +279,7 @@ class PostServiceImplTest {
     @Test
     public void testAddMarksThrows449() {
         String username = "test_user";
-        MarkDTO markDTO = new MarkDTO();
-        markDTO.setPhotoId(1L);
+        MarkDTO markDTO = MarkDTO.builder().photoId(1L).build();
         List<MarkDTO> markDTOs = new ArrayList<>();
         markDTOs.add(markDTO);
         when(pictureRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -315,15 +298,14 @@ class PostServiceImplTest {
         otherUser.setUsername("otherUser");
         post.setAuthor(otherUser);
         picture.setPost(post);
-        MarkDTO markDTO = new MarkDTO();
-        markDTO.setPhotoId(1L);
-        markDTO.setUsername(username);
+        MarkDTO markDTO = MarkDTO.builder().photoId(1L).username(username).build();
         List<MarkDTO> markDTOs = new ArrayList<>();
         markDTOs.add(markDTO);
         when(pictureRepository.findById(anyLong())).thenReturn(Optional.of(picture));
 
         assertThrows(Status433NotYourPostException.class, () -> postService.addMarks(username, markDTOs));
     }
+
     @Test
     public void testAddMarksThrows437() {
         String username = "test_user";
@@ -333,9 +315,7 @@ class PostServiceImplTest {
         author.setUsername(username);
         post.setAuthor(author);
         picture.setPost(post);
-        MarkDTO markDTO = new MarkDTO();
-        markDTO.setPhotoId(1L);
-        markDTO.setUsername("invalid_user");
+        MarkDTO markDTO = MarkDTO.builder().photoId(1L).username("invalid_user").build();
         List<MarkDTO> markDTOs = new ArrayList<>();
         markDTOs.add(markDTO);
         when(pictureRepository.findById(anyLong())).thenReturn(Optional.of(picture));
@@ -357,6 +337,7 @@ class PostServiceImplTest {
         verify(markRepository, times(0)).save(any());
         verify(notificationService, times(0)).sendNotification(any());
     }
+
     @Test
     void testGetRecommendations() {
         // Given

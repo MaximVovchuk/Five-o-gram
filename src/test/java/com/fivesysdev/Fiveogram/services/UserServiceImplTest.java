@@ -126,11 +126,8 @@ public class UserServiceImplTest {
         when(userRepository.findUserByUsername("testuser")).thenReturn(user);
         when(passwordEncoder.encode("newpassword")).thenReturn("newpassword");
         when(jwtUtil.generateToken("newusername", List.of(user.getRole()))).thenReturn("jwt");
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("newusername");
-        userDTO.setName("newname");
-        userDTO.setSurname("newsurname");
-        userDTO.setPassword("newpassword");
+        UserDTO userDTO = UserDTO.builder().username("newusername").name("newname")
+                .surname("newsurname").password("newpassword").build();
 
         String jwt = userService.editMe("testuser", userDTO);
 
@@ -147,8 +144,7 @@ public class UserServiceImplTest {
     @Test
     public void testEditMeUsernameBusy() {
         when(userRepository.existsByUsername("newusername")).thenReturn(true);
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("newusername");
+        UserDTO userDTO = UserDTO.builder().username("newusername").build();
         assertThrows(Status439UsernameBusyException.class,
                 () -> userService.editMe("testuser", userDTO));
     }

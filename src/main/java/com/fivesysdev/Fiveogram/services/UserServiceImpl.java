@@ -66,13 +66,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public String editMe(String username, UserDTO userDTO) throws Status439UsernameBusyException {
         User user = userRepository.findUserByUsername(username);
-        if (!username.equals(userDTO.getUsername()) && userRepository.existsByUsername(userDTO.getUsername())) {
+        if (!username.equals(userDTO.username()) && userRepository.existsByUsername(userDTO.username())) {
             throw new Status439UsernameBusyException();
         }
-        user.setName(userDTO.getName());
-        user.setUsername(userDTO.getUsername());
-        user.setSurname(userDTO.getSurname());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setName(userDTO.name());
+        user.setUsername(userDTO.username());
+        user.setSurname(userDTO.surname());
+        user.setPassword(passwordEncoder.encode(userDTO.password()));
         return jwtUtil.generateToken(user.getUsername(), List.of(user.getRole()));
     }
 

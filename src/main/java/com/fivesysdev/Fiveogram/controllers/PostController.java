@@ -27,7 +27,7 @@ public class PostController {
     private final JWTUtil jwtUtil;
     private final HashtagService hashtagService;
 
-    @PostMapping("/newPost")
+    @PostMapping()
     public Response<Post> addNewPost(@ModelAttribute PostDTO postDTO,
                                            @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status436SponsorNotFoundException,
@@ -39,7 +39,7 @@ public class PostController {
     public Response<Post> addMarks(@RequestBody MarksToAddDTO marksToAddDTO,
                                          @RequestHeader(value = "Authorization") String token)
             throws Status449PictureNotFoundException, Status433NotYourPostException, Status437UserNotFoundException {
-        return new Response<>(postService.addMarks(jwtUtil.getUsername(token), marksToAddDTO.getMarkDTOs()));
+        return new Response<>(postService.addMarks(jwtUtil.getUsername(token), marksToAddDTO.markDTOs()));
     }
 
     @GetMapping("/{id}")

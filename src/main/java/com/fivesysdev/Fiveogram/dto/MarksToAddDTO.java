@@ -6,9 +6,5 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class MarksToAddDTO {
-    public List<MarkDTO> markDTOs;
+public record MarksToAddDTO(List<MarkDTO> markDTOs) {
 }

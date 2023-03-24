@@ -60,7 +60,7 @@ public class ReportServiceImpl implements ReportService {
             postReportDTO.addReportText(report.getText());
         }
         reports.add(postReportDTO);
-        reports.sort(Comparator.comparingInt(o -> o.getReportTexts().size()));
+        reports.sort(Comparator.comparingInt(o -> o.reportTexts().size()));
         return reports;
     }
 
@@ -134,7 +134,7 @@ public class ReportServiceImpl implements ReportService {
             storyReportDTO.addReportText(report.getText());
         }
         reports.add(storyReportDTO);
-        reports.sort(Comparator.comparingInt(o -> o.getReportTexts().size()));
+        reports.sort(Comparator.comparingInt(o -> o.reportTexts().size()));
         return reports;
     }
 

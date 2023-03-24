@@ -42,6 +42,12 @@ public class RegistrationService {
     }
 
     private User convertToUser(UserDTO userDTO) {
-        return this.modelMapper.map(userDTO, User.class);
+        User user = new User();
+        user.setUsername(userDTO.username());
+        user.setPassword(userDTO.password());
+        user.setName(userDTO.name());
+        user.setSurname(userDTO.surname());
+        return user;
+//        return this.modelMapper.map(userDTO, User.class);
     }
 }

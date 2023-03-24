@@ -39,11 +39,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequestException, Status437UserNotFoundException {
         User user = userRepository.findUserByUsername(username);
-        List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
+        List<MultipartFile> multipartFiles = postDTO.multipartFiles();
         if (multipartFiles.isEmpty()) {
             throw new Status443DidNotReceivePictureException();
         }
-        Long sponsorId = postDTO.getSponsorId();
+        Long sponsorId = postDTO.sponsorId();
         User sponsor = null;
         if (sponsorId != null) {
             sponsor = userRepository.findUserById(sponsorId);
@@ -51,7 +51,7 @@ public class PostServiceImpl implements PostService {
                 throw new Status436SponsorNotFoundException();
             }
         }
-        Post post = createAndSavePost(user, postDTO.getText(), multipartFiles);
+        Post post = createAndSavePost(user, postDTO.text(), multipartFiles);
         hashtagService.saveAllHashtagsFromPost(post);
         if (sponsorId != null) {
             createAndSaveSponsoredPost(post, sponsor);
@@ -80,7 +80,7 @@ public class PostServiceImpl implements PostService {
         if (!post.getAuthor().equals(user)) {
             throw new Status433NotYourPostException();
         }
-        List<MultipartFile> multipartFiles = postDTO.getMultipartFiles();
+        List<MultipartFile> multipartFiles = postDTO.multipartFiles();
         deletePictures(post.getPictures());
         if (multipartFiles != null && !multipartFiles.isEmpty()) {
             for (MultipartFile multipartFile : multipartFiles) {
@@ -91,7 +91,7 @@ public class PostServiceImpl implements PostService {
                 post.addPicture(picture);
             }
         }
-        post.setText(postDTO.getText());
+        post.setText(postDTO.text());
         hashtagService.deleteAllHashtagsFromPost(post);
         hashtagService.saveAllHashtagsFromPost(post);
         return post;
@@ -128,19 +128,19 @@ public class PostServiceImpl implements PostService {
         Post post = null;
         deleteMarksByMarkDTOs(markDTOs);
         for (MarkDTO markDTO : markDTOs) {
-            Picture picture = pictureRepository.findById(markDTO.getPhotoId())
+            Picture picture = pictureRepository.findById(markDTO.photoId())
                     .orElseThrow(Status449PictureNotFoundException::new);
             if (!username.equals(picture.getPost().getAuthor().getUsername())) {
                 throw new Status433NotYourPostException();
             }
-            if (!userRepository.existsByUsername(markDTO.getUsername())) {
+            if (!userRepository.existsByUsername(markDTO.username())) {
                 throw new Status437UserNotFoundException();
             }
             post = post == null ? picture.getPost() : null;
             Mark mark = Mark.builder()
-                    .width(markDTO.getWidth())
-                    .height(markDTO.getHeight())
-                    .username(markDTO.getUsername())
+                    .width(markDTO.width())
+                    .height(markDTO.height())
+                    .username(markDTO.username())
                     .picture(picture)
                     .build();
             notificationService.sendNotification(
@@ -214,7 +214,7 @@ public class PostServiceImpl implements PostService {
     private void deleteMarksByMarkDTOs(List<MarkDTO> markDTOs) throws Status449PictureNotFoundException {
         try {
             Set<Picture> pictures = markDTOs.stream()
-                    .map(markDTO -> pictureRepository.findById(markDTO.getPhotoId()).orElseThrow()).collect(Collectors.toSet());
+                    .map(markDTO -> pictureRepository.findById(markDTO.photoId()).orElseThrow()).collect(Collectors.toSet());
             for (Picture picture : pictures) {
                 markRepository.deleteByPicture(picture);
             }

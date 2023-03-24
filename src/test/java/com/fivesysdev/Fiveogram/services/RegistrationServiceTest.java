@@ -37,9 +37,7 @@ public class RegistrationServiceTest {
     @BeforeEach
     public void setUp() {
         registrationService = new RegistrationService(userRepository, passwordEncoder, jwtUtil, new ModelMapper());
-        userDTO = new UserDTO();
-        userDTO.setUsername("test");
-        userDTO.setPassword("pass");
+        userDTO = UserDTO.builder().username("test").password("pass").build();
         user = new User();
         user.setUsername("test");
         user.setPassword("pass");
@@ -64,9 +62,7 @@ public class RegistrationServiceTest {
 
     @Test
     public void whenValidUser_thenSaveUser() throws Status439UsernameBusyException {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("TestUser");
-        userDTO.setPassword("TestPassword");
+        UserDTO userDTO = UserDTO.builder().username("TestUser").password("TestPassword").build();
         when(passwordEncoder.encode("TestPassword")).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(new User());
         when(jwtUtil.generateToken("TestUser", List.of(Role.USER))).thenReturn("Token");
@@ -80,9 +76,7 @@ public class RegistrationServiceTest {
 
     @Test
     public void whenUserWithSameUsernameExists_thenThrowException() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("TestUser");
-        userDTO.setPassword("TestPassword");
+        UserDTO userDTO = UserDTO.builder().username("TestUser").password("TestPassword").build();
 
         when(userRepository.findUserByUsername("TestUser")).thenReturn(new User());
 
@@ -91,18 +85,14 @@ public class RegistrationServiceTest {
 
     @Test
     public void whenEmptyUsername_thenThrowException() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("");
-        userDTO.setPassword("TestPassword");
+        UserDTO userDTO = UserDTO.builder().username("").password("TestPassword").build();
 
         assertThrows(IllegalArgumentException.class, () -> registrationService.register(userDTO));
     }
 
     @Test
     public void whenEmptyPassword_thenThrowException() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("TestUser");
-        userDTO.setPassword("");
+        UserDTO userDTO = UserDTO.builder().username("TestUser").password("").build();
         assertThrows(IllegalArgumentException.class, () -> registrationService.register(userDTO));
     }
 }
