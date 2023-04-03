@@ -19,15 +19,13 @@ public class LoginService {
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
-    private final MailSenderService mailSenderService;
 
-    public String login(AuthenticationDTO authenticationDTO) throws Status440WrongPasswordException, MessagingException {
+    public String login(AuthenticationDTO authenticationDTO) throws Status440WrongPasswordException {
         JwtUser userDetails;
         userDetails = authService.loadUserByUsername(authenticationDTO.username());
         if (!passwordEncoder.matches(authenticationDTO.password(), userDetails.getPassword())) {
             throw new Status440WrongPasswordException();
         }
-        mailSenderService.sendMessage("Subject","Basic Text","maxik.volk.k@gmail.com");
         return jwtUtil.generateToken(userDetails.getUsername(), (Collection<Role>) userDetails.getAuthorities());
     }
 }

@@ -32,6 +32,8 @@ public class User extends BaseEntity {
     private String password;
     @Column(name = "role")
     private Role role;
+    @Column(name = "email")
+    private String email;
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "user")
     @ToString.Exclude

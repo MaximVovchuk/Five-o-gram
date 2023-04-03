@@ -17,11 +17,15 @@ public class AuthService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findUserByUsername(username);
+    public JwtUser loadUserByUsername(String credential) throws UsernameNotFoundException {
+        User user = userRepository.findUserByUsername(credential);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found!");
+            user = userRepository.findByEmail(credential);
+            if (user == null) {
+                throw new UsernameNotFoundException("User not found!");
+            }
         }
         return new JwtUser(user);
     }
+
 }

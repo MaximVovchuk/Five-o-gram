@@ -31,3 +31,11 @@ databaseChangeLog:
         - sqlFile:
             path: 0004-chat.sql
             relativeToChangelogFile: true
+
+  - changeSet:
+      id: changes in reg/login
+      author: maks
+      changes:
+        - sqlFile:
+            path: 0005-loginChanges.sql
+            relativeToChangelogFile: true

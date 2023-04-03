@@ -1,9 +1,14 @@
 package com.fivesysdev.Fiveogram.services;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+import com.fivesysdev.Fiveogram.config.JWTUtil;
+import com.fivesysdev.Fiveogram.dto.UserDTO;
+import com.fivesysdev.Fiveogram.exceptions.Status439UsernameBusyException;
+import com.fivesysdev.Fiveogram.models.User;
+import com.fivesysdev.Fiveogram.repositories.UserRepository;
+import com.fivesysdev.Fiveogram.repositories.UserToRegisterRepository;
+import com.fivesysdev.Fiveogram.roles.Role;
+import com.fivesysdev.Fiveogram.serviceInterfaces.MailSenderService;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,14 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.fivesysdev.Fiveogram.config.JWTUtil;
-import com.fivesysdev.Fiveogram.dto.UserDTO;
-import com.fivesysdev.Fiveogram.exceptions.Status439UsernameBusyException;
-import com.fivesysdev.Fiveogram.roles.Role;
-import com.fivesysdev.Fiveogram.models.User;
-import com.fivesysdev.Fiveogram.repositories.UserRepository;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class RegistrationServiceTest {
@@ -29,6 +30,10 @@ public class RegistrationServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
+    private UserToRegisterRepository userToRegisterRepository;
+    @Mock
+    private MailSenderService mailSenderService;
+    @Mock
     private JWTUtil jwtUtil;
     private RegistrationService registrationService;
     private UserDTO userDTO;
@@ -36,7 +41,7 @@ public class RegistrationServiceTest {
 
     @BeforeEach
     public void setUp() {
-        registrationService = new RegistrationService(userRepository, passwordEncoder, jwtUtil, new ModelMapper());
+        registrationService = new RegistrationService(userRepository, passwordEncoder, userToRegisterRepository, mailSenderService, jwtUtil, new ModelMapper());
         userDTO = UserDTO.builder().username("test").password("pass").build();
         user = new User();
         user.setUsername("test");
@@ -45,33 +50,20 @@ public class RegistrationServiceTest {
     }
 
     @Test
-    public void whenUserDoesNotExist_registerUser_shouldReturnToken() throws Status439UsernameBusyException {
-        String expectedToken = "token";
-        when(userRepository.findUserByUsername("test")).thenReturn(null);
-        when(passwordEncoder.encode("pass")).thenReturn("encodedPass");
-        when(jwtUtil.generateToken("test", List.of(Role.USER))).thenReturn(expectedToken);
-        String token = registrationService.register(userDTO);
-        assertEquals(expectedToken, token);
-    }
-
-    @Test
     public void whenUserExists_registerUser_shouldThrowException() {
         when(userRepository.findUserByUsername("test")).thenReturn(user);
-        assertThrows(Status439UsernameBusyException.class, () -> registrationService.register(userDTO));
+        assertThrows(Status439UsernameBusyException.class, () -> registrationService.baseRegister(userDTO));
     }
 
     @Test
-    public void whenValidUser_thenSaveUser() throws Status439UsernameBusyException {
-        UserDTO userDTO = UserDTO.builder().username("TestUser").password("TestPassword").build();
+    public void whenValidUser_thenSaveUser() throws Status439UsernameBusyException, MessagingException {
+        UserDTO userDTO = UserDTO.builder().username("TestUser").password("TestPassword").email("testEmail@gmail.com").build();
         when(passwordEncoder.encode("TestPassword")).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(new User());
-        when(jwtUtil.generateToken("TestUser", List.of(Role.USER))).thenReturn("Token");
 
-        String result = registrationService.register(userDTO);
+        String result = registrationService.baseRegister(userDTO);
 
-        assertEquals("Token", result);
-        verify(userRepository, times(1)).save(any(User.class));
-        verify(jwtUtil, times(1)).generateToken("TestUser", List.of(Role.USER));
+        assertEquals("testEmail@gmail.com", result);
+        verify(mailSenderService, times(1)).sendMessage(anyString(), anyString(), anyString());
     }
 
     @Test
@@ -80,19 +72,19 @@ public class RegistrationServiceTest {
 
         when(userRepository.findUserByUsername("TestUser")).thenReturn(new User());
 
-        assertThrows(Status439UsernameBusyException.class, () -> registrationService.register(userDTO));
+        assertThrows(Status439UsernameBusyException.class, () -> registrationService.baseRegister(userDTO));
     }
 
     @Test
     public void whenEmptyUsername_thenThrowException() {
         UserDTO userDTO = UserDTO.builder().username("").password("TestPassword").build();
 
-        assertThrows(IllegalArgumentException.class, () -> registrationService.register(userDTO));
+        assertThrows(IllegalArgumentException.class, () -> registrationService.baseRegister(userDTO));
     }
 
     @Test
     public void whenEmptyPassword_thenThrowException() {
         UserDTO userDTO = UserDTO.builder().username("TestUser").password("").build();
-        assertThrows(IllegalArgumentException.class, () -> registrationService.register(userDTO));
+        assertThrows(IllegalArgumentException.class, () -> registrationService.baseRegister(userDTO));
     }
 }

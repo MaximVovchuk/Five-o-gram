@@ -40,7 +40,7 @@ public class PostServiceImpl implements PostService {
     public Post save(String username, PostDTO postDTO) throws Status441FileIsNullException, Status436SponsorNotFoundException, Status443DidNotReceivePictureException, Status446MarksBadRequestException, Status437UserNotFoundException {
         User user = userRepository.findUserByUsername(username);
         List<MultipartFile> multipartFiles = postDTO.multipartFiles();
-        if (multipartFiles.isEmpty()) {
+        if (multipartFiles==null || multipartFiles.isEmpty()) {
             throw new Status443DidNotReceivePictureException();
         }
         Long sponsorId = postDTO.sponsorId();
