@@ -31,6 +31,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/report/**").hasAuthority(Role.ADMIN.getAuthority())
                 .antMatchers("/auth/register").permitAll()
                 .antMatchers("/auth/register/confirm").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/v2/**").permitAll()
+                .antMatchers("/csrf").permitAll()
+                .antMatchers("/").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -38,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
+//        http.addFilterBefore(new SwaggerTokenFilter(), BasicAuthenticationFilter.class);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     }

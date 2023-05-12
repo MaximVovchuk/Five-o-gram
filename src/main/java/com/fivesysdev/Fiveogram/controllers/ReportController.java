@@ -5,12 +5,14 @@ import com.fivesysdev.Fiveogram.dto.StoryReportDTO;
 import com.fivesysdev.Fiveogram.exceptions.Status451ReportWithThisIdIsNotFound;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
 import com.fivesysdev.Fiveogram.util.Response;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/report")
+@Api(value = "Report endpoints", tags = {"Report"})
 public class ReportController {
     private final ReportService reportService;
 

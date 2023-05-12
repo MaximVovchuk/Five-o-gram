@@ -9,6 +9,7 @@ import com.fivesysdev.Fiveogram.models.Like;
 import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.*;
 import com.fivesysdev.Fiveogram.util.Response;
+import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.Set;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/post")
+@Api(value = "Post endpoints", tags = {"Post"})
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;

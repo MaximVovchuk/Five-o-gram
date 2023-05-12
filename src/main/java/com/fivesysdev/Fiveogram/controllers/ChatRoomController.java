@@ -9,12 +9,14 @@ import com.fivesysdev.Fiveogram.models.ChatRoom;
 import com.fivesysdev.Fiveogram.models.MessageModel;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ChatRoomService;
 import com.fivesysdev.Fiveogram.util.Response;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/chatRoom")
+@Api(value = "Chatroom endpoints", tags = {"ChatRoom"})
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final JWTUtil jwtUtil;

@@ -10,11 +10,13 @@ import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentLikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
 import com.fivesysdev.Fiveogram.util.Response;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/comment")
+@Api(value = "Comment endpoints", tags = {"Comment"})
 public class CommentController {
     private final CommentService commentService;
     private final CommentLikeService commentLikeService;

@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JWTFilter extends OncePerRequestFilter {
@@ -29,6 +30,14 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse
             , FilterChain filterChain) throws ServletException, IOException {
         String authHeader = httpServletRequest.getHeader("Authorization");
+
+        String requestURI = httpServletRequest.getRequestURI();
+        System.out.println(requestURI);
+        List<String> list = List.of("/swagger-ui.html", "/swagger-ui/index.html", "/v3/api-docs", "/favicon.ico", "/v2/api-docs", "/webjars/**", "/swagger-resources/**");
+        if (list.contains(requestURI)) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
+        }
 
         if (authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);

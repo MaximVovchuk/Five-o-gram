@@ -10,6 +10,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.NotificationService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Response;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
+@Api(value = "User endpoints", tags = {"User"})
 public class UserController {
     private final SubscriptionService subscriptionService;
     private final UserService userService;

@@ -8,6 +8,7 @@ import com.fivesysdev.Fiveogram.models.Story;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
 import com.fivesysdev.Fiveogram.util.Response;
+import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/story")
+@Api(value = "Stories endpoints", tags = {"Story"})
 public class StoryController {
     private final StoryService storyService;
     private final ReportService reportService;

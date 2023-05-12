@@ -9,12 +9,14 @@ import com.fivesysdev.Fiveogram.exceptions.Status455WrongCodeException;
 import com.fivesysdev.Fiveogram.services.LoginService;
 import com.fivesysdev.Fiveogram.services.RegistrationService;
 import com.fivesysdev.Fiveogram.util.Response;
+import io.swagger.annotations.Api;
 import jakarta.mail.MessagingException;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/auth")
+@Api(value = "Auth endpoints", tags = {"Auth"})
 public class StartController {
     private final LoginService loginService;
     private final RegistrationService registrationService;
@@ -26,7 +28,7 @@ public class StartController {
 
     @GetMapping("/login")
     public Response<String> login(@RequestBody AuthenticationDTO authenticationDTO)
-            throws Status440WrongPasswordException, MessagingException {
+            throws Status440WrongPasswordException {
         return new Response<>(loginService.login(authenticationDTO));
     }
 
