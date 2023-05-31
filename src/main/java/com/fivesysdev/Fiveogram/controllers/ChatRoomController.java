@@ -10,6 +10,7 @@ import com.fivesysdev.Fiveogram.models.MessageModel;
 import com.fivesysdev.Fiveogram.serviceInterfaces.ChatRoomService;
 import com.fivesysdev.Fiveogram.util.Response;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,27 +28,27 @@ public class ChatRoomController {
     }
 
     @PostMapping("/new")
-    public Response<ChatRoom> newChatRoom(@RequestHeader(value = "Authorization") String token,
+    public Response<ChatRoom> newChatRoom(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token,
                                           @RequestBody List<Long> usersId) throws Status437UserNotFoundException {
         return new Response<>(chatRoomService.newChatRoom(jwtUtil.getUsername(token), usersId));
     }
 
     @GetMapping("/{id}")
-    public Response<List<MessageModel>> getMessages(@RequestHeader(value = "Authorization") String token,
+    public Response<List<MessageModel>> getMessages(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token,
                                                     @PathVariable long id)
             throws Status452ChatRoomNotFoundException, Status453NotYourChatRoomException {
         return new Response<>(chatRoomService.findById(id,jwtUtil.getUsername(token)).getMessages());
     }
 
     @PostMapping("/addUser/{chatRoomId}")
-    public void addUserToChatRoom(@RequestHeader(value = "Authorization") String token,
+    public void addUserToChatRoom(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token,
                                   @PathVariable Long chatRoomId, @RequestBody List<Long> userIds)
             throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException {
         chatRoomService.addUserToChatRoom(chatRoomId, userIds, jwtUtil.getUsername(token));
     }
 
     @DeleteMapping("/deleteUser/{chatRoomId}")
-    public void deleteUserFromChatRoom(@RequestHeader(value = "Authorization") String token,
+    public void deleteUserFromChatRoom(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token,
                                        @PathVariable Long chatRoomId, @RequestParam Long userId)
             throws Status452ChatRoomNotFoundException, Status437UserNotFoundException, Status454YouAreNotAnAdminException {
         chatRoomService.deleteUserFromChatRoom(chatRoomId, userId,jwtUtil.getUsername(token));

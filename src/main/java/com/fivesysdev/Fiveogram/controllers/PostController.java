@@ -10,6 +10,7 @@ import com.fivesysdev.Fiveogram.models.Post;
 import com.fivesysdev.Fiveogram.serviceInterfaces.*;
 import com.fivesysdev.Fiveogram.util.Response;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +31,8 @@ public class PostController {
     private final HashtagService hashtagService;
 
     @PostMapping()
-    public Response<Post> addNewPost(@ModelAttribute PostDTO postDTO,
-                                           @RequestHeader(value = "Authorization") String token)
+    public Response<Post> addNewPost(@RequestBody PostDTO postDTO,
+                                           @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status436SponsorNotFoundException,
             Status443DidNotReceivePictureException, Status446MarksBadRequestException, Status437UserNotFoundException {
         return new Response<>(postService.save(jwtUtil.getUsername(token), postDTO));
@@ -39,7 +40,7 @@ public class PostController {
 
     @PostMapping("/addMarks")
     public Response<Post> addMarks(@RequestBody MarksToAddDTO marksToAddDTO,
-                                         @RequestHeader(value = "Authorization") String token)
+                                         @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status449PictureNotFoundException, Status433NotYourPostException, Status437UserNotFoundException {
         return new Response<>(postService.addMarks(jwtUtil.getUsername(token), marksToAddDTO.markDTOs()));
     }
@@ -50,8 +51,8 @@ public class PostController {
     }
 
     @PatchMapping("/{id}/edit")
-    public Response<Post> editPost(@PathVariable long id, @ModelAttribute PostDTO postDTO,
-                                         @RequestHeader(value = "Authorization") String token)
+    public Response<Post> editPost(@PathVariable long id, @RequestBody PostDTO postDTO,
+                                         @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status435PostNotFoundException,
             Status433NotYourPostException, Status437UserNotFoundException, Status446MarksBadRequestException {
         return new Response<>(postService.editPost(jwtUtil.getUsername(token), postDTO, id));
@@ -59,21 +60,21 @@ public class PostController {
 
     @DeleteMapping("/{id}/delete")
     public Response<List<Post>> deletePost(@PathVariable long id,
-                                                 @RequestHeader(value = "Authorization") String token)
+                                                 @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException, Status433NotYourPostException {
         return new Response<>(postService.deletePost(jwtUtil.getUsername(token), id));
     }
 
     @PostMapping("/{id}/addComment")
     public Response<Comment> addComment(@PathVariable long id, @RequestParam @Nullable String text,
-                                              @RequestHeader(value = "Authorization") String token)
+                                              @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException, Status448TextIsNullException {
         return new Response<>(commentService.save(jwtUtil.getUsername(token), id, text));
     }
 
     @PostMapping("/{id}/setLike")
     public Response<Post> addLike(@PathVariable long id,
-                                        @RequestHeader(value = "Authorization") String token)
+                                        @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status438PostAlreadyLikedException,
             Status435PostNotFoundException {
         return new Response<>(likeService.likePost(jwtUtil.getUsername(token), id));
@@ -81,7 +82,7 @@ public class PostController {
 
     @PostMapping("/{id}/deleteLike")
     public Response<Post> deleteLike(@PathVariable long id,
-                                           @RequestHeader(value = "Authorization") String token)
+                                           @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException {
         return new Response<>(likeService.unlikePost(jwtUtil.getUsername(token), id));
     }
@@ -102,7 +103,7 @@ public class PostController {
     }
 
     @GetMapping("/getRecommendations")
-    public Response<Set<Post>> getMyRecommendations(@RequestHeader(value = "Authorization") String token){
+    public Response<Set<Post>> getMyRecommendations(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token){
         return new Response<>(postService.getRecommendations(jwtUtil.getUsername(token)));
     }
 }

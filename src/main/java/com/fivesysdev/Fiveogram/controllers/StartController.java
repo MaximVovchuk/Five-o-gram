@@ -27,9 +27,9 @@ public class StartController {
     }
 
     @GetMapping("/login")
-    public Response<String> login(@RequestBody AuthenticationDTO authenticationDTO)
+    public Response<String> login(@RequestParam String username, @RequestParam String password)
             throws Status440WrongPasswordException {
-        return new Response<>(loginService.login(authenticationDTO));
+        return new Response<>(loginService.login(new AuthenticationDTO(username, password)));
     }
 
     @PostMapping("/register")

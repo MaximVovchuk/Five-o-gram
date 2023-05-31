@@ -9,6 +9,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.ReportService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.StoryService;
 import com.fivesysdev.Fiveogram.util.Response;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,15 +26,15 @@ public class StoryController {
     private final JWTUtil jwtUtil;
 
     @PostMapping("/new")
-    public Response<Story> addNewStory(@ModelAttribute MultipartFile multipartFile,
-                                       @RequestHeader(value = "Authorization") String token)
+    public Response<Story> addNewStory(@RequestBody MultipartFile multipartFile,
+                                       @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException {
         return new Response<>(storyService.createNewStory(jwtUtil.getUsername(token), multipartFile));
     }
 
     @DeleteMapping("{id}")
     public void deleteStory(@PathVariable Long id,
-                            @RequestHeader(value = "Authorization") String token)
+                            @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status444NotYourStoryException, Status445StoryNotFoundException {
         storyService.deleteById(jwtUtil.getUsername(token), id);
     }
@@ -44,12 +45,12 @@ public class StoryController {
     }
 
     @GetMapping()
-    public Response<List<Story>> getStories(@RequestHeader(value = "Authorization") String token) {
+    public Response<List<Story>> getStories(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token) {
         return new Response<>(storyService.getStoriesList(jwtUtil.getUsername(token)));
     }
 
     @GetMapping("/archive")
-    public Response<List<Story>> getMyArchive(@RequestHeader(value = "Authorization") String token) {
+    public Response<List<Story>> getMyArchive(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token) {
         return new Response<>(storyService.getMyStoriesArchive(jwtUtil.getUsername(token)));
     }
 

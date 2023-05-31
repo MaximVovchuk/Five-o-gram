@@ -11,6 +11,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.CommentLikeService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.CommentService;
 import com.fivesysdev.Fiveogram.util.Response;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -30,7 +31,7 @@ public class CommentController {
 
     @PatchMapping("/{id}/edit")
     public Response<Comment> editComment(@PathVariable long id, @RequestParam String text,
-                                               @RequestHeader(value = "Authorization") String token)
+                                               @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status435PostNotFoundException,
             Status434CommentNotFoundException, Status432NotYourCommentException {
         return new Response<>(commentService.editComment(jwtUtil.getUsername(token), id, text));
@@ -38,7 +39,7 @@ public class CommentController {
 
     @DeleteMapping("/{id}/delete")
     public Response<Post> deleteComment(@PathVariable long id,
-                                              @RequestHeader(value = "Authorization") String token)
+                                              @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status435PostNotFoundException,
             Status434CommentNotFoundException, Status432NotYourCommentException {
         return new Response<>(commentService.deleteComment(jwtUtil.getUsername(token), id));
@@ -46,14 +47,14 @@ public class CommentController {
 
     @PostMapping("/{id}/setLike")
     public Response<Post> setLike(@PathVariable long id,
-                                        @RequestHeader(value = "Authorization") String token)
+                                        @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
         return new Response<>(commentLikeService.setLike(jwtUtil.getUsername(token), id));
     }
 
     @DeleteMapping("{id}/deleteLike")
     public Response<Post> deleteLike(@PathVariable long id,
-                                           @RequestHeader(value = "Authorization") String token)
+                                           @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status434CommentNotFoundException {
         return new Response<>(commentLikeService.deleteLike(jwtUtil.getUsername(token), id));
     }

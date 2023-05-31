@@ -11,6 +11,7 @@ import com.fivesysdev.Fiveogram.serviceInterfaces.SubscriptionService;
 import com.fivesysdev.Fiveogram.serviceInterfaces.UserService;
 import com.fivesysdev.Fiveogram.util.Response;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,21 +36,21 @@ public class UserController {
 
     @PostMapping("/setAvatar")
     public Response<User> setAvatar(@RequestBody MultipartFile multipartFile,
-                                          @RequestHeader(value = "Authorization") String token)
+                                          @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException {
         return new Response<>(userService.setAvatar(jwtUtil.getUsername(token), multipartFile));
     }
 
     @DeleteMapping("/avatar/{id}")
     public void deleteAvatar(@PathVariable long id,
-                             @RequestHeader(value = "Authorization") String token)
+                             @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status447NotYourAvatarException, Status450AvatarNotFoundException {
         userService.deleteAvatar(jwtUtil.getUsername(token), id);
     }
 
     @PatchMapping("/editMyProfile")
     public Response<String> editProfile(@RequestBody UserDTO userDTO,
-                                            @RequestHeader(value = "Authorization") String token)
+                                            @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status439UsernameBusyException {
         return new Response<>(userService.editMe(jwtUtil.getUsername(token), userDTO));
     }
@@ -62,14 +63,14 @@ public class UserController {
 
     @PostMapping("{id}/subscribe")
     public Response<User> subscribe(@PathVariable long id,
-                                          @RequestHeader(value = "Authorization") String token)
+                                          @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status431SubscriptionException {
         return new Response<>(subscriptionService.subscribe(jwtUtil.getUsername(token), id));
     }
 
     @PostMapping("{id}/unsubscribe")
     public Response<User> unsubscribe(@PathVariable long id,
-                                            @RequestHeader(value = "Authorization") String token)
+                                            @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status437UserNotFoundException, Status431SubscriptionException {
         return new Response<>(subscriptionService.unsubscribe(jwtUtil.getUsername(token), id));
     }
@@ -85,19 +86,19 @@ public class UserController {
     }
 
     @GetMapping("/notifications")
-    public Response<List<Notification>> getNotifications(@RequestHeader(value = "Authorization") String token)
+    public Response<List<Notification>> getNotifications(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status435PostNotFoundException, Status437UserNotFoundException {
         return new Response<>(notificationService.getAllNotifications(jwtUtil.getUsername(token)));
     }
 
     @GetMapping("/getFeed")
-    public Response<List<Post>> getFeed(@RequestHeader(value = "Authorization") String token)
+    public Response<List<Post>> getFeed(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status442NoFeedPostsException, Status437UserNotFoundException {
         return new Response<>(userService.getFeed(jwtUtil.getUsername(token)));
     }
 
     @GetMapping("/getPostsWhereImMarked")
-    public Response<Set<Post>> getPostsWhereImMarked(@RequestHeader(value = "Authorization") String token) {
+    public Response<Set<Post>> getPostsWhereImMarked(@ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token) {
         return new Response<>(userService.getPostsWhereImMarked(jwtUtil.getUsername(token)));
     }
 

@@ -40,9 +40,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .loginPage("/auth/login")
-                .and()
+//                .formLogin()
+//                .loginPage("/auth/login")
+//                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 //        http.addFilterBefore(new SwaggerTokenFilter(), BasicAuthenticationFilter.class);
