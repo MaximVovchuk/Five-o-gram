@@ -33,7 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String requestURI = httpServletRequest.getRequestURI();
         System.out.println(requestURI);
-        List<String> list = List.of("/swagger-ui.html", "/swagger-ui/index.html", "/v3/api-docs", "/favicon.ico", "/v2/api-docs", "/webjars/**", "/swagger-resources/**");
+        List<String> list = List.of("/swagger-ui.html", "/swagger-ui/index.html", "/v3/api-docs", "/favicon.ico", "/v2/api-docs", "/webjars/**", "/swagger-resources/**","/test/**");
         if (list.contains(requestURI)) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;

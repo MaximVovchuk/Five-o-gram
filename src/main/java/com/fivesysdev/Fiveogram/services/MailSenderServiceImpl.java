@@ -41,7 +41,7 @@ public class MailSenderServiceImpl implements MailSenderService {
             message.setSubject(subject);
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             message.setSentDate(new Date());
-            message.setFrom(new InternetAddress("gmail@gmail.com"));
+            message.setFrom(new InternetAddress("no-reply@gmail.com"));
             Transport.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();

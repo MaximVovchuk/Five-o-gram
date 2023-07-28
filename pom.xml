@@ -113,6 +113,23 @@
             <version>2.9.2</version>
         </dependency>
 
+
+
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.512</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-storage</artifactId>
+            <version>1.117.0</version>
+        </dependency>
+
+
+
+
     </dependencies>
 
     <build>

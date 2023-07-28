@@ -31,7 +31,7 @@ public class PostController {
     private final HashtagService hashtagService;
 
     @PostMapping()
-    public Response<Post> addNewPost(@RequestBody PostDTO postDTO,
+    public Response<Post> addNewPost(@ModelAttribute PostDTO postDTO,
                                            @ApiParam(hidden = true) @RequestHeader(value = "Authorization") String token)
             throws Status441FileIsNullException, Status436SponsorNotFoundException,
             Status443DidNotReceivePictureException, Status446MarksBadRequestException, Status437UserNotFoundException {
