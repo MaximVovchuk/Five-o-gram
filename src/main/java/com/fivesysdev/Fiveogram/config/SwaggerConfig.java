@@ -35,7 +35,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("API")
-                .description("Vovchuk Maksym, 4KI1, 2023")
+                .description("Vovchuk Maksym, 2KI-23ms, 2025")
                 .version("1.0.0")
                 .termsOfServiceUrl(null) // disable terms of service
                 .build();
